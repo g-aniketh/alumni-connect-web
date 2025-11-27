@@ -1,0 +1,93 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Separator } from '../ui/separator';
+import { type Job } from '../../types';
+import { Briefcase, MapPin, DollarSign, Calendar, Building2 } from 'lucide-react';
+
+interface JobDetailsProps {
+  job: Job | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
+  if (!job) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <DialogTitle className="text-2xl">{job.title}</DialogTitle>
+              <DialogDescription className="text-base mt-1 flex items-center gap-2">
+                <Building2 className="h-4 w-4" /> {job.company}
+              </DialogDescription>
+            </div>
+            {job.referralAvailable && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                    Referral Available
+                </Badge>
+            )}
+          </div>
+        </DialogHeader>
+
+        <div className="grid gap-6 py-4">
+          <div className="flex flex-wrap gap-4 text-sm">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Briefcase className="h-4 w-4" />
+              {job.type}
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <MapPin className="h-4 w-4" />
+              {job.location}
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <DollarSign className="h-4 w-4" />
+              {job.salaryMin ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax?.toLocaleString()}` : 'Competitive'}
+            </div>
+             <div className="flex items-center gap-2 text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              Posted: {new Date(job.postedDate).toLocaleDateString()}
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <h3 className="font-semibold text-lg">Job Description</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              {job.description}
+            </p>
+          </div>
+
+           <div className="space-y-3">
+            <h3 className="font-semibold text-lg">Target Departments</h3>
+             <div className="flex flex-wrap gap-2">
+                {job.department.map(dept => (
+                    <Badge key={dept} variant="outline">{dept}</Badge>
+                ))}
+             </div>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button className="w-full sm:w-auto" asChild>
+            <a href={job.applyLink || '#'} target="_blank" rel="noopener noreferrer">
+              Apply Now
+            </a>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
