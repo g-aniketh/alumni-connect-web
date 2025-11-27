@@ -4,6 +4,8 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
 import JobsPage from './pages/JobsPage';
+import AlumniDirectoryPage from './pages/AlumniDirectoryPage';
+import EventsCampaignsPage from './pages/EventsCampaignsPage';
 import { AuthProvider } from './context/AuthContext';
 import './App.css';
 
@@ -19,8 +21,10 @@ function App() {
             <Route path="/signup" element={<AuthPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/jobs" element={<JobsPage />} />
+            <Route path="/alumni" element={<AlumniDirectoryPage />} />
+            <Route path="/events" element={<EventsCampaignsPage />} />
           </Routes>
-      </div>
+        </div>
       </Router>
     </AuthProvider>
   );

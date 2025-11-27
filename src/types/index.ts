@@ -1,4 +1,12 @@
+export const ContributionType = {
+  Financial: "Financial Contribution",
+  Volunteer: "Volunteer Time",
+} as const;
+
+export type ContributionType = (typeof ContributionType)[keyof typeof ContributionType];
+
 export const Department = {
+
   CS: "Computer Science",
   EE: "Electrical Engineering",
   Mech: "Mechanical Engineering",
@@ -47,6 +55,7 @@ export interface Alumni {
   designation: string;
   skills: string[];
   avatar?: string;
+  mentorshipAvailable?: boolean; // true = Open for Mentorship, false/undefined = Busy
 }
 
 export interface Student {
