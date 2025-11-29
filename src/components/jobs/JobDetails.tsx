@@ -9,8 +9,10 @@ import {
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
-import { type Job } from '../../types';
+import { type Job, JobApplicationStatus } from '../../types';
 import { Briefcase, MapPin, DollarSign, Calendar, Building2 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { UserRole } from '../../types';
 
 interface JobDetailsProps {
   job: Job | null;
@@ -19,7 +21,28 @@ interface JobDetailsProps {
 }
 
 export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
+  const { user } = useAuth();
+  
   if (!job) return null;
+
+  const handleApply = () => {
+    if (user && user.role === UserRole.Student) {
+      const applicationData = {
+        id: `app-${Date.now()}`,
+        jobId: job.id,
+        studentId: user.id,
+        appliedDate: new Date().toISOString().split('T')[0],
+        status: JobApplicationStatus.Applied,
+        resumeUrl: '', // Would be uploaded in real app
+        coverLetter: '', // Would be filled in real app
+      };
+      console.log('Job Application Submitted:', applicationData);
+      // In real app, would navigate to applications page or show success message
+      onOpenChange(false);
+    } else if (job.applyLink) {
+      window.open(job.applyLink, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -80,11 +103,21 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
         </div>
 
         <DialogFooter>
-          <Button className="w-full sm:w-auto" asChild>
-            <a href={job.applyLink || '#'} target="_blank" rel="noopener noreferrer">
+          {user && user.role === UserRole.Student ? (
+            <Button className="w-full sm:w-auto" onClick={handleApply}>
               Apply Now
-            </a>
-          </Button>
+            </Button>
+          ) : job.applyLink ? (
+            <Button className="w-full sm:w-auto" asChild>
+              <a href={job.applyLink} target="_blank" rel="noopener noreferrer">
+                Apply Now
+              </a>
+            </Button>
+          ) : (
+            <Button className="w-full sm:w-auto" disabled>
+              Apply Now
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

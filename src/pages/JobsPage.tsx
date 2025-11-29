@@ -4,7 +4,7 @@ import { JobFilters } from '../components/jobs/JobFilters';
 import { JobDetails } from '../components/jobs/JobDetails';
 import { mockJobs } from '../data/mockData';
 import { type Job, JobType } from '../types';
-import { Button } from '../components/ui/button'; // For mobile filter toggle if needed
+// Button import removed - not currently used
 
 const JobsPage = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);

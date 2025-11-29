@@ -7,8 +7,15 @@ import {
   EventStatus,
   type Job,
   JobType,
+  type JobApplication,
+  JobApplicationStatus,
   type Student,
   UserRole,
+  type MentorshipRequest,
+  MentorshipStatus,
+  type EventRegistration,
+  EventRegistrationStatus,
+  type Newsletter,
 } from '../types';
 
 export const mockAlumni: Alumni[] = [
@@ -288,5 +295,99 @@ export const mockEvents: AlumniEvent[] = [
     organizer: 'c1',
     image:
       'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=1000',
+  },
+];
+
+export const mockJobApplications: JobApplication[] = [
+  {
+    id: 'app1',
+    jobId: 'j1',
+    studentId: 's1',
+    status: JobApplicationStatus.UnderReview,
+    appliedOn: '2024-03-21',
+    updatedOn: '2024-03-24',
+    notes: 'Initial resume screening complete',
+    referralRequested: true,
+  },
+  {
+    id: 'app2',
+    jobId: 'j2',
+    studentId: 's2',
+    status: JobApplicationStatus.Applied,
+    appliedOn: '2024-03-22',
+    referralRequested: false,
+  },
+  {
+    id: 'app3',
+    jobId: 'j3',
+    studentId: 's1',
+    status: JobApplicationStatus.Interviewing,
+    appliedOn: '2024-03-18',
+    updatedOn: '2024-03-25',
+    notes: 'Completed first round interview',
+  },
+];
+
+export const mockEventRegistrations: EventRegistration[] = [
+  {
+    id: 'reg1',
+    eventId: 'e1',
+    studentId: 's1',
+    status: EventRegistrationStatus.Registered,
+    registeredOn: '2024-04-01',
+  },
+  {
+    id: 'reg2',
+    eventId: 'e2',
+    studentId: 's2',
+    status: EventRegistrationStatus.Waitlisted,
+    registeredOn: '2024-04-05',
+  },
+];
+
+export const mockMentorshipRequests: MentorshipRequest[] = [
+  {
+    id: 'm1',
+    studentId: 's1',
+    alumniId: 'a1',
+    status: MentorshipStatus.Accepted,
+    requestedOn: '2024-03-10',
+    updatedOn: '2024-03-12',
+    message: 'Interested in guidance for front-end interviews.',
+  },
+  {
+    id: 'm2',
+    studentId: 's2',
+    alumniId: 'a3',
+    status: MentorshipStatus.Pending,
+    requestedOn: '2024-03-22',
+    message: 'Looking for advice on management consulting career paths.',
+  },
+];
+
+export const mockNewsletters: Newsletter[] = [
+  {
+    id: 'n1',
+    title: 'Quarterly Innovation Digest',
+    summary: 'Highlights of research, startups, and alumni spotlights from Q1.',
+    content:
+      'In this edition, we feature alumni-founded startups, research breakthroughs, and upcoming collaboration opportunities.',
+    author: 'College Communications Team',
+    publishedOn: '2024-03-15',
+    tags: ['Innovation', 'Startups', 'Research'],
+    coverImage:
+      'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?auto=format&fit=crop&q=80&w=1000',
+  },
+  {
+    id: 'n2',
+    title: 'Alumni Success Stories',
+    summary: 'Celebrating alumni who lead impactful initiatives across the globe.',
+    content:
+      'Read about our alumni making a difference in sustainability, fintech, and healthcare.',
+    author: 'Alumni Office',
+    publishedOn: '2024-04-05',
+    tags: ['Alumni', 'Impact'],
+    coverImage:
+      'https://images.unsplash.com/photo-1521790797524-b2497295b8a0?auto=format&fit=crop&q=80&w=1000',
   },
 ];

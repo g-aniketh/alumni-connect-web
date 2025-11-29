@@ -102,6 +102,28 @@ export interface Job {
   applyLink?: string;
 }
 
+export const JobApplicationStatus = {
+  Applied: "Applied",
+  UnderReview: "Under Review",
+  Interviewing: "Interviewing",
+  Offered: "Offered",
+  Rejected: "Rejected",
+} as const;
+
+export type JobApplicationStatus =
+  (typeof JobApplicationStatus)[keyof typeof JobApplicationStatus];
+
+export interface JobApplication {
+  id: string;
+  jobId: string;
+  studentId: string;
+  status: JobApplicationStatus;
+  appliedOn: string;
+  updatedOn?: string;
+  notes?: string;
+  referralRequested?: boolean;
+}
+
 export interface Campaign {
   id: string;
   title: string;
@@ -123,4 +145,55 @@ export interface AlumniEvent {
   status: EventStatus;
   organizer: string;
   image?: string;
+}
+
+export const EventRegistrationStatus = {
+  Registered: "Registered",
+  Waitlisted: "Waitlisted",
+  Attended: "Attended",
+  Cancelled: "Cancelled",
+} as const;
+
+export type EventRegistrationStatus =
+  (typeof EventRegistrationStatus)[keyof typeof EventRegistrationStatus];
+
+export interface EventRegistration {
+  id: string;
+  eventId: string;
+  studentId: string;
+  status: EventRegistrationStatus;
+  registeredOn: string;
+  checkedIn?: boolean;
+}
+
+export const MentorshipStatus = {
+  Pending: "Pending",
+  Accepted: "Accepted",
+  Declined: "Declined",
+  Completed: "Completed",
+} as const;
+
+export type MentorshipStatus =
+  (typeof MentorshipStatus)[keyof typeof MentorshipStatus];
+
+export interface MentorshipRequest {
+  id: string;
+  studentId: string;
+  alumniId: string;
+  status: MentorshipStatus;
+  requestedOn: string;
+  message?: string;
+  updatedOn?: string;
+}
+
+export interface Newsletter {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  author: string;
+  publishedOn: string;
+  tags?: string[];
+  coverImage?: string;
+  link?: string;
 }

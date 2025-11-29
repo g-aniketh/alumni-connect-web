@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, GraduationCap } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../ui/button";
@@ -13,19 +13,54 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { RoleSwitcher } from "../auth/RoleSwitcher";
+import { UserRole } from "../../types";
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
-  const navLinks = [
+  const publicLinks = [
     { name: "Home", path: "/" },
     { name: "Jobs", path: "/jobs" },
-    { name: "Alumni", path: "/alumni" },
     { name: "Events", path: "/events" },
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/contact" },
   ];
+
+  const getRoleLinks = () => {
+    if (!user) return [];
+    
+    switch (user.role) {
+      case UserRole.Student:
+        return [
+          { name: "Dashboard", path: "/dashboard" },
+          { name: "Alumni", path: "/student/alumni" },
+          { name: "Jobs", path: "/jobs" },
+          { name: "Applications", path: "/student/applications" },
+          { name: "Events", path: "/events" },
+        ];
+      case UserRole.Alumni:
+        return [
+          { name: "Dashboard", path: "/dashboard" },
+          { name: "Alumni Network", path: "/alumni/network" },
+          { name: "Students", path: "/alumni/students" },
+          { name: "Jobs", path: "/jobs" },
+          { name: "Events", path: "/events" },
+        ];
+      case UserRole.College:
+        return [
+          { name: "Dashboard", path: "/dashboard" },
+          { name: "Alumni", path: "/college/alumni" },
+          { name: "Students", path: "/college/students" },
+          { name: "Jobs", path: "/jobs" },
+          { name: "Events", path: "/events" },
+        ];
+      default:
+        return publicLinks;
+    }
+  };
+
+  const navLinks = isAuthenticated ? getRoleLinks() : publicLinks;
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
@@ -46,7 +81,9 @@ const Navbar = () => {
             <Link
               key={link.name}
               to={link.path}
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                location.pathname === link.path ? "text-primary" : ""
+              }`}
             >
               {link.name}
             </Link>
@@ -54,6 +91,7 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
+          {!isAuthenticated && <RoleSwitcher />}
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -76,11 +114,16 @@ const Navbar = () => {
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
                     </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.role}
+                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Dashboard</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
@@ -122,7 +165,9 @@ const Navbar = () => {
                     <Link
                       key={link.name}
                       to={link.path}
-                      className="text-lg font-medium transition-colors hover:text-primary"
+                      className={`text-lg font-medium transition-colors hover:text-primary ${
+                        location.pathname === link.path ? "text-primary" : ""
+                      }`}
                       onClick={() => setIsOpen(false)}
                     >
                       {link.name}
@@ -130,6 +175,11 @@ const Navbar = () => {
                   ))}
                 </div>
                 <div className="border-t pt-4">
+                  {!isAuthenticated && (
+                    <div className="mb-4">
+                      <RoleSwitcher />
+                    </div>
+                  )}
                   {isAuthenticated && user ? (
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-2">
@@ -143,6 +193,9 @@ const Navbar = () => {
                           </p>
                           <p className="text-xs leading-none text-muted-foreground">
                             {user.email}
+                          </p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user.role}
                           </p>
                         </div>
                       </div>
