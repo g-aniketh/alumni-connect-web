@@ -2,7 +2,7 @@ import { Briefcase, MapPin, DollarSign, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { type Job, JobType } from '../../types';
+import type { Job } from '../../types';
 
 interface JobCardProps {
   job: Job;

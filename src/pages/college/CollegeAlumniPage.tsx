@@ -6,19 +6,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table';
-import { Badge } from '../components/ui/badge';
-import { Input } from '../components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
+} from '../../components/ui/table';
+import { Badge } from '../../components/ui/badge';
+import { Input } from '../../components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
-import { mockAlumni } from '../data/mockData';
-import { Department } from '../types';
+} from '../../components/ui/select';
+import { mockAlumni } from '../../data/mockData';
+import { Department } from '../../types';
 import { Search } from 'lucide-react';
 
 const CollegeAlumniPage = () => {
@@ -26,7 +26,9 @@ const CollegeAlumniPage = () => {
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [yearFilter, setYearFilter] = useState<string>('all');
 
-  const years = Array.from(new Set(mockAlumni.map(a => a.graduationYear))).sort((a, b) => b - a);
+  const years = Array.from(new Set<number>(mockAlumni.map(a => a.graduationYear))).sort(
+    (a, b) => b - a,
+  );
 
   const filteredAlumni = mockAlumni.filter((alumni) => {
     const matchesSearch = search === '' || 

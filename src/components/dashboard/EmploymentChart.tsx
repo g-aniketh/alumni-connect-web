@@ -8,7 +8,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Department } from '../../types';
 
 const data = [
   { name: 'CS', rate: 95 },

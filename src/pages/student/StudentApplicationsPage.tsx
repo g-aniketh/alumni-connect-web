@@ -6,11 +6,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table';
-import { Badge } from '../components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { mockJobs, mockJobApplications } from '../data/mockData';
-import { JobApplicationStatus } from '../types';
+} from '../../components/ui/table';
+import { Badge } from '../../components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { mockJobs, mockJobApplications } from '../../data/mockData';
+import { JobApplicationStatus } from '../../types';
 import { Calendar, Building2, MapPin } from 'lucide-react';
 
 const StudentApplicationsPage = () => {

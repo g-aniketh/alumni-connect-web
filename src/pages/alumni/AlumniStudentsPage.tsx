@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-import { Input } from '../components/ui/input';
-import { mockStudents } from '../data/mockData';
-import { type Student } from '../types';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
+import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { Input } from '../../components/ui/input';
+import { mockStudents } from '../../data/mockData';
+import type { Student } from '../../types';
 import { UserPlus, Search } from 'lucide-react';
 import {
   Dialog,
@@ -13,7 +13,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../components/ui/dialog';
+} from '../../components/ui/dialog';
 
 const AlumniStudentsPage = () => {
   const [search, setSearch] = useState('');

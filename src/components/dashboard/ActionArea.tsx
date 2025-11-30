@@ -10,11 +10,7 @@ import {
 } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea'; // Assume we have this or use Input
 import { useState } from 'react';
-
-// We'll use a simple Input for description for now since Textarea isn't installed yet
-// Or better, install textarea now or use Input with type="text"
 
 export const ActionArea = () => {
   const [isCampaignOpen, setIsCampaignOpen] = useState(false);

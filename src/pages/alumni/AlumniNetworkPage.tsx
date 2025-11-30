@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { AlumniProfileCard } from '../components/alumni/AlumniProfileCard';
-import { AlumniSearchFilters } from '../components/alumni/AlumniSearchFilters';
-import { mockAlumni } from '../data/mockData';
-import { type Alumni } from '../types';
+import { AlumniProfileCard } from '../../components/alumni/AlumniProfileCard';
+import { AlumniSearchFilters } from '../../components/alumni/AlumniSearchFilters';
+import { mockAlumni } from '../../data/mockData';
+import type { Alumni } from '../../types';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../components/ui/dialog';
-import { Button } from '../components/ui/button';
-import { useAuth } from '../context/AuthContext';
+} from '../../components/ui/dialog';
+import { Button } from '../../components/ui/button';
+import { useAuth } from '../../context/AuthContext';
 
 const AlumniNetworkPage = () => {
   const { user } = useAuth();
