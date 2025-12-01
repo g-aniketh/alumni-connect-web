@@ -33,7 +33,7 @@ const Navbar = () => {
     switch (user.role) {
       case UserRole.Student:
         return [
-          { name: "Dashboard", path: "/dashboard" },
+          { name: "Dashboard", path: "/student/dashboard" },
           { name: "Alumni", path: "/student/alumni" },
           { name: "Jobs", path: "/jobs" },
           { name: "Applications", path: "/student/applications" },
@@ -41,7 +41,7 @@ const Navbar = () => {
         ];
       case UserRole.Alumni:
         return [
-          { name: "Dashboard", path: "/dashboard" },
+          { name: "Dashboard", path: "/alumni/dashboard" },
           { name: "Alumni Network", path: "/alumni/network" },
           { name: "Students", path: "/alumni/students" },
           { name: "Jobs", path: "/jobs" },
@@ -49,7 +49,7 @@ const Navbar = () => {
         ];
       case UserRole.College:
         return [
-          { name: "Dashboard", path: "/dashboard" },
+          { name: "Dashboard", path: "/college/dashboard" },
           { name: "Alumni", path: "/college/alumni" },
           { name: "Students", path: "/college/students" },
           { name: "Jobs", path: "/jobs" },
@@ -123,7 +123,9 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/dashboard">Dashboard</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Profile</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>

@@ -40,6 +40,21 @@ const StudentDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              My Mentorships
+            </CardTitle>
+            <CardDescription>Track your mentorship relationships</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="w-full">
+              <Link to="/student/mentorships">View Mentorships</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
               <Briefcase className="h-5 w-5" />
               Jobs & Applications
             </CardTitle>
@@ -124,6 +139,21 @@ const AlumniDashboard = () => {
           <CardContent>
             <Button asChild className="w-full">
               <Link to="/alumni/students">View Students</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Mentorship Requests
+            </CardTitle>
+            <CardDescription>Manage mentorship requests from students</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="w-full">
+              <Link to="/alumni/mentorships">Manage Requests</Link>
             </Button>
           </CardContent>
         </Card>
@@ -316,6 +346,8 @@ const CollegeDashboard = () => {
   );
 };
 
+import { Navigate } from 'react-router-dom';
+
 const RoleDashboard = () => {
   const { user } = useAuth();
 
@@ -327,13 +359,14 @@ const RoleDashboard = () => {
     );
   }
 
+  // Redirect to role-specific dashboard
   switch (user.role) {
     case UserRole.Student:
-      return <StudentDashboard />;
+      return <Navigate to="/student/dashboard" replace />;
     case UserRole.Alumni:
-      return <AlumniDashboard />;
+      return <Navigate to="/alumni/dashboard" replace />;
     case UserRole.College:
-      return <CollegeDashboard />;
+      return <Navigate to="/college/dashboard" replace />;
     default:
       return null;
   }

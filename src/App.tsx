@@ -4,6 +4,9 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
 import RoleDashboard from './pages/RoleDashboard';
+import StudentDashboardPage from './pages/student/StudentDashboardPage';
+import AlumniDashboardPage from './pages/alumni/AlumniDashboardPage';
+import CollegeDashboardPage from './pages/college/CollegeDashboardPage';
 import JobsPage from './pages/JobsPage';
 import AlumniDirectoryPage from './pages/AlumniDirectoryPage';
 import EventsCampaignsPage from './pages/EventsCampaignsPage';
@@ -19,6 +22,9 @@ import CollegeCampaignCreationPage from './pages/college/CollegeCampaignCreation
 import CollegeNewslettersPage from './pages/college/CollegeNewslettersPage';
 import CollegeNewsletterCreationPage from './pages/college/CollegeNewsletterCreationPage';
 import StudentApplicationsPage from './pages/student/StudentApplicationsPage';
+import StudentMentorshipsPage from './pages/student/StudentMentorshipsPage';
+import AlumniMentorshipsPage from './pages/alumni/AlumniMentorshipsPage';
+import ProfilePage from './pages/ProfilePage';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserRole } from './types';
@@ -40,12 +46,36 @@ function App() {
             <Route path="/jobs" element={<JobsPage />} />
             <Route path="/events" element={<EventsCampaignsPage />} />
             
-            {/* Role-based Dashboard */}
+            {/* Role-based Dashboards */}
             <Route 
               path="/dashboard" 
               element={
                 <ProtectedRoute>
                   <RoleDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/student/dashboard" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Student]}>
+                  <StudentDashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alumni/dashboard" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniDashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/college/dashboard" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeDashboardPage />
                 </ProtectedRoute>
               } 
             />
@@ -74,6 +104,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Student]}>
                   <StudentApplicationsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/student/mentorships" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Student]}>
+                  <StudentMentorshipsPage />
                 </ProtectedRoute>
               } 
             />
@@ -108,6 +146,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniEventCreationPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alumni/mentorships" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniMentorshipsPage />
                 </ProtectedRoute>
               } 
             />
@@ -172,6 +218,16 @@ function App() {
             
             {/* Legacy route for alumni directory (public) */}
             <Route path="/alumni" element={<AlumniDirectoryPage />} />
+            
+            {/* Profile Page */}
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </div>
       </Router>
