@@ -17,13 +17,24 @@ import { useNavigate } from 'react-router-dom';
 
 const CollegeJobCreationPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    company: string;
+    location: string;
+    type: JobType;
+    department: Department[];
+    salaryMin: string;
+    salaryMax: string;
+    referralAvailable: boolean;
+    applyLink: string;
+  }>({
     title: '',
     description: '',
     company: '',
     location: '',
     type: JobType.FullTime,
-    department: [] as Department[],
+    department: [],
     salaryMin: '',
     salaryMax: '',
     referralAvailable: false,

@@ -2,19 +2,15 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { 
   Users, 
   Briefcase, 
   Calendar, 
-  DollarSign,
   FileText,
-  TrendingUp,
   CheckCircle2,
   Clock,
   ArrowRight,
   Search,
-  BookOpen,
   MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -28,9 +24,6 @@ const StudentDashboardPage = () => {
   const totalApplications = mockJobApplications.length;
   const activeApplications = mockJobApplications.filter(
     app => app.status === JobApplicationStatus.Applied || app.status === JobApplicationStatus.UnderReview
-  ).length;
-  const acceptedApplications = mockJobApplications.filter(
-    app => app.status === JobApplicationStatus.Offered
   ).length;
 
   const activeMentorships = mockMentorshipRequests.filter(

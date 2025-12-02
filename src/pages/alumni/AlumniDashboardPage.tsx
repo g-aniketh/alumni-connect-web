@@ -13,9 +13,7 @@ import {
   CheckCircle2,
   Clock,
   ArrowRight,
-  Plus,
-  FileText,
-  DollarSign
+  Plus
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { mockMentorshipRequests, mockStudents, mockJobs, mockEvents } from '../../data/mockData';

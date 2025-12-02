@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { mockMentorshipRequests, mockStudents } from '../../data/mockData';
 import { MentorshipStatus } from '../../types';
-import { Calendar, MessageSquare, CheckCircle2, XCircle, Clock, User, Send } from 'lucide-react';
+import { Calendar, CheckCircle2, XCircle, Clock, User } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -19,8 +19,8 @@ import { Label } from '../../components/ui/label';
 
 const AlumniMentorshipsPage = () => {
   const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
-  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [actionType, setActionType] = useState<'accept' | 'reject' | 'end' | null>(null);
+  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [feedback, setFeedback] = useState('');
 
   // Get mentorship requests for current alumni (as mentor)
@@ -323,7 +323,7 @@ const AlumniMentorshipsPage = () => {
                   id="feedback"
                   placeholder="Add any feedback or notes..."
                   value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFeedback(e.target.value)}
                   rows={4}
                 />
               </div>

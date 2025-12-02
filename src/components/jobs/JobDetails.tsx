@@ -17,7 +17,6 @@ import { type Job, JobApplicationStatus } from '../../types';
 import { Briefcase, MapPin, DollarSign, Calendar, Building2, Upload, FileText } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface JobDetailsProps {
   job: Job | null;
@@ -61,7 +60,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
         id: `app-${Date.now()}`,
         jobId: job.id,
         studentId: user.id,
-        appliedDate: new Date().toISOString().split('T')[0],
+        appliedOn: new Date().toISOString().split('T')[0],
         status: JobApplicationStatus.Applied,
         coverLetter: applicationData.coverLetter,
         resumeFileName: applicationData.resumeFileName,

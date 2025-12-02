@@ -16,7 +16,15 @@ import { useNavigate } from 'react-router-dom';
 
 const AlumniEventCreationPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    date: string;
+    time: string;
+    location: string;
+    status: EventStatus;
+    image: string;
+  }>({
     title: '',
     description: '',
     date: '',

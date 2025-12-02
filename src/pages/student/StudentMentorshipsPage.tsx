@@ -14,11 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../../components/ui/dialog';
-import { Textarea } from '../../components/ui/textarea';
-import { Label } from '../../components/ui/label';
-
 const StudentMentorshipsPage = () => {
-  const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
 
   // Get mentorship requests for current student
@@ -52,8 +48,7 @@ const StudentMentorshipsPage = () => {
     return mockAlumni.find(a => a.id === alumniId);
   };
 
-  const handleViewFeedback = (requestId: string) => {
-    setSelectedRequest(requestId);
+  const handleViewFeedback = (_requestId: string) => {
     setIsFeedbackDialogOpen(true);
   };
 

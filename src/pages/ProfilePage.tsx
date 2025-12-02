@@ -17,11 +17,9 @@ import {
 } from '../components/ui/select';
 import { UserRole, Department } from '../types';
 import { User, Mail, Building2, GraduationCap, MapPin, Briefcase, Save, Edit2, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',

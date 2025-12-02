@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
 import { 
   Users, 
   GraduationCap,
@@ -9,7 +8,6 @@ import {
   Calendar,
   DollarSign,
   FileText,
-  TrendingUp,
   Plus,
   ArrowRight,
   BarChart3,
@@ -19,7 +17,6 @@ import { useAuth } from '../../context/AuthContext';
 import { mockAlumni, mockStudents, mockJobs, mockEvents, mockCampaigns, mockNewsletters } from '../../data/mockData';
 import { EventStatus } from '../../types';
 import { EmploymentChart } from '../../components/dashboard/EmploymentChart';
-import { DashboardStats } from '../../components/dashboard/DashboardStats';
 
 const CollegeDashboardPage = () => {
   const { user } = useAuth();

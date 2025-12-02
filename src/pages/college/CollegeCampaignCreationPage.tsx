@@ -16,7 +16,14 @@ import { useNavigate } from 'react-router-dom';
 
 const CollegeCampaignCreationPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    targetAmount: string;
+    deadline: string;
+    status: EventStatus;
+    image: string;
+  }>({
     title: '',
     description: '',
     targetAmount: '',
