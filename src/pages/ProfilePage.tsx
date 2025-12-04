@@ -15,37 +15,51 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { UserRole, Department } from '../types';
+import { UserRole, Department, type Alumni, type Student, type College } from '../types';
 import { User, Mail, Building2, GraduationCap, MapPin, Briefcase, Save, Edit2, X } from 'lucide-react';
 
 const ProfilePage = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    ...(user?.role === UserRole.Alumni && {
-      currentEmployer: (user as any).currentEmployer || '',
-      designation: (user as any).designation || '',
-      graduationYear: (user as any).graduationYear?.toString() || '',
-      degree: (user as any).degree || '',
-      department: (user as any).department || '',
-      skills: (user as any).skills?.join(', ') || '',
-      mentorshipAvailable: (user as any).mentorshipAvailable || false,
-    }),
-    ...(user?.role === UserRole.Student && {
-      rollNumber: (user as any).rollNumber || '',
-      enrollmentYear: (user as any).enrollmentYear?.toString() || '',
-      degree: (user as any).degree || '',
-      department: (user as any).department || '',
-      skills: (user as any).skills?.join(', ') || '',
-    }),
-    ...(user?.role === UserRole.College && {
-      website: (user as any).website || '',
-      location: (user as any).location || '',
-      establishedYear: (user as any).establishedYear?.toString() || '',
-    }),
-  });
+  const getInitialFormData = () => {
+    if (!user) return { name: '', email: '' };
+    
+    const base = { name: user.name || '', email: user.email || '' };
+    
+    if (user.role === UserRole.Alumni) {
+      const alumni = user as Alumni;
+      return {
+        ...base,
+        currentEmployer: alumni.currentEmployer || '',
+        designation: alumni.designation || '',
+        graduationYear: alumni.graduationYear?.toString() || '',
+        degree: alumni.degree || '',
+        department: alumni.department || '',
+        skills: alumni.skills?.join(', ') || '',
+        mentorshipAvailable: alumni.mentorshipAvailable || false,
+      };
+    } else if (user.role === UserRole.Student) {
+      const student = user as Student;
+      return {
+        ...base,
+        rollNumber: student.rollNumber || '',
+        enrollmentYear: student.enrollmentYear?.toString() || '',
+        degree: student.degree || '',
+        department: student.department || '',
+        skills: student.skills?.join(', ') || '',
+      };
+    } else {
+      const college = user as College;
+      return {
+        ...base,
+        website: college.website || '',
+        location: college.location || '',
+        establishedYear: college.establishedYear?.toString() || '',
+      };
+    }
+  };
+
+  const [formData, setFormData] = useState(getInitialFormData());
 
   if (!user) {
     return (
@@ -66,31 +80,7 @@ const ProfilePage = () => {
 
   const handleCancel = () => {
     // Reset form data
-    setFormData({
-      name: user?.name || '',
-      email: user?.email || '',
-      ...(user?.role === UserRole.Alumni && {
-        currentEmployer: (user as any).currentEmployer || '',
-        designation: (user as any).designation || '',
-        graduationYear: (user as any).graduationYear?.toString() || '',
-        degree: (user as any).degree || '',
-        department: (user as any).department || '',
-        skills: (user as any).skills?.join(', ') || '',
-        mentorshipAvailable: (user as any).mentorshipAvailable || false,
-      }),
-      ...(user?.role === UserRole.Student && {
-        rollNumber: (user as any).rollNumber || '',
-        enrollmentYear: (user as any).enrollmentYear?.toString() || '',
-        degree: (user as any).degree || '',
-        department: (user as any).department || '',
-        skills: (user as any).skills?.join(', ') || '',
-      }),
-      ...(user?.role === UserRole.College && {
-        website: (user as any).website || '',
-        location: (user as any).location || '',
-        establishedYear: (user as any).establishedYear?.toString() || '',
-      }),
-    });
+    setFormData(getInitialFormData());
     setIsEditing(false);
   };
 
@@ -145,7 +135,7 @@ const ProfilePage = () => {
                 )}
                 <div className="flex items-center gap-2 mt-2">
                   <Badge variant="secondary">{user.role}</Badge>
-                  {user.role === UserRole.Alumni && (user as any).mentorshipAvailable && (
+                  {user.role === UserRole.Alumni && (user as Alumni).mentorshipAvailable && (
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                       Open for Mentorship
                     </Badge>
@@ -220,7 +210,7 @@ const ProfilePage = () => {
                     ) : (
                       <div className="flex items-center gap-2 text-sm">
                         <Building2 className="h-4 w-4 text-muted-foreground" />
-                        {(user as any).currentEmployer || 'Not specified'}
+                        {(user as Alumni).currentEmployer || 'Not specified'}
                       </div>
                     )}
                   </div>
@@ -235,7 +225,7 @@ const ProfilePage = () => {
                     ) : (
                       <div className="flex items-center gap-2 text-sm">
                         <Briefcase className="h-4 w-4 text-muted-foreground" />
-                        {(user as any).designation || 'Not specified'}
+                        {(user as Alumni).designation || 'Not specified'}
                       </div>
                     )}
                   </div>
@@ -253,7 +243,7 @@ const ProfilePage = () => {
                     ) : (
                       <div className="flex items-center gap-2 text-sm">
                         <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                        {(user as any).graduationYear || 'Not specified'}
+                        {(user as Alumni).graduationYear || 'Not specified'}
                       </div>
                     )}
                   </div>
@@ -266,7 +256,7 @@ const ProfilePage = () => {
                         onChange={(e) => setFormData(prev => ({ ...prev, degree: e.target.value }))}
                       />
                     ) : (
-                      <div className="text-sm">{(user as any).degree || 'Not specified'}</div>
+                      <div className="text-sm">{(user as Alumni).degree || 'Not specified'}</div>
                     )}
                   </div>
                 </div>
@@ -289,7 +279,7 @@ const ProfilePage = () => {
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="text-sm">{(user as any).department || 'Not specified'}</div>
+                    <div className="text-sm">{(user as Alumni).department || 'Not specified'}</div>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -304,7 +294,7 @@ const ProfilePage = () => {
                     />
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {((user as any).skills || []).map((skill: string) => (
+                      {((user as Alumni).skills || []).map((skill: string) => (
                         <Badge key={skill} variant="outline">{skill}</Badge>
                       ))}
                     </div>
@@ -332,7 +322,7 @@ const ProfilePage = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, rollNumber: e.target.value }))}
                     />
                   ) : (
-                    <div className="text-sm">{(user as any).rollNumber || 'Not specified'}</div>
+                    <div className="text-sm">{(user as Student).rollNumber || 'Not specified'}</div>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -345,7 +335,7 @@ const ProfilePage = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, enrollmentYear: e.target.value }))}
                     />
                   ) : (
-                    <div className="text-sm">{(user as any).enrollmentYear || 'Not specified'}</div>
+                    <div className="text-sm">{(user as Student).enrollmentYear || 'Not specified'}</div>
                   )}
                 </div>
               </div>
@@ -359,7 +349,7 @@ const ProfilePage = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, degree: e.target.value }))}
                     />
                   ) : (
-                    <div className="text-sm">{(user as any).degree || 'Not specified'}</div>
+                    <div className="text-sm">{(user as Student).degree || 'Not specified'}</div>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -381,7 +371,7 @@ const ProfilePage = () => {
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="text-sm">{(user as any).department || 'Not specified'}</div>
+                    <div className="text-sm">{(user as Student).department || 'Not specified'}</div>
                   )}
                 </div>
               </div>
@@ -397,7 +387,7 @@ const ProfilePage = () => {
                   />
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {((user as any).skills || []).map((skill: string) => (
+                    {((user as Student).skills || []).map((skill: string) => (
                       <Badge key={skill} variant="outline">{skill}</Badge>
                     ))}
                   </div>
@@ -427,7 +417,7 @@ const ProfilePage = () => {
                   ) : (
                     <div className="flex items-center gap-2 text-sm">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      {(user as any).website || 'Not specified'}
+                      {(user as College).website || 'Not specified'}
                     </div>
                   )}
                 </div>
@@ -442,7 +432,7 @@ const ProfilePage = () => {
                   ) : (
                     <div className="flex items-center gap-2 text-sm">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      {(user as any).location || 'Not specified'}
+                      {(user as College).location || 'Not specified'}
                     </div>
                   )}
                 </div>
@@ -457,7 +447,7 @@ const ProfilePage = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, establishedYear: e.target.value }))}
                   />
                 ) : (
-                  <div className="text-sm">{(user as any).establishedYear || 'Not specified'}</div>
+                  <div className="text-sm">{(user as College).establishedYear || 'Not specified'}</div>
                 )}
               </div>
             </CardContent>

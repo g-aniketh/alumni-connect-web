@@ -34,12 +34,35 @@ const colleges = [
   "Vellore Institute of Technology",
 ];
 
+// Map frontend degree display to backend enum values
+const degreeMap: Record<string, string> = {
+  "B.Tech": "bachelors",
+  "M.Tech": "masters",
+  "B.Sc": "bachelors",
+  "M.Sc": "masters",
+  MBA: "masters",
+  PhD: "phd",
+};
+
 const degrees = ["B.Tech", "M.Tech", "B.Sc", "M.Sc", "MBA", "PhD"];
+
+// Map frontend department display to backend enum values
+const departmentMap: Record<string, string> = {
+  "Computer Science": "computer_science",
+  "Electrical Engineering": "electrical_engineering",
+  "Mechanical Engineering": "mechanical_engineering",
+  "Civil Engineering": "civil_engineering",
+  Business: "business_administration",
+  Arts: "arts",
+  Science: "science",
+};
 
 export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
   const [isLogin, setIsLogin] = useState(isLoginDefault);
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   // Common State
   const [email, setEmail] = useState("");
@@ -50,46 +73,140 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
   const [department, setDepartment] = useState<Department | "">("");
   const [graduationYear, setGraduationYear] = useState("");
   const [enrollmentYear, setEnrollmentYear] = useState("");
+  const [graduationYearStudent, setGraduationYearStudent] = useState("");
   const [degree, setDegree] = useState("");
   const [college, setCollege] = useState("");
+  const [collegeOther, setCollegeOther] = useState("");
+  const [showCollegeOther, setShowCollegeOther] = useState(false);
   const [rollNumber, setRollNumber] = useState("");
   const [website, setWebsite] = useState("");
-  const [location, setLocation] = useState("");
+  const [address, setAddress] = useState("");
+  const [establishedYear, setEstablishedYear] = useState("");
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const formData = {
-      role,
-      email,
-      password,
-      ...(!isLogin && {
-        name,
-        ...(role === UserRole.Alumni && {
-          department,
-          graduationYear,
-          degree,
-          college,
-        }),
-        ...(role === UserRole.Student && {
-          department,
-          rollNumber,
-          enrollmentYear,
-          degree, // Assuming students also declare degree
-        }),
-        ...(role === UserRole.College && {
-          website,
-          location,
-          collegeName: name, // Use name as college name
-        }),
-      }),
-    };
+    try {
+      if (isLogin) {
+        // Login
+        await login(role, email, password);
+        navigate("/dashboard");
+      } else {
+        // Signup
+        if (role === UserRole.Alumni) {
+          if (
+            !name ||
+            !email ||
+            !password ||
+            !department ||
+            !graduationYear ||
+            !degree ||
+            !college
+          ) {
+            throw new Error("Please fill all required fields");
+          }
+          const signupData = {
+            name,
+            email,
+            password,
+            graduationYear: parseInt(graduationYear),
+            degree: degreeMap[degree] || degree.toLowerCase(),
+            collegeName: college,
+            department:
+              departmentMap[department] ||
+              department.toLowerCase().replace(/\s+/g, "_"),
+          };
+          await signup(role, signupData);
+        } else if (role === UserRole.Student) {
+          const finalCollegeName = showCollegeOther ? collegeOther : college;
+          if (
+            !name ||
+            !email ||
+            !password ||
+            !rollNumber ||
+            !finalCollegeName ||
+            !enrollmentYear ||
+            !department ||
+            !degree ||
+            !graduationYearStudent
+          ) {
+            throw new Error("Please fill all required fields");
+          }
+          const signupData = {
+            name,
+            email,
+            password,
+            rollNumber,
+            collegeName: finalCollegeName,
+            enrollmentYear: parseInt(enrollmentYear),
+            department:
+              departmentMap[department] ||
+              department.toLowerCase().replace(/\s+/g, "_"),
+            degree: degreeMap[degree] || degree.toLowerCase(),
+            graduationYear: parseInt(graduationYearStudent),
+          };
+          await signup(role, signupData);
+        } else if (role === UserRole.College) {
+          if (
+            !name ||
+            !email ||
+            !password ||
+            !address ||
+            !establishedYear ||
+            selectedDepartments.length === 0 ||
+            selectedDegrees.length === 0
+          ) {
+            throw new Error("Please fill all required fields");
+          }
+          const signupData = {
+            name,
+            email,
+            password,
+            address,
+            establishedYear: parseInt(establishedYear),
+            departments: selectedDepartments.map(
+              d => departmentMap[d] || d.toLowerCase().replace(/\s+/g, "_")
+            ),
+            degreesOffered: selectedDegrees.map(
+              d => degreeMap[d] || d.toLowerCase()
+            ),
+          };
+          await signup(role, signupData);
+        } else {
+          throw new Error("Invalid role");
+        }
+        // After successful signup, show message and redirect to login
+        alert("Account created successfully! Please log in.");
+        setIsLogin(true);
+        setEmail("");
+        setPassword("");
+      }
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred. Please try again.";
+      setError(errorMessage);
+      console.error("Auth error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    console.log("Form Submitted:", formData);
+  const toggleDepartment = (dept: string) => {
+    setSelectedDepartments(prev =>
+      prev.includes(dept) ? prev.filter(d => d !== dept) : [...prev, dept]
+    );
+  };
 
-    // Simulate successful auth
-    login(role, email);
-    navigate("/");
+  const toggleDegree = (deg: string) => {
+    setSelectedDegrees(prev =>
+      prev.includes(deg) ? prev.filter(d => d !== deg) : [...prev, deg]
+    );
   };
 
   return (
@@ -189,6 +306,8 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
                   id="gradYear"
                   type="number"
                   placeholder="2023"
+                  min="1950"
+                  max="2100"
                   value={graduationYear}
                   onChange={e => setGraduationYear(e.target.value)}
                   required
@@ -225,6 +344,55 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
                 />
               </div>
               <div className="space-y-2">
+                <Label>College</Label>
+                <Select
+                  onValueChange={value => {
+                    if (value === "other") {
+                      setShowCollegeOther(true);
+                      setCollege("");
+                    } else {
+                      setShowCollegeOther(false);
+                      setCollege(value);
+                      setCollegeOther("");
+                    }
+                  }}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select College" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {colleges.map(c => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">
+                      Others (Enter manually)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {showCollegeOther && (
+                  <div className="space-y-2 mt-2">
+                    <Label htmlFor="collegeOther">College Name</Label>
+                    <Input
+                      id="collegeOther"
+                      placeholder="Enter your college name"
+                      value={collegeOther}
+                      onChange={e => setCollegeOther(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  ⚠️ <strong>Important:</strong> Your college must be registered
+                  in the system first. If you select "Others" and enter a
+                  college name, make sure the college has already signed up with
+                  the exact same name. If you get a "College not found" error,
+                  ask your college administrator to sign up first.
+                </p>
+              </div>
+              <div className="space-y-2">
                 <Label>Department</Label>
                 <Select
                   onValueChange={v => setDepartment(v as Department)}
@@ -243,13 +411,45 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
                 </Select>
               </div>
               <div className="space-y-2">
+                <Label>Degree</Label>
+                <Select onValueChange={setDegree} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Degree" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {degrees.map(d => (
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="enrollYear">Enrollment Year</Label>
                 <Input
                   id="enrollYear"
                   type="number"
                   placeholder="2021"
+                  min="1950"
+                  max="2100"
                   value={enrollmentYear}
                   onChange={e => setEnrollmentYear(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gradYearStudent">
+                  Expected Graduation Year
+                </Label>
+                <Input
+                  id="gradYearStudent"
+                  type="number"
+                  placeholder="2025"
+                  min="1950"
+                  max="2100"
+                  value={graduationYearStudent}
+                  onChange={e => setGraduationYearStudent(e.target.value)}
                   required
                 />
               </div>
@@ -259,32 +459,104 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
           {!isLogin && role === UserRole.College && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="address">Address</Label>
+                <Input
+                  id="address"
+                  placeholder="123 University Ave, City, State 12345"
+                  value={address}
+                  onChange={e => setAddress(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="establishedYear">Established Year</Label>
+                <Input
+                  id="establishedYear"
+                  type="number"
+                  placeholder="1990"
+                  min="1800"
+                  max="2100"
+                  value={establishedYear}
+                  onChange={e => setEstablishedYear(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Departments Offered</Label>
+                <div className="space-y-2 border rounded-md p-3">
+                  {Object.values(Department).map(dept => (
+                    <div key={dept} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`dept-${dept}`}
+                        checked={selectedDepartments.includes(dept)}
+                        onChange={() => toggleDepartment(dept)}
+                        className="rounded"
+                      />
+                      <Label
+                        htmlFor={`dept-${dept}`}
+                        className="font-normal cursor-pointer"
+                      >
+                        {dept}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                {selectedDepartments.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Select at least one department
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label>Degrees Offered</Label>
+                <div className="space-y-2 border rounded-md p-3">
+                  {degrees.map(deg => (
+                    <div key={deg} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`deg-${deg}`}
+                        checked={selectedDegrees.includes(deg)}
+                        onChange={() => toggleDegree(deg)}
+                        className="rounded"
+                      />
+                      <Label
+                        htmlFor={`deg-${deg}`}
+                        className="font-normal cursor-pointer"
+                      >
+                        {deg}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                {selectedDegrees.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Select at least one degree
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="website">Website (Optional)</Label>
                 <Input
                   id="website"
                   type="url"
                   placeholder="https://college.edu"
                   value={website}
                   onChange={e => setWebsite(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  placeholder="City, State"
-                  value={location}
-                  onChange={e => setLocation(e.target.value)}
-                  required
                 />
               </div>
             </>
           )}
 
+          {error && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+              {error}
+            </div>
+          )}
+
           <div className="pt-4">
-            <Button type="submit" className="w-full">
-              {isLogin ? "Log In" : "Sign Up"}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Please wait..." : isLogin ? "Log In" : "Sign Up"}
             </Button>
           </div>
         </form>

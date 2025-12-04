@@ -1,52 +1,230 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { UserRole, type Alumni, type Student, type College } from "../types";
-import { mockAlumni, mockStudents, mockCollege } from "../data/mockData";
+import { authAPI, tokenService } from "../lib/api";
+import type {
+  BackendAlumni,
+  BackendStudent,
+  BackendCollege,
+  SignupRequest,
+} from "../types/api";
 
 type User = Alumni | Student | College;
 
 interface AuthContextType {
   user: User | null;
-  login: (role: UserRole, email?: string) => void;
-  logout: () => void;
+  loading: boolean;
+  login: (role: UserRole, email: string, password: string) => Promise<void>;
+  signup: (role: UserRole, data: SignupRequest) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Helper to transform backend user to frontend user format
+const transformUser = (
+  backendUser: BackendAlumni | BackendStudent | BackendCollege,
+  role: UserRole
+): User => {
+  const baseUser = {
+    id: backendUser._id || (backendUser as { id?: string }).id || '',
+    name: backendUser.name,
+    email: backendUser.email,
+    role,
+  };
+
+  if (role === UserRole.Alumni) {
+    const alumni = backendUser as BackendAlumni;
+    return {
+      ...baseUser,
+      role: UserRole.Alumni,
+      department: alumni.department as import("../types").Department,
+      graduationYear: alumni.graduationYear,
+      degree: alumni.degree,
+      currentEmployer: alumni.currentEmployer || '',
+      designation: alumni.currentDesignation || '',
+      skills: alumni.skills || [],
+      avatar: alumni.profilePictureUrl,
+      mentorshipAvailable: true, // Default, can be updated
+    } as Alumni;
+  } else if (role === UserRole.Student) {
+    const student = backendUser as BackendStudent;
+    return {
+      ...baseUser,
+      role: UserRole.Student,
+      department: student.department as import("../types").Department,
+      rollNumber: student.rollNumber,
+      enrollmentYear: student.enrollmentYear,
+      degree: student.degree,
+      skills: student.skills || [],
+      avatar: student.profilePictureUrl,
+    } as Student;
+  } else {
+    const college = backendUser as BackendCollege;
+    return {
+      ...baseUser,
+      role: UserRole.College,
+      establishedYear: college.establishedYear,
+      website: college.website || '',
+      location: college.address,
+      stats: {
+        alumniCount: college.alumniCount || 0,
+        studentCount: college.studentCount || 0,
+      },
+      avatar: college.collegeLogoUrl,
+    } as College;
+  }
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (role: UserRole, _email?: string) => {
-    // In a real app, we would verify credentials.
-    // Here we just pick a mock user based on role to simulate login.
-    let loggedInUser: User | undefined;
+  // Load user from storage on mount
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const storedUser = tokenService.getUser();
+        const token = tokenService.getAccessToken();
 
-    switch (role) {
-      case UserRole.Alumni:
-        loggedInUser = mockAlumni[0];
-        break;
-      case UserRole.Student:
-        loggedInUser = mockStudents[0];
-        break;
-      case UserRole.College:
-        loggedInUser = mockCollege;
-        break;
-    }
+        if (storedUser && token) {
+          // Verify token is still valid by fetching current user
+          try {
+            const response = await authAPI.getCurrentUser();
+            if (response.user) {
+              const transformedUser = transformUser(response.user, response.role as UserRole);
+              setUser(transformedUser);
+              tokenService.setUser(transformedUser);
+            }
+          } catch (error) {
+            // Token invalid, clear storage
+            tokenService.clearTokens();
+            setUser(null);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading user:", error);
+        tokenService.clearTokens();
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (loggedInUser) {
-      setUser(loggedInUser);
-      console.log(`Logged in as ${role}:`, loggedInUser.name);
+    loadUser();
+  }, []);
+
+  const login = async (role: UserRole, email: string, password: string): Promise<void> => {
+    try {
+      let response: import("../types/api").LoginResponse;
+
+      switch (role) {
+        case UserRole.Alumni:
+          response = await authAPI.loginAlumni(email, password);
+          break;
+        case UserRole.Student:
+          response = await authAPI.loginStudent(email, password);
+          break;
+        case UserRole.College:
+          response = await authAPI.loginCollege(email, password);
+          break;
+        default:
+          throw new Error("Invalid role");
+      }
+
+      // Store token (backend returns single token, use it as both access and refresh)
+      if (response.token) {
+        tokenService.setTokens(response.token, response.token);
+      }
+
+      // Fetch full user profile
+      const userResponse = await authAPI.getCurrentUser();
+      if (userResponse.user) {
+        const transformedUser = transformUser(userResponse.user, role);
+        setUser(transformedUser);
+        tokenService.setUser(transformedUser);
+      } else {
+        // Fallback to basic user info from login response
+        const userData = response.alumni || response.student || response.college;
+        if (userData) {
+          // Create a minimal user object for transformation
+          const minimalUser = {
+            _id: userData.id,
+            name: userData.name,
+            email: userData.email,
+          };
+          const transformedUser = transformUser(minimalUser as BackendAlumni | BackendStudent | BackendCollege, role);
+          setUser(transformedUser);
+          tokenService.setUser(transformedUser);
+        }
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Login failed";
+      console.error("Login error:", error);
+      throw new Error(errorMessage);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    console.log("Logged out");
+  const signup = async (role: UserRole, data: SignupRequest): Promise<void> => {
+    try {
+      switch (role) {
+        case UserRole.Alumni:
+          await authAPI.signupAlumni(data as import("../types/api").AlumniSignupRequest);
+          break;
+        case UserRole.Student:
+          await authAPI.signupStudent(data as import("../types/api").StudentSignupRequest);
+          break;
+        case UserRole.College:
+          await authAPI.signupCollege(data as import("../types/api").CollegeSignupRequest);
+          break;
+        default:
+          throw new Error("Invalid role");
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Signup failed";
+      console.error("Signup error:", error);
+      throw new Error(errorMessage);
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      await authAPI.logout();
+    } catch (error: unknown) {
+      console.error("Logout error:", error);
+    } finally {
+      tokenService.clearTokens();
+      setUser(null);
+    }
+  };
+
+  const refreshUser = async (): Promise<void> => {
+    try {
+      const response = await authAPI.getCurrentUser();
+      if (response.user) {
+        const transformedUser = transformUser(response.user, response.role as UserRole);
+        setUser(transformedUser);
+        tokenService.setUser(transformedUser);
+      }
+    } catch (error: unknown) {
+      console.error("Error refreshing user:", error);
+      // If refresh fails, logout user
+      tokenService.clearTokens();
+      setUser(null);
+    }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isAuthenticated: !!user }}
+      value={{
+        user,
+        loading,
+        login,
+        signup,
+        logout,
+        refreshUser,
+        isAuthenticated: !!user,
+      }}
     >
       {children}
     </AuthContext.Provider>
