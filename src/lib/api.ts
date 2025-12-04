@@ -675,3 +675,56 @@ export const collegeAPI = {
     }>('/colleges/pending-verifications');
   },
 };
+
+// Campaigns API endpoints
+export const campaignsAPI = {
+  // Get all campaigns (public)
+  getAll: async (): Promise<import('../types/api').BackendCampaign[]> => {
+    return api.get<import('../types/api').BackendCampaign[]>('/campaigns');
+  },
+
+  // Get active campaigns (public)
+  getActive: async (): Promise<import('../types/api').BackendCampaign[]> => {
+    return api.get<import('../types/api').BackendCampaign[]>('/campaigns/active');
+  },
+
+  // Get campaign by ID (public)
+  getById: async (id: string): Promise<import('../types/api').BackendCampaign> => {
+    return api.get<import('../types/api').BackendCampaign>(`/campaigns/${id}`);
+  },
+
+  // Create campaign (authenticated - college only)
+  create: async (data: import('../types/api').CampaignCreateRequest): Promise<{ message: string; campaign: import('../types/api').BackendCampaign }> => {
+    return api.post<{ message: string; campaign: import('../types/api').BackendCampaign }>('/campaigns', data);
+  },
+
+  // Update campaign (authenticated - college owner only)
+  update: async (id: string, data: Partial<import('../types/api').CampaignCreateRequest>): Promise<{ message: string; campaign: import('../types/api').BackendCampaign }> => {
+    return api.put<{ message: string; campaign: import('../types/api').BackendCampaign }>(`/campaigns/${id}`, data);
+  },
+
+  // Delete campaign (authenticated - college owner only)
+  delete: async (id: string): Promise<{ message: string }> => {
+    return api.delete<{ message: string }>(`/campaigns/${id}`);
+  },
+
+  // Get my campaigns (authenticated - college only)
+  getMyCampaigns: async (): Promise<import('../types/api').BackendCampaign[]> => {
+    return api.get<import('../types/api').BackendCampaign[]>('/campaigns/my/campaigns');
+  },
+
+  // Contribute financially (authenticated - verified alumni/student)
+  contributeFinancial: async (data: { campaignId: string; amount: number; paymentMethod: string }): Promise<{ message: string; contribution: any }> => {
+    return api.post<{ message: string; contribution: any }>('/campaigns/contribute/financial', data);
+  },
+
+  // Contribute volunteer hours (authenticated - verified alumni/student)
+  contributeVolunteer: async (data: { campaignId: string; hours: number; date: string }): Promise<{ message: string; contribution: any }> => {
+    return api.post<{ message: string; contribution: any }>('/campaigns/contribute/volunteer', data);
+  },
+
+  // Get my contributions (authenticated)
+  getMyContributions: async (): Promise<any[]> => {
+    return api.get<any[]>('/campaigns/my/contributions');
+  },
+};

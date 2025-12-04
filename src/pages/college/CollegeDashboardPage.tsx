@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { collegeAPI, jobsAPI, eventsAPI } from '../../lib/api';
-import { mockNewsletters } from '../../data/mockData';
 import { EmploymentChart } from '../../components/dashboard/EmploymentChart';
 
 const CollegeDashboardPage = () => {
@@ -34,7 +33,6 @@ const CollegeDashboardPage = () => {
     totalRaised: 0,
   });
   const [upcomingEvents, setUpcomingEvents] = useState(0);
-  const recentNewsletters = mockNewsletters.slice(0, 3);
 
   useEffect(() => {
     loadDashboardData();
@@ -335,68 +333,6 @@ const CollegeDashboardPage = () => {
         </Card>
       </div>
 
-      {/* Recent Newsletters */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Recent Newsletters</CardTitle>
-            <CardDescription>Latest posts and updates</CardDescription>
-          </div>
-          <div className="flex gap-2">
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/college/newsletters">
-                View All
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to="/college/newsletters/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Post
-              </Link>
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {recentNewsletters.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-3">
-              {recentNewsletters.map((newsletter) => (
-                <Card key={newsletter.id} className="hover:shadow-md transition-shadow">
-                  {newsletter.coverImage && (
-                    <div className="h-32 w-full overflow-hidden rounded-t-lg">
-                      <img 
-                        src={newsletter.coverImage} 
-                        alt={newsletter.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <CardHeader>
-                    <CardTitle className="text-lg line-clamp-2">{newsletter.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">{newsletter.summary}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>{new Date(newsletter.publishedOn).toLocaleDateString()}</span>
-                    </div>
-                    <Button asChild variant="outline" className="w-full mt-4">
-                      <Link to={`/college/newsletters/${newsletter.id}`}>Read More</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No newsletters yet</p>
-              <Button asChild variant="outline" className="mt-4">
-                <Link to="/college/newsletters/create">Create Your First Newsletter</Link>
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Directory Quick Access */}
       <div className="grid gap-6 md:grid-cols-2">

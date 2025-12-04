@@ -3,8 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { EventCard } from '../components/events/EventCard';
 import { CampaignCard } from '../components/events/CampaignCard';
 import { DonationModal } from '../components/events/DonationModal';
-import { mockCampaigns } from '../data/mockData';
-import { type AlumniEvent, type Campaign } from '../types';
+import { type AlumniEvent } from '../types';
+import { campaignsAPI } from '../lib/api';
+import type { BackendCampaign } from '../types/api';
 import {
   Dialog,
   DialogContent,
@@ -22,13 +23,16 @@ const EventsCampaignsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [events, setEvents] = useState<BackendEvent[]>([]);
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [campaigns, setCampaigns] = useState<BackendCampaign[]>([]);
+  const [campaignsLoading, setCampaignsLoading] = useState(true);
+  const [selectedCampaign, setSelectedCampaign] = useState<BackendCampaign | null>(null);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<BackendEvent | null>(null);
   const [isRSVPDialogOpen, setIsRSVPDialogOpen] = useState(false);
 
   useEffect(() => {
     loadEvents();
+    loadCampaigns();
   }, []);
 
   const loadEvents = async () => {
@@ -55,7 +59,17 @@ const EventsCampaignsPage = () => {
     }
   };
 
-  const ongoingCampaigns = mockCampaigns.filter(c => c.status === 'Ongoing' as any);
+  const loadCampaigns = async () => {
+    try {
+      setCampaignsLoading(true);
+      const activeCampaigns = await campaignsAPI.getActive();
+      setCampaigns(activeCampaigns);
+    } catch (err) {
+      console.error('Failed to load campaigns:', err);
+    } finally {
+      setCampaignsLoading(false);
+    }
+  };
 
   // Transform BackendEvent to AlumniEvent for components
   const transformEvent = (backendEvent: BackendEvent): AlumniEvent => {
@@ -75,14 +89,38 @@ const EventsCampaignsPage = () => {
     };
   };
 
-  const handleRSVP = (event: AlumniEvent) => {
-    setSelectedEvent(event);
+  const handleRSVP = (backendEvent: BackendEvent) => {
+    setSelectedEvent(backendEvent);
     setIsRSVPDialogOpen(true);
   };
 
-  const handleDonate = (campaign: Campaign) => {
+  const handleDonate = (campaign: BackendCampaign) => {
     setSelectedCampaign(campaign);
     setIsDonationModalOpen(true);
+  };
+
+  // Transform BackendCampaign to Campaign for components
+  const transformCampaign = (backendCampaign: BackendCampaign) => {
+    const now = new Date();
+    const startDate = new Date(backendCampaign.startDate);
+    const endDate = new Date(backendCampaign.endDate);
+    const isActive = now >= startDate && now <= endDate;
+    
+    const organizerName = typeof backendCampaign.createdBy === 'object' 
+      ? backendCampaign.createdBy.name 
+      : 'College';
+    
+    return {
+      id: backendCampaign._id,
+      title: backendCampaign.title,
+      description: backendCampaign.description,
+      organizer: organizerName,
+      targetAmount: backendCampaign.targetAmount || 0,
+      totalRaised: backendCampaign.totalRaised || 0,
+      status: isActive ? 'Ongoing' as any : 'Completed' as any,
+      deadline: backendCampaign.endDate,
+      image: undefined, // Backend doesn't have image field
+    };
   };
 
   const handleRSVPSubmit = async () => {
@@ -90,7 +128,8 @@ const EventsCampaignsPage = () => {
 
     try {
       setError('');
-      await eventsAPI.register({ eventId: selectedEvent._id });
+      const eventId = '_id' in selectedEvent ? selectedEvent._id : selectedEvent.id;
+      await eventsAPI.register({ eventId });
       setIsRSVPDialogOpen(false);
       setSelectedEvent(null);
       alert('Successfully registered for the event!');
@@ -141,10 +180,7 @@ const EventsCampaignsPage = () => {
                   <EventCard 
                     key={backendEvent._id} 
                     event={event} 
-                    onRSVP={() => {
-                      setSelectedEvent(backendEvent);
-                      setIsRSVPDialogOpen(true);
-                    }} 
+                    onRSVP={() => handleRSVP(backendEvent)} 
                   />
                 );
               })}
@@ -158,15 +194,22 @@ const EventsCampaignsPage = () => {
         </TabsContent>
 
         <TabsContent value="campaigns" className="mt-6">
-          {ongoingCampaigns.length > 0 ? (
+          {campaignsLoading ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>Loading campaigns...</p>
+            </div>
+          ) : campaigns.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ongoingCampaigns.map((campaign) => (
-                <CampaignCard 
-                  key={campaign.id} 
-                  campaign={campaign} 
-                  onDonate={handleDonate} 
-                />
-              ))}
+              {campaigns.map((backendCampaign) => {
+                const campaign = transformCampaign(backendCampaign);
+                return (
+                  <CampaignCard 
+                    key={backendCampaign._id} 
+                    campaign={campaign} 
+                    onDonate={() => handleDonate(backendCampaign)} 
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
@@ -185,7 +228,7 @@ const EventsCampaignsPage = () => {
             <DialogDescription>
               {selectedEvent && (
                 <>
-                  Confirm your attendance for <strong>{selectedEvent.title}</strong>.
+                  Confirm your attendance for <strong>{selectedEvent.title || 'this event'}</strong>.
                 </>
               )}
             </DialogDescription>

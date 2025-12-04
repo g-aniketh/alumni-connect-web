@@ -281,3 +281,29 @@ export interface MentorshipFeedbackRequest {
   rating: number;
   comment?: string;
 }
+
+// Campaign Types
+export interface BackendCampaign {
+  _id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  targetAmount?: number;
+  totalRaised?: number;
+  totalVolunteeringHours?: number;
+  createdBy: string | { _id: string; name: string; email: string };
+  contributions?: string[];
+  countFinancialContributors?: number;
+  countVolunteeringContributors?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CampaignCreateRequest {
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  targetAmount?: number;
+}

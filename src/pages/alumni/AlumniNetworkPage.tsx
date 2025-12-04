@@ -84,13 +84,10 @@ const AlumniNetworkPage = () => {
   };
 
   const handleSubmitConnect = () => {
+    // Alumni-to-alumni connection feature is not yet implemented in the backend
+    // This would require a separate connection/network request system
     if (selectedAlumni) {
-      console.log('Connection Request Submitted:', {
-        fromAlumniId: user?.id,
-        toAlumniId: selectedAlumni._id,
-        toAlumniName: selectedAlumni.name,
-        timestamp: new Date().toISOString(),
-      });
+      alert('Alumni-to-alumni connection feature is coming soon!');
       setIsConnectDialogOpen(false);
       setSelectedAlumni(null);
     }

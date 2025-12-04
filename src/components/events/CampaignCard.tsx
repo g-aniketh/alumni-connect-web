@@ -2,9 +2,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { type Campaign } from '../../types';
-import { mockAlumni, mockCollege } from '../../data/mockData';
 import { DollarSign, Calendar, User } from 'lucide-react';
 
 interface CampaignCardProps {
@@ -13,10 +11,10 @@ interface CampaignCardProps {
 }
 
 export const CampaignCard = ({ campaign, onDonate }: CampaignCardProps) => {
-  const progressPercentage = (campaign.totalRaised / campaign.targetAmount) * 100;
-  const organizer = campaign.organizer.startsWith('c')
-    ? mockCollege
-    : mockAlumni.find(a => a.id === campaign.organizer);
+  const progressPercentage = campaign.targetAmount > 0 
+    ? (campaign.totalRaised / campaign.targetAmount) * 100 
+    : 0;
+  const organizerName = typeof campaign.organizer === 'string' ? campaign.organizer : 'Organizer';
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -68,18 +66,10 @@ export const CampaignCard = ({ campaign, onDonate }: CampaignCardProps) => {
             <Calendar className="h-4 w-4" />
             <span>Deadline: {new Date(campaign.deadline).toLocaleDateString()}</span>
           </div>
-          {organizer && (
+          {organizerName && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <User className="h-4 w-4" />
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={organizer.avatar} alt={organizer.name} />
-                  <AvatarFallback className="text-xs">
-                    {organizer.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-xs">{organizer.name}</span>
-              </div>
+              <span className="text-xs">{organizerName}</span>
             </div>
           )}
         </div>

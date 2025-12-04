@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,18 +6,26 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Separator } from '../ui/separator';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { type Job } from '../../types';
-import { Briefcase, MapPin, DollarSign, Calendar, Building2, Upload, FileText } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { UserRole } from '../../types';
-import { jobsAPI } from '../../lib/api';
+} from "../ui/dialog";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Separator } from "../ui/separator";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { type Job } from "../../types";
+import {
+  Briefcase,
+  MapPin,
+  DollarSign,
+  Calendar,
+  Building2,
+  Upload,
+  FileText,
+} from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { UserRole } from "../../types";
+import { jobsAPI } from "../../lib/api";
 
 interface JobDetailsProps {
   job: Job | null;
@@ -28,21 +36,21 @@ interface JobDetailsProps {
 export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [applicationData, setApplicationData] = useState({
-    message: '',
+    message: "",
     resumeFile: null as File | null,
-    resumeFileName: '',
+    resumeFileName: "",
   });
-  
+
   if (!job) return null;
 
   const handleApply = () => {
     if (user && user.role === UserRole.Student) {
       setShowApplicationForm(true);
     } else if (job.applyLink) {
-      window.open(job.applyLink, '_blank', 'noopener,noreferrer');
+      window.open(job.applyLink, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -62,38 +70,49 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
 
     try {
       setLoading(true);
-      setError('');
+      setError("");
 
       // TODO: Upload resume file to storage service and get URL
       // For now, we'll just send the message
       const applicationDataToSend = {
         message: applicationData.message || undefined,
-        resumeUrl: applicationData.resumeFileName ? `resume-${Date.now()}.pdf` : undefined, // Placeholder
+        resumeUrl: applicationData.resumeFileName
+          ? `resume-${Date.now()}.pdf`
+          : undefined, // Placeholder
       };
 
       await jobsAPI.apply(job.id, applicationDataToSend);
-      
+
       setShowApplicationForm(false);
-      setApplicationData({ message: '', resumeFile: null, resumeFileName: '' });
+      setApplicationData({ message: "", resumeFile: null, resumeFileName: "" });
       onOpenChange(false);
-      
+
       // Show success message (could use a toast notification)
-      alert('Application submitted successfully!');
+      alert("Application submitted successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit application');
+      setError(
+        err instanceof Error ? err.message : "Failed to submit application"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-      onOpenChange(isOpen);
-      if (!isOpen) {
-        setShowApplicationForm(false);
-        setApplicationData({ coverLetter: '', resumeFile: null, resumeFileName: '' });
-      }
-    }}>
+    <Dialog
+      open={open}
+      onOpenChange={isOpen => {
+        onOpenChange(isOpen);
+        if (!isOpen) {
+          setShowApplicationForm(false);
+          setApplicationData({
+            message: "",
+            resumeFile: null,
+            resumeFileName: "",
+          });
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         {!showApplicationForm ? (
           <>
@@ -106,9 +125,12 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                   </DialogDescription>
                 </div>
                 {job.referralAvailable && (
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-                        Referral Available
-                    </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
+                  >
+                    Referral Available
+                  </Badge>
                 )}
               </div>
             </DialogHeader>
@@ -125,9 +147,11 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <DollarSign className="h-4 w-4" />
-                  {job.salaryMin ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax?.toLocaleString()}` : 'Competitive'}
+                  {job.salaryMin
+                    ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax?.toLocaleString()}`
+                    : "Competitive"}
                 </div>
-                 <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   Posted: {new Date(job.postedDate).toLocaleDateString()}
                 </div>
@@ -142,13 +166,15 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                 </p>
               </div>
 
-               <div className="space-y-3">
+              <div className="space-y-3">
                 <h3 className="font-semibold text-lg">Target Departments</h3>
-                 <div className="flex flex-wrap gap-2">
-                    {job.department.map(dept => (
-                        <Badge key={dept} variant="outline">{dept}</Badge>
-                    ))}
-                 </div>
+                <div className="flex flex-wrap gap-2">
+                  {job.department.map(dept => (
+                    <Badge key={dept} variant="outline">
+                      {dept}
+                    </Badge>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -159,7 +185,11 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                 </Button>
               ) : job.applyLink ? (
                 <Button className="w-full sm:w-auto" asChild>
-                  <a href={job.applyLink} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={job.applyLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Apply Now
                   </a>
                 </Button>
@@ -195,7 +225,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                     className="flex items-center gap-2 px-4 py-2 border rounded-md cursor-pointer hover:bg-accent"
                   >
                     <Upload className="h-4 w-4" />
-                    {applicationData.resumeFileName || 'Upload Resume'}
+                    {applicationData.resumeFileName || "Upload Resume"}
                   </Label>
                   {applicationData.resumeFileName && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -221,7 +251,12 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                   id="message"
                   placeholder="Tell us why you're interested in this position and what makes you a great fit..."
                   value={applicationData.message}
-                  onChange={(e) => setApplicationData(prev => ({ ...prev, message: e.target.value }))}
+                  onChange={e =>
+                    setApplicationData(prev => ({
+                      ...prev,
+                      message: e.target.value,
+                    }))
+                  }
                   rows={6}
                 />
                 <p className="text-xs text-muted-foreground">
@@ -232,7 +267,8 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
               {job.referralAvailable && (
                 <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-md border border-blue-200 dark:border-blue-800">
                   <p className="text-sm text-blue-900 dark:text-blue-100">
-                    <strong>Referral Available:</strong> This position has an alumni referral. Your application will be highlighted.
+                    <strong>Referral Available:</strong> This position has an
+                    alumni referral. Your application will be highlighted.
                   </p>
                 </div>
               )}
@@ -243,7 +279,11 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                 variant="outline"
                 onClick={() => {
                   setShowApplicationForm(false);
-                  setApplicationData({ coverLetter: '', resumeFile: null, resumeFileName: '' });
+                  setApplicationData({
+                    message: "",
+                    resumeFile: null,
+                    resumeFileName: "",
+                  });
                 }}
               >
                 Cancel
@@ -252,7 +292,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                 onClick={handleSubmitApplication}
                 disabled={loading || !applicationData.resumeFile}
               >
-                {loading ? 'Submitting...' : 'Submit Application'}
+                {loading ? "Submitting..." : "Submit Application"}
               </Button>
             </DialogFooter>
           </>
@@ -261,4 +301,3 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
     </Dialog>
   );
 };
-

@@ -1,33 +1,37 @@
-import { DashboardStats } from '../components/dashboard/DashboardStats';
-import { AlumniTable } from '../components/dashboard/AlumniTable';
-import { EmploymentChart } from '../components/dashboard/EmploymentChart';
-import { ActionArea } from '../components/dashboard/ActionArea';
+// This page redirects to role-specific dashboards
+// Keeping for backward compatibility
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { UserRole } from '../types';
 
 const DashboardPage = () => {
-  return (
-    <div className="container py-10 space-y-8">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">College Dashboard</h2>
-        <div className="flex items-center space-x-2">
-          <ActionArea />
-        </div>
-      </div>
-      
-      <DashboardStats />
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
-          <EmploymentChart />
-        </div>
-        {/* We can add more widgets here later, like Recent Activities */}
-      </div>
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-      <div className="space-y-4">
-         <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold tracking-tight">Alumni Directory</h3>
-         </div>
-        <AlumniTable />
-      </div>
+  useEffect(() => {
+    if (user) {
+      switch (user.role) {
+        case UserRole.College:
+          navigate('/college/dashboard');
+          break;
+        case UserRole.Alumni:
+          navigate('/alumni/dashboard');
+          break;
+        case UserRole.Student:
+          navigate('/student/dashboard');
+          break;
+        default:
+          navigate('/auth');
+      }
+    } else {
+      navigate('/auth');
+    }
+  }, [user, navigate]);
+
+  return (
+    <div className="container py-10">
+      <p>Redirecting...</p>
     </div>
   );
 };

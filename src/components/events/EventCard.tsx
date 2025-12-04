@@ -3,7 +3,6 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { type AlumniEvent } from '../../types';
-import { mockAlumni, mockCollege } from '../../data/mockData';
 import { Calendar, MapPin, Clock, User } from 'lucide-react';
 
 interface EventCardProps {
@@ -22,9 +21,8 @@ const formatTime = (dateString: string) => {
 };
 
 export const EventCard = ({ event, onRSVP }: EventCardProps) => {
-  const organizer = event.organizer.startsWith('c') 
-    ? mockCollege 
-    : mockAlumni.find(a => a.id === event.organizer);
+  // Organizer is now a string (name) from backend, not an ID
+  const organizerName = typeof event.organizer === 'string' ? event.organizer : 'Organizer';
 
   return (
     <Card className="flex flex-col h-full hover:shadow-lg transition-shadow">
@@ -64,18 +62,10 @@ export const EventCard = ({ event, onRSVP }: EventCardProps) => {
             <MapPin className="h-4 w-4" />
             <span>{event.location}</span>
           </div>
-          {organizer && (
+          {organizerName && (
             <div className="flex items-center gap-2 text-muted-foreground pt-2 border-t">
               <User className="h-4 w-4" />
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={organizer.avatar} alt={organizer.name} />
-                  <AvatarFallback className="text-xs">
-                    {organizer.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-xs">{organizer.name}</span>
-              </div>
+              <span className="text-xs">{organizerName}</span>
             </div>
           )}
         </div>

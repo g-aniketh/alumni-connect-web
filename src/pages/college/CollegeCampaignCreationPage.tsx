@@ -11,37 +11,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { EventStatus } from '../../types';
 import { useNavigate } from 'react-router-dom';
+import { campaignsAPI } from '../../lib/api';
 
 const CollegeCampaignCreationPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
     targetAmount: string;
-    deadline: string;
-    status: EventStatus;
-    image: string;
+    startDate: string;
+    endDate: string;
   }>({
     title: '',
     description: '',
     targetAmount: '',
-    deadline: '',
-    status: EventStatus.Ongoing,
-    image: '',
+    startDate: '',
+    endDate: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const campaignData = {
-      ...formData,
-      targetAmount: parseFloat(formData.targetAmount),
-      totalRaised: 0,
-      organizer: 'college-id', // Would come from auth context
-    };
-    console.log('Campaign Created:', campaignData);
-    navigate('/events');
+    try {
+      setLoading(true);
+      setError('');
+
+      const campaignData = {
+        title: formData.title,
+        description: formData.description,
+        targetAmount: formData.targetAmount ? parseFloat(formData.targetAmount) : undefined,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+      };
+
+      await campaignsAPI.create(campaignData);
+      alert('Campaign created successfully!');
+      navigate('/events');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create campaign');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,7 +97,7 @@ const CollegeCampaignCreationPage = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="targetAmount">Target Amount ($) *</Label>
+                <Label htmlFor="targetAmount">Target Amount ($)</Label>
                 <Input
                   id="targetAmount"
                   type="number"
@@ -93,21 +105,39 @@ const CollegeCampaignCreationPage = () => {
                   placeholder="500000"
                   value={formData.targetAmount}
                   onChange={(e) => setFormData(prev => ({ ...prev, targetAmount: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startDate">Start Date *</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="deadline">Deadline *</Label>
+                <Label htmlFor="endDate">End Date *</Label>
                 <Input
-                  id="deadline"
+                  id="endDate"
                   type="date"
-                  value={formData.deadline}
-                  onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
+                  value={formData.endDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
                   required
                 />
               </div>
             </div>
+
+            {error && (
+              <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+                {error}
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="status">Campaign Status *</Label>
@@ -141,7 +171,9 @@ const CollegeCampaignCreationPage = () => {
               <Button type="button" variant="outline" onClick={() => navigate('/events')}>
                 Cancel
               </Button>
-              <Button type="submit">Create Campaign</Button>
+              <Button type="submit" disabled={loading}>
+              {loading ? 'Creating...' : 'Create Campaign'}
+            </Button>
             </div>
           </form>
         </CardContent>

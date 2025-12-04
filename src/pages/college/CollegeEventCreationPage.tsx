@@ -44,15 +44,13 @@ const CollegeEventCreationPage = () => {
     try {
       setLoading(true);
 
-      // Combine date and time
-      const eventDate = `${formData.date}T${formData.startTime}:00`;
-      const endTime = formData.endTime ? `${formData.date}T${formData.endTime}:00` : undefined;
-
+      // Backend expects startTime and endTime in HH:MM format (24-hour)
       const eventData = {
         title: formData.title,
         description: formData.description,
-        eventDate,
-        endTime,
+        eventDate: formData.date,
+        startTime: formData.startTime || '00:00',
+        endTime: formData.endTime || '23:59',
         location: formData.location,
         eventBannerUrl: formData.image || undefined,
       };

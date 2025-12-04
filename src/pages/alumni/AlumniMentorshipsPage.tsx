@@ -135,7 +135,7 @@ const AlumniMentorshipsPage = () => {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={student.avatar} alt={student.name} />
+                <AvatarImage src={student.profilePictureUrl} alt={student.name} />
                 <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
@@ -171,7 +171,7 @@ const AlumniMentorshipsPage = () => {
             <Button 
               size="sm" 
               className="flex-1"
-              onClick={() => handleAction(request.id, 'accept')}
+              onClick={() => handleAction(request._id, 'accept')}
             >
               <CheckCircle2 className="h-4 w-4 mr-2" />
               Accept
@@ -180,7 +180,7 @@ const AlumniMentorshipsPage = () => {
               size="sm" 
               variant="outline"
               className="flex-1"
-              onClick={() => handleAction(request.id, 'reject')}
+              onClick={() => handleAction(request._id, 'reject')}
             >
               <XCircle className="h-4 w-4 mr-2" />
               Decline
@@ -201,7 +201,7 @@ const AlumniMentorshipsPage = () => {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={student.avatar} alt={student.name} />
+                <AvatarImage src={student.profilePictureUrl} alt={student.name} />
                 <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
@@ -227,7 +227,7 @@ const AlumniMentorshipsPage = () => {
             variant="outline" 
             size="sm" 
             className="w-full"
-            onClick={() => handleAction(request.id, 'end')}
+            onClick={() => handleAction(request._id, 'end')}
           >
             <XCircle className="h-4 w-4 mr-2" />
             End Mentorship
@@ -247,7 +247,7 @@ const AlumniMentorshipsPage = () => {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={student.avatar} alt={student.name} />
+                <AvatarImage src={student.profilePictureUrl} alt={student.name} />
                 <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
@@ -316,7 +316,7 @@ const AlumniMentorshipsPage = () => {
           {pendingRequests.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {pendingRequests.map((request) => (
-                <PendingRequestCard key={request.id} request={request} />
+                <PendingRequestCard key={request._id} request={request} />
               ))}
             </div>
           ) : (
@@ -336,7 +336,7 @@ const AlumniMentorshipsPage = () => {
           {activeMentorships.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {activeMentorships.map((request) => (
-                <ActiveMentorshipCard key={request.id} request={request} />
+                <ActiveMentorshipCard key={request._id} request={request} />
               ))}
             </div>
           ) : (
@@ -356,7 +356,7 @@ const AlumniMentorshipsPage = () => {
           {completedMentorships.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {completedMentorships.map((request) => (
-                <CompletedMentorshipCard key={request.id} request={request} />
+                <CompletedMentorshipCard key={request._id} request={request} />
               ))}
             </div>
           ) : (

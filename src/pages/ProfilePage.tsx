@@ -17,10 +17,10 @@ import {
 } from '../components/ui/select';
 import { UserRole, Department, type Alumni, type Student, type College } from '../types';
 import { User, Mail, Building2, GraduationCap, MapPin, Briefcase, Save, Edit2, X } from 'lucide-react';
-import { alumniAPI } from '../lib/api';
+import { alumniAPI, studentAPI, collegeAPI } from '../lib/api';
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
@@ -110,24 +110,23 @@ const ProfilePage = () => {
           department: formData.department,
           skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(s => s) : [],
         };
-        // TODO: Add studentAPI.updateProfile when implemented
-        console.log('Student profile update:', updateData);
+        await studentAPI.updateProfile(user.id, updateData);
       } else if (user.role === UserRole.College) {
         const college = user as College;
         updateData = {
           name: formData.name,
           email: formData.email,
           website: formData.website,
-          location: formData.location,
+          address: formData.location, // Backend uses 'address' not 'location'
           establishedYear: formData.establishedYear ? parseInt(formData.establishedYear) : college.establishedYear,
         };
-        // TODO: Add collegeAPI.updateProfile when implemented
-        console.log('College profile update:', updateData);
+        await collegeAPI.updateProfile(updateData);
       }
       
       // Refresh user data
-      // The AuthContext should handle this automatically on next load
+      await refreshUser();
       setIsEditing(false);
+      alert('Profile updated successfully!');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile');
     } finally {
