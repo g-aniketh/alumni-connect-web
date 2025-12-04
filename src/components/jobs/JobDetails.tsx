@@ -87,7 +87,6 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
       setApplicationData({ message: "", resumeFile: null, resumeFileName: "" });
       onOpenChange(false);
 
-      // Show success message (could use a toast notification)
       alert("Application submitted successfully!");
     } catch (err) {
       setError(

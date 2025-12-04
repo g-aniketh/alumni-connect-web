@@ -81,7 +81,11 @@ export const CampaignCard = ({ campaign, onDonate }: CampaignCardProps) => {
           disabled={campaign.status !== 'Ongoing'}
         >
           <DollarSign className="w-4 h-4 mr-2" />
-          {campaign.status === 'Ongoing' ? 'Donate' : 'Campaign Ended'}
+          {campaign.status === 'Ongoing' 
+            ? 'Donate' 
+            : campaign.status === 'Upcoming' 
+            ? 'Coming Soon' 
+            : 'Campaign Ended'}
         </Button>
       </CardFooter>
     </Card>

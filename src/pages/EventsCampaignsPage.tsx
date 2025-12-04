@@ -62,9 +62,20 @@ const EventsCampaignsPage = () => {
   const loadCampaigns = async () => {
     try {
       setCampaignsLoading(true);
-      const activeCampaigns = await campaignsAPI.getActive();
-      setCampaigns(activeCampaigns);
+      // Get all campaigns (not just active ones) so newly created campaigns are visible
+      // We'll filter them on the frontend to show active and upcoming
+      const allCampaigns = await campaignsAPI.getAll();
+      
+      // Sort by endDate (upcoming/active first)
+      const sortedCampaigns = allCampaigns.sort((a, b) => {
+        const dateA = new Date(a.endDate).getTime();
+        const dateB = new Date(b.endDate).getTime();
+        return dateA - dateB;
+      });
+      
+      setCampaigns(sortedCampaigns);
     } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load campaigns');
       console.error('Failed to load campaigns:', err);
     } finally {
       setCampaignsLoading(false);
@@ -104,7 +115,16 @@ const EventsCampaignsPage = () => {
     const now = new Date();
     const startDate = new Date(backendCampaign.startDate);
     const endDate = new Date(backendCampaign.endDate);
-    const isActive = now >= startDate && now <= endDate;
+    
+    // Determine status: Upcoming (not started), Ongoing (active), or Completed (ended)
+    let status: 'Ongoing' | 'Completed' | 'Upcoming';
+    if (now < startDate) {
+      status = 'Upcoming' as any;
+    } else if (now >= startDate && now <= endDate) {
+      status = 'Ongoing' as any;
+    } else {
+      status = 'Completed' as any;
+    }
     
     const organizerName = typeof backendCampaign.createdBy === 'object' 
       ? backendCampaign.createdBy.name 
@@ -117,7 +137,7 @@ const EventsCampaignsPage = () => {
       organizer: organizerName,
       targetAmount: backendCampaign.targetAmount || 0,
       totalRaised: backendCampaign.totalRaised || 0,
-      status: isActive ? 'Ongoing' as any : 'Completed' as any,
+      status,
       deadline: backendCampaign.endDate,
       image: undefined, // Backend doesn't have image field
     };
@@ -199,21 +219,24 @@ const EventsCampaignsPage = () => {
               <p>Loading campaigns...</p>
             </div>
           ) : campaigns.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {campaigns.map((backendCampaign) => {
-                const campaign = transformCampaign(backendCampaign);
-                return (
-                  <CampaignCard 
-                    key={backendCampaign._id} 
-                    campaign={campaign} 
-                    onDonate={() => handleDonate(backendCampaign)} 
-                  />
-                );
-              })}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {campaigns.map((backendCampaign) => {
+                  const campaign = transformCampaign(backendCampaign);
+                  // Show all campaigns (upcoming, active, and recently completed)
+                  return (
+                    <CampaignCard 
+                      key={backendCampaign._id} 
+                      campaign={campaign} 
+                      onDonate={() => handleDonate(backendCampaign)} 
+                    />
+                  );
+                })}
+              </div>
+            </>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg font-medium mb-2">No active campaigns</p>
+              <p className="text-lg font-medium mb-2">No campaigns found</p>
               <p className="text-sm">Check back later for new fundraising initiatives.</p>
             </div>
           )}

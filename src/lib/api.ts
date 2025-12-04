@@ -547,26 +547,28 @@ export const collegeAPI = {
     return api.delete<{ message: string }>('/colleges/profile');
   },
 
+  // Public endpoint to get all college names (for signup dropdowns)
+  getAllCollegeNames: async (): Promise<string[]> => {
+    const response = await api.get<{ colleges: string[] }>('/colleges/list');
+    return response.colleges;
+  },
+
   // Stats
   getStats: async (): Promise<{
-    totalAlumni: number;
-    verifiedAlumni: number;
-    totalStudents: number;
-    verifiedStudents: number;
-    totalJobs: number;
-    totalEvents: number;
-    totalCampaigns: number;
-    totalRaised: number;
+    alumniCount: number;
+    alumniVerifiedCount: number;
+    studentCount: number;
+    studentsVerifiedCount: number;
+    batchesCount?: number;
+    batches?: any[];
   }> => {
     return api.get<{
-      totalAlumni: number;
-      verifiedAlumni: number;
-      totalStudents: number;
-      verifiedStudents: number;
-      totalJobs: number;
-      totalEvents: number;
-      totalCampaigns: number;
-      totalRaised: number;
+      alumniCount: number;
+      alumniVerifiedCount: number;
+      studentCount: number;
+      studentsVerifiedCount: number;
+      batchesCount?: number;
+      batches?: any[];
     }>('/colleges/stats');
   },
 

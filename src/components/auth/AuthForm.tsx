@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserRole, Department } from "../../types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -19,20 +19,12 @@ import {
 } from "../ui/card";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { collegeAPI } from "../../lib/api";
 
 interface AuthFormProps {
   role: UserRole;
   isLoginDefault?: boolean;
 }
-
-const colleges = [
-  "Indian Institute of Technology, Bombay",
-  "Indian Institute of Technology, Delhi",
-  "National Institute of Technology, Trichy",
-  "Delhi Technological University",
-  "Anna University",
-  "Vellore Institute of Technology",
-];
 
 // Map frontend degree display to backend enum values
 const degreeMap: Record<string, string> = {
@@ -63,6 +55,8 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [colleges, setColleges] = useState<string[]>([]);
+  const [loadingColleges, setLoadingColleges] = useState(false);
 
   // Common State
   const [email, setEmail] = useState("");
@@ -84,6 +78,27 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
   const [establishedYear, setEstablishedYear] = useState("");
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
+
+  // Fetch colleges from backend when component mounts (only for signup)
+  useEffect(() => {
+    if (!isLogin && (role === UserRole.Alumni || role === UserRole.Student)) {
+      loadColleges();
+    }
+  }, [isLogin, role]);
+
+  const loadColleges = async () => {
+    try {
+      setLoadingColleges(true);
+      const collegeNames = await collegeAPI.getAllCollegeNames();
+      setColleges(collegeNames);
+    } catch (err) {
+      console.error("Failed to load colleges:", err);
+      // Keep empty array if fetch fails - user can still use "Others" option
+      setColleges([]);
+    } finally {
+      setLoadingColleges(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -315,16 +330,32 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
               </div>
               <div className="space-y-2">
                 <Label>College</Label>
-                <Select onValueChange={setCollege} required>
+                <Select
+                  onValueChange={setCollege}
+                  required
+                  disabled={loadingColleges}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select College" />
+                    <SelectValue
+                      placeholder={
+                        loadingColleges
+                          ? "Loading colleges..."
+                          : "Select College"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {colleges.map(c => (
-                      <SelectItem key={c} value={c}>
-                        {c}
+                    {colleges.length === 0 && !loadingColleges ? (
+                      <SelectItem value="no-colleges" disabled>
+                        No colleges found. Use "Others" option below.
                       </SelectItem>
-                    ))}
+                    ) : (
+                      colleges.map(c => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -357,19 +388,40 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
                     }
                   }}
                   required
+                  disabled={loadingColleges}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select College" />
+                    <SelectValue
+                      placeholder={
+                        loadingColleges
+                          ? "Loading colleges..."
+                          : "Select College"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {colleges.map(c => (
-                      <SelectItem key={c} value={c}>
-                        {c}
+                    {loadingColleges ? (
+                      <SelectItem value="loading" disabled>
+                        Loading colleges...
                       </SelectItem>
-                    ))}
-                    <SelectItem value="other">
-                      Others (Enter manually)
-                    </SelectItem>
+                    ) : (
+                      <>
+                        {colleges.length > 0 ? (
+                          colleges.map(c => (
+                            <SelectItem key={c} value={c}>
+                              {c}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="no-colleges" disabled>
+                            No colleges registered yet
+                          </SelectItem>
+                        )}
+                        <SelectItem value="other">
+                          Others (Enter manually)
+                        </SelectItem>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
                 {showCollegeOther && (

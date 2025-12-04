@@ -1,23 +1,22 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
+import { useState } from "react";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../components/ui/select';
-import { useNavigate } from 'react-router-dom';
-import { campaignsAPI } from '../../lib/api';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import { useNavigate } from "react-router-dom";
+import { campaignsAPI } from "../../lib/api";
 
 const CollegeCampaignCreationPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
@@ -25,32 +24,36 @@ const CollegeCampaignCreationPage = () => {
     startDate: string;
     endDate: string;
   }>({
-    title: '',
-    description: '',
-    targetAmount: '',
-    startDate: '',
-    endDate: '',
+    title: "",
+    description: "",
+    targetAmount: "",
+    startDate: "",
+    endDate: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
-      setError('');
+      setError("");
 
       const campaignData = {
         title: formData.title,
         description: formData.description,
-        targetAmount: formData.targetAmount ? parseFloat(formData.targetAmount) : undefined,
+        targetAmount: formData.targetAmount
+          ? parseFloat(formData.targetAmount)
+          : undefined,
         startDate: formData.startDate,
         endDate: formData.endDate,
       };
 
       await campaignsAPI.create(campaignData);
-      alert('Campaign created successfully!');
-      navigate('/events');
+      alert("Campaign created successfully!");
+      navigate("/events");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create campaign');
+      setError(
+        err instanceof Error ? err.message : "Failed to create campaign"
+      );
     } finally {
       setLoading(false);
     }
@@ -59,16 +62,21 @@ const CollegeCampaignCreationPage = () => {
   return (
     <div className="container py-8 max-w-3xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Create Fundraising Campaign</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Create Fundraising Campaign
+        </h1>
         <p className="text-muted-foreground">
-          Launch a fundraising campaign to support your institution's initiatives.
+          Launch a fundraising campaign to support your institution's
+          initiatives.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Campaign Details</CardTitle>
-          <CardDescription>Fill in the information about your fundraising campaign.</CardDescription>
+          <CardDescription>
+            Fill in the information about your fundraising campaign.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -78,7 +86,9 @@ const CollegeCampaignCreationPage = () => {
                 id="title"
                 placeholder="e.g., New Library Wing Fund"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={e =>
+                  setFormData(prev => ({ ...prev, title: e.target.value }))
+                }
                 required
               />
             </div>
@@ -89,7 +99,12 @@ const CollegeCampaignCreationPage = () => {
                 id="description"
                 placeholder="Describe the purpose of the campaign, how funds will be used, and the impact..."
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 rows={6}
                 required
               />
@@ -104,7 +119,12 @@ const CollegeCampaignCreationPage = () => {
                   min="1"
                   placeholder="500000"
                   value={formData.targetAmount}
-                  onChange={(e) => setFormData(prev => ({ ...prev, targetAmount: e.target.value }))}
+                  onChange={e =>
+                    setFormData(prev => ({
+                      ...prev,
+                      targetAmount: e.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -116,7 +136,12 @@ const CollegeCampaignCreationPage = () => {
                   id="startDate"
                   type="date"
                   value={formData.startDate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+                  onChange={e =>
+                    setFormData(prev => ({
+                      ...prev,
+                      startDate: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -127,7 +152,9 @@ const CollegeCampaignCreationPage = () => {
                   id="endDate"
                   type="date"
                   value={formData.endDate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
+                  onChange={e =>
+                    setFormData(prev => ({ ...prev, endDate: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -139,41 +166,17 @@ const CollegeCampaignCreationPage = () => {
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="status">Campaign Status *</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as EventStatus }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(EventStatus).map((status) => (
-                    <SelectItem key={status} value={status}>{status}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="image">Campaign Image URL (Optional)</Label>
-              <Input
-                id="image"
-                type="url"
-                placeholder="https://example.com/campaign-image.jpg"
-                value={formData.image}
-                onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-              />
-            </div>
-
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => navigate('/events')}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/events")}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Campaign'}
-            </Button>
+                {loading ? "Creating..." : "Create Campaign"}
+              </Button>
             </div>
           </form>
         </CardContent>
@@ -183,4 +186,3 @@ const CollegeCampaignCreationPage = () => {
 };
 
 export default CollegeCampaignCreationPage;
-

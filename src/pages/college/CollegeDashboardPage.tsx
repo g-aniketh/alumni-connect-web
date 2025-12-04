@@ -15,7 +15,7 @@ import {
   Activity
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { collegeAPI, jobsAPI, eventsAPI } from '../../lib/api';
+import { collegeAPI, jobsAPI, eventsAPI, campaignsAPI } from '../../lib/api';
 import { EmploymentChart } from '../../components/dashboard/EmploymentChart';
 
 const CollegeDashboardPage = () => {
@@ -43,14 +43,60 @@ const CollegeDashboardPage = () => {
       setLoading(true);
       setError('');
 
-      // Load stats
+      // Load stats from backend
       const statsData = await collegeAPI.getStats();
-      setStats(statsData);
+      
+      // Map backend response to frontend format
+      // Backend returns: alumniCount, alumniVerifiedCount, studentCount, studentsVerifiedCount
+      const mappedStats = {
+        totalAlumni: statsData.alumniCount || 0,
+        verifiedAlumni: statsData.alumniVerifiedCount || 0,
+        totalStudents: statsData.studentCount || 0,
+        verifiedStudents: statsData.studentsVerifiedCount || 0,
+        totalJobs: 0,
+        totalEvents: 0,
+        totalCampaigns: 0,
+        totalRaised: 0,
+      };
 
-      // Load upcoming events count
-      const eventsResponse = await eventsAPI.getFiltered({ upcoming: true });
-      const events = Array.isArray(eventsResponse) ? eventsResponse : eventsResponse.events;
-      setUpcomingEvents(events.length);
+      // Fetch additional stats
+      try {
+        // Get jobs count
+        const jobsResponse = await jobsAPI.getFiltered({ by: 'college' });
+        const jobs = Array.isArray(jobsResponse) ? jobsResponse : (jobsResponse as any).jobs || [];
+        mappedStats.totalJobs = jobs.length;
+      } catch (err) {
+        console.error('Failed to load jobs:', err);
+      }
+
+      try {
+        // Get events count
+        const eventsResponse = await eventsAPI.getFiltered({ by: 'college' });
+        const events = Array.isArray(eventsResponse) ? eventsResponse : (eventsResponse as any).events || [];
+        mappedStats.totalEvents = events.length;
+        
+        // Get upcoming events count
+        const upcomingResponse = await eventsAPI.getFiltered({ upcoming: true });
+        const upcomingEvents = Array.isArray(upcomingResponse) ? upcomingResponse : (upcomingResponse as any).events || [];
+        setUpcomingEvents(upcomingEvents.length);
+      } catch (err) {
+        console.error('Failed to load events:', err);
+      }
+
+      try {
+        // Get campaigns and calculate totalRaised
+        const campaigns = await campaignsAPI.getMyCampaigns();
+        mappedStats.totalCampaigns = campaigns.length;
+        
+        // Calculate total raised from all campaigns
+        mappedStats.totalRaised = campaigns.reduce((sum: number, campaign: any) => {
+          return sum + (campaign.totalRaised || 0);
+        }, 0);
+      } catch (err) {
+        console.error('Failed to load campaigns:', err);
+      }
+
+      setStats(mappedStats);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
     } finally {
@@ -88,7 +134,12 @@ const CollegeDashboardPage = () => {
     },
     {
       title: 'Funds Raised',
-      value: `$${(stats.totalRaised / 1000).toFixed(0)}k`,
+      value: (() => {
+        const raised = stats.totalRaised || 0;
+        if (raised === 0) return '$0';
+        if (raised < 1000) return `$${raised}`;
+        return `$${(raised / 1000).toFixed(0)}k`;
+      })(),
       description: 'From campaigns',
       icon: DollarSign,
       color: 'text-orange-600',
@@ -321,7 +372,14 @@ const CollegeDashboardPage = () => {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Total Raised</span>
-              <span className="text-lg font-semibold">${(stats.totalRaised / 1000).toFixed(0)}k</span>
+              <span className="text-lg font-semibold">
+                {(() => {
+                  const raised = stats.totalRaised || 0;
+                  if (raised === 0) return '$0';
+                  if (raised < 1000) return `$${raised}`;
+                  return `$${(raised / 1000).toFixed(0)}k`;
+                })()}
+              </span>
             </div>
             <Button asChild variant="outline" className="w-full">
               <Link to="/college/campaigns/create">
