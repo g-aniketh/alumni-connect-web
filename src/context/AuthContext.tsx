@@ -54,6 +54,12 @@ const transformUser = (
       skills: alumni.skills || [],
       avatar: alumni.profilePictureUrl,
       mentorshipAvailable: true, // Default, can be updated
+      linkedInProfile: alumni.linkedInProfile,
+      githubProfile: alumni.githubProfile,
+      personalWebsite: alumni.personalWebsite,
+      resumeUrl: alumni.resumeUrl,
+      bio: alumni.bio,
+      location: alumni.location,
     } as Alumni;
   } else if (role === UserRole.Student) {
     const student = backendUser as BackendStudent;
@@ -67,6 +73,11 @@ const transformUser = (
       degree: student.degree,
       skills: student.skills || [],
       avatar: student.profilePictureUrl,
+      linkedInProfile: student.linkedInProfile,
+      githubProfile: student.githubProfile,
+      personalWebsite: student.personalWebsite,
+      resumeUrl: student.resumeUrl,
+      bio: student.bio,
     } as Student;
   } else {
     const college = backendUser as BackendCollege;

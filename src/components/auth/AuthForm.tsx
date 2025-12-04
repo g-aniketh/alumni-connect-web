@@ -78,6 +78,8 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
   const [establishedYear, setEstablishedYear] = useState("");
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
+  const [linkedInProfile, setLinkedInProfile] = useState("");
+  const [linkedInProfile, setLinkedInProfile] = useState("");
 
   // Fetch colleges from backend when component mounts (only for signup)
   useEffect(() => {
@@ -134,6 +136,7 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
             department:
               departmentMap[department] ||
               department.toLowerCase().replace(/\s+/g, "_"),
+            linkedInProfile: linkedInProfile.trim() || undefined,
           };
           await signup(role, signupData);
         } else if (role === UserRole.Student) {
@@ -358,6 +361,19 @@ export const AuthForm = ({ role, isLoginDefault = true }: AuthFormProps) => {
                     )}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="linkedIn">LinkedIn Profile (Optional)</Label>
+                <Input
+                  id="linkedIn"
+                  type="url"
+                  placeholder="https://linkedin.com/in/yourprofile"
+                  value={linkedInProfile}
+                  onChange={e => setLinkedInProfile(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Add your LinkedIn profile to help others connect with you.
+                </p>
               </div>
             </>
           )}

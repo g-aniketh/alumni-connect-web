@@ -12,7 +12,8 @@ import {
   Plus,
   ArrowRight,
   BarChart3,
-  Activity
+  Activity,
+  Upload
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { collegeAPI, jobsAPI, eventsAPI, campaignsAPI } from '../../lib/api';
@@ -239,6 +240,13 @@ const CollegeDashboardPage = () => {
                 <DollarSign className="h-5 w-5 mb-2" />
                 <span className="font-semibold">Create Campaign</span>
                 <span className="text-xs text-muted-foreground mt-1">Start fundraising</span>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-auto flex-col items-start p-4">
+              <Link to="/college/bulk-import">
+                <Upload className="h-5 w-5 mb-2" />
+                <span className="font-semibold">Bulk Import</span>
+                <span className="text-xs text-muted-foreground mt-1">Import students/alumni</span>
               </Link>
             </Button>
           </div>

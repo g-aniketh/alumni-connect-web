@@ -322,12 +322,25 @@ export const authAPI = {
 // Alumni API endpoints
 export const alumniAPI = {
   // Profile Management
-  getProfile: async (): Promise<{ alumni: import('../types/api').BackendAlumni }> => {
-    return api.get<{ alumni: import('../types/api').BackendAlumni }>('/alumni/profile');
+  getProfile: async (): Promise<{
+    alumni: import("../types/api").BackendAlumni;
+  }> => {
+    return api.get<{ alumni: import("../types/api").BackendAlumni }>(
+      "/alumni/profile"
+    );
   },
 
-  updateProfile: async (id: string, data: Partial<import('../types/api').BackendAlumni>): Promise<{ message: string; alumni: import('../types/api').BackendAlumni }> => {
-    return api.put<{ message: string; alumni: import('../types/api').BackendAlumni }>(`/alumni/profile/${id}`, data);
+  updateProfile: async (
+    id: string,
+    data: Partial<import("../types/api").BackendAlumni>
+  ): Promise<{
+    message: string;
+    alumni: import("../types/api").BackendAlumni;
+  }> => {
+    return api.put<{
+      message: string;
+      alumni: import("../types/api").BackendAlumni;
+    }>(`/alumni/profile/${id}`, data);
   },
 
   deleteProfile: async (id: string): Promise<{ message: string }> => {
@@ -338,40 +351,67 @@ export const alumniAPI = {
 // Jobs API endpoints
 export const jobsAPI = {
   // Get all jobs (public)
-  getAll: async (): Promise<import('../types/api').BackendJob[]> => {
-    return api.get<import('../types/api').BackendJob[]>('/jobs');
+  getAll: async (): Promise<import("../types/api").BackendJob[]> => {
+    return api.get<import("../types/api").BackendJob[]>("/jobs");
   },
 
   // Search jobs (public)
-  search: async (params: { keyword?: string; location?: string; jobType?: string }): Promise<import('../types/api').BackendJob[]> => {
+  search: async (params: {
+    keyword?: string;
+    location?: string;
+    jobType?: string;
+  }): Promise<import("../types/api").BackendJob[]> => {
     const queryParams = new URLSearchParams();
-    if (params.keyword) queryParams.append('keyword', params.keyword);
-    if (params.location) queryParams.append('location', params.location);
-    if (params.jobType) queryParams.append('jobType', params.jobType);
-    return api.get<import('../types/api').BackendJob[]>(`/jobs/search?${queryParams.toString()}`);
+    if (params.keyword) queryParams.append("keyword", params.keyword);
+    if (params.location) queryParams.append("location", params.location);
+    if (params.jobType) queryParams.append("jobType", params.jobType);
+    return api.get<import("../types/api").BackendJob[]>(
+      `/jobs/search?${queryParams.toString()}`
+    );
   },
 
   // Get filtered jobs (authenticated - college context)
-  getFiltered: async (params?: { by?: string; available?: boolean }): Promise<import('../types/api').BackendJob[] | { total: number; jobs: import('../types/api').BackendJob[] }> => {
+  getFiltered: async (params?: {
+    by?: string;
+    available?: boolean;
+  }): Promise<
+    | import("../types/api").BackendJob[]
+    | { total: number; jobs: import("../types/api").BackendJob[] }
+  > => {
     const queryParams = new URLSearchParams();
-    if (params?.by) queryParams.append('by', params.by);
-    if (params?.available !== undefined) queryParams.append('available', params.available.toString());
-    return api.get<import('../types/api').BackendJob[] | { total: number; jobs: import('../types/api').BackendJob[] }>(`/jobs/filter?${queryParams.toString()}`);
+    if (params?.by) queryParams.append("by", params.by);
+    if (params?.available !== undefined)
+      queryParams.append("available", params.available.toString());
+    return api.get<
+      | import("../types/api").BackendJob[]
+      | { total: number; jobs: import("../types/api").BackendJob[] }
+    >(`/jobs/filter?${queryParams.toString()}`);
   },
 
   // Get job by ID (public)
-  getById: async (id: string): Promise<import('../types/api').BackendJob> => {
-    return api.get<import('../types/api').BackendJob>(`/jobs/${id}`);
+  getById: async (id: string): Promise<import("../types/api").BackendJob> => {
+    return api.get<import("../types/api").BackendJob>(`/jobs/${id}`);
   },
 
   // Create job (authenticated - verified alumni/college)
-  create: async (data: import('../types/api').JobCreateRequest): Promise<{ message: string; job: import('../types/api').BackendJob }> => {
-    return api.post<{ message: string; job: import('../types/api').BackendJob }>('/jobs', data);
+  create: async (
+    data: import("../types/api").JobCreateRequest
+  ): Promise<{ message: string; job: import("../types/api").BackendJob }> => {
+    return api.post<{
+      message: string;
+      job: import("../types/api").BackendJob;
+    }>("/jobs", data);
   },
 
   // Update job (authenticated - owner only)
-  update: async (id: string, data: Partial<import('../types/api').JobCreateRequest>): Promise<{ message: string; job: import('../types/api').BackendJob }> => {
-    return api.put<{ message: string; job: import('../types/api').BackendJob }>(`/jobs/${id}`, data);
+  update: async (
+    id: string,
+    data: Partial<import("../types/api").JobCreateRequest>
+  ): Promise<{ message: string; job: import("../types/api").BackendJob }> => {
+    return api.put<{ message: string; job: import("../types/api").BackendJob }>(
+      `/jobs/${id}`,
+      data
+    );
   },
 
   // Delete job (authenticated - owner only)
@@ -380,74 +420,132 @@ export const jobsAPI = {
   },
 
   // Get my posted jobs (authenticated)
-  getMyPosted: async (): Promise<import('../types/api').BackendJob[]> => {
-    return api.get<import('../types/api').BackendJob[]>('/jobs/my/posted');
+  getMyPosted: async (): Promise<import("../types/api").BackendJob[]> => {
+    return api.get<import("../types/api").BackendJob[]>("/jobs/my/posted");
   },
 
   // Apply for job (authenticated - verified student/alumni)
-  apply: async (jobId: string, data: import('../types/api').JobApplicationRequest): Promise<{ message: string; application: import('../types/api').BackendJobApplication }> => {
-    return api.post<{ message: string; application: import('../types/api').BackendJobApplication }>(`/jobs/${jobId}/apply`, data);
+  apply: async (
+    jobId: string,
+    data: import("../types/api").JobApplicationRequest
+  ): Promise<{
+    message: string;
+    application: import("../types/api").BackendJobApplication;
+  }> => {
+    return api.post<{
+      message: string;
+      application: import("../types/api").BackendJobApplication;
+    }>(`/jobs/${jobId}/apply`, data);
   },
 
   // Get my applications (authenticated)
-  getMyApplications: async (): Promise<import('../types/api').BackendJobApplication[]> => {
-    return api.get<import('../types/api').BackendJobApplication[]>('/jobs/my/applications');
+  getMyApplications: async (): Promise<
+    import("../types/api").BackendJobApplication[]
+  > => {
+    return api.get<import("../types/api").BackendJobApplication[]>(
+      "/jobs/my/applications"
+    );
   },
 
   // Get applications for a job (authenticated - owner only)
-  getJobApplications: async (jobId: string): Promise<import('../types/api').BackendJobApplication[]> => {
-    return api.get<import('../types/api').BackendJobApplication[]>(`/jobs/${jobId}/applications`);
+  getJobApplications: async (
+    jobId: string
+  ): Promise<import("../types/api").BackendJobApplication[]> => {
+    return api.get<import("../types/api").BackendJobApplication[]>(
+      `/jobs/${jobId}/applications`
+    );
   },
 
   // Update application status (authenticated - job owner only)
-  updateApplicationStatus: async (applicationId: string, status: string): Promise<{ message: string; application: import('../types/api').BackendJobApplication }> => {
-    return api.put<{ message: string; application: import('../types/api').BackendJobApplication }>(`/jobs/applications/${applicationId}/status`, { status });
+  updateApplicationStatus: async (
+    applicationId: string,
+    status: string
+  ): Promise<{
+    message: string;
+    application: import("../types/api").BackendJobApplication;
+  }> => {
+    return api.put<{
+      message: string;
+      application: import("../types/api").BackendJobApplication;
+    }>(`/jobs/applications/${applicationId}/status`, { status });
   },
 
   // Withdraw application (authenticated - applicant only)
-  withdrawApplication: async (applicationId: string): Promise<{ message: string }> => {
-    return api.delete<{ message: string }>(`/jobs/applications/${applicationId}/withdraw`);
+  withdrawApplication: async (
+    applicationId: string
+  ): Promise<{ message: string }> => {
+    return api.delete<{ message: string }>(
+      `/jobs/applications/${applicationId}/withdraw`
+    );
   },
 };
 
 // Events API endpoints
 export const eventsAPI = {
   // Get all events (public)
-  getAll: async (): Promise<import('../types/api').BackendEvent[]> => {
-    return api.get<import('../types/api').BackendEvent[]>('/events');
+  getAll: async (): Promise<import("../types/api").BackendEvent[]> => {
+    return api.get<import("../types/api").BackendEvent[]>("/events");
   },
 
   // Search events (public)
-  search: async (params: { keyword?: string; location?: string; startDate?: string; endDate?: string }): Promise<import('../types/api').BackendEvent[]> => {
+  search: async (params: {
+    keyword?: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<import("../types/api").BackendEvent[]> => {
     const queryParams = new URLSearchParams();
-    if (params.keyword) queryParams.append('keyword', params.keyword);
-    if (params.location) queryParams.append('location', params.location);
-    if (params.startDate) queryParams.append('startDate', params.startDate);
-    if (params.endDate) queryParams.append('endDate', params.endDate);
-    return api.get<import('../types/api').BackendEvent[]>(`/events/search?${queryParams.toString()}`);
+    if (params.keyword) queryParams.append("keyword", params.keyword);
+    if (params.location) queryParams.append("location", params.location);
+    if (params.startDate) queryParams.append("startDate", params.startDate);
+    if (params.endDate) queryParams.append("endDate", params.endDate);
+    return api.get<import("../types/api").BackendEvent[]>(
+      `/events/search?${queryParams.toString()}`
+    );
   },
 
   // Get filtered events (authenticated - college context)
-  getFiltered: async (params?: { by?: string; upcoming?: boolean }): Promise<import('../types/api').BackendEvent[] | { total: number; events: import('../types/api').BackendEvent[] }> => {
+  getFiltered: async (params?: {
+    by?: string;
+    upcoming?: boolean;
+  }): Promise<
+    | import("../types/api").BackendEvent[]
+    | { total: number; events: import("../types/api").BackendEvent[] }
+  > => {
     const queryParams = new URLSearchParams();
-    if (params?.by) queryParams.append('by', params.by);
-    if (params?.upcoming !== undefined) queryParams.append('upcoming', params.upcoming.toString());
-    return api.get<import('../types/api').BackendEvent[] | { total: number; events: import('../types/api').BackendEvent[] }>(`/events/filter?${queryParams.toString()}`);
+    if (params?.by) queryParams.append("by", params.by);
+    if (params?.upcoming !== undefined)
+      queryParams.append("upcoming", params.upcoming.toString());
+    return api.get<
+      | import("../types/api").BackendEvent[]
+      | { total: number; events: import("../types/api").BackendEvent[] }
+    >(`/events/filter?${queryParams.toString()}`);
   },
 
   // Get event by ID (public)
-  getById: async (id: string): Promise<import('../types/api').BackendEvent> => {
-    return api.get<import('../types/api').BackendEvent>(`/events/${id}`);
+  getById: async (id: string): Promise<import("../types/api").BackendEvent> => {
+    return api.get<import("../types/api").BackendEvent>(`/events/${id}`);
   },
 
   // Create event (authenticated - verified alumni/college)
-  create: async (data: import('../types/api').EventCreateRequest): Promise<import('../types/api').BackendEvent> => {
-    return api.post<import('../types/api').BackendEvent>('/events', data);
+  create: async (
+    data: import("../types/api").EventCreateRequest
+  ): Promise<import("../types/api").BackendEvent> => {
+    return api.post<import("../types/api").BackendEvent>("/events", data);
   },
 
   // Update event (authenticated - organizer only)
-  update: async (id: string, data: Partial<import('../types/api').EventCreateRequest>): Promise<{ message: string; event: import('../types/api').BackendEvent }> => {
-    return api.put<{ message: string; event: import('../types/api').BackendEvent }>(`/events/${id}`, data);
+  update: async (
+    id: string,
+    data: Partial<import("../types/api").EventCreateRequest>
+  ): Promise<{
+    message: string;
+    event: import("../types/api").BackendEvent;
+  }> => {
+    return api.put<{
+      message: string;
+      event: import("../types/api").BackendEvent;
+    }>(`/events/${id}`, data);
   },
 
   // Delete event (authenticated - organizer only)
@@ -456,99 +554,214 @@ export const eventsAPI = {
   },
 
   // Get my organized events (authenticated)
-  getMyOrganized: async (): Promise<import('../types/api').BackendEvent[]> => {
-    return api.get<import('../types/api').BackendEvent[]>('/events/my/organized');
+  getMyOrganized: async (): Promise<import("../types/api").BackendEvent[]> => {
+    return api.get<import("../types/api").BackendEvent[]>(
+      "/events/my/organized"
+    );
   },
 
   // Register for event (authenticated - verified student only)
-  register: async (data: import('../types/api').EventRegisterRequest): Promise<{ message: string; registration: import('../types/api').BackendEventRegistration }> => {
-    return api.post<{ message: string; registration: import('../types/api').BackendEventRegistration }>('/events/register', data);
+  register: async (
+    data: import("../types/api").EventRegisterRequest
+  ): Promise<{
+    message: string;
+    registration: import("../types/api").BackendEventRegistration;
+  }> => {
+    return api.post<{
+      message: string;
+      registration: import("../types/api").BackendEventRegistration;
+    }>("/events/register", data);
   },
 
   // Get my registrations (authenticated - student only)
-  getMyRegistrations: async (): Promise<import('../types/api').BackendEventRegistration[]> => {
-    return api.get<import('../types/api').BackendEventRegistration[]>('/events/my/registrations');
+  getMyRegistrations: async (): Promise<
+    import("../types/api").BackendEventRegistration[]
+  > => {
+    return api.get<import("../types/api").BackendEventRegistration[]>(
+      "/events/my/registrations"
+    );
   },
 
   // Get event registrations (authenticated - organizer only)
-  getEventRegistrations: async (eventId: string): Promise<import('../types/api').BackendEventRegistration[]> => {
-    return api.get<import('../types/api').BackendEventRegistration[]>(`/events/${eventId}/registrations`);
+  getEventRegistrations: async (
+    eventId: string
+  ): Promise<import("../types/api").BackendEventRegistration[]> => {
+    return api.get<import("../types/api").BackendEventRegistration[]>(
+      `/events/${eventId}/registrations`
+    );
   },
 
   // Update registration status (authenticated - organizer only)
-  updateRegistrationStatus: async (registrationId: string, status: string): Promise<{ message: string; registration: import('../types/api').BackendEventRegistration }> => {
-    return api.put<{ message: string; registration: import('../types/api').BackendEventRegistration }>(`/events/registrations/${registrationId}/status`, { status });
+  updateRegistrationStatus: async (
+    registrationId: string,
+    status: string
+  ): Promise<{
+    message: string;
+    registration: import("../types/api").BackendEventRegistration;
+  }> => {
+    return api.put<{
+      message: string;
+      registration: import("../types/api").BackendEventRegistration;
+    }>(`/events/registrations/${registrationId}/status`, { status });
   },
 
   // Cancel registration (authenticated - student only)
-  cancelRegistration: async (registrationId: string): Promise<{ message: string }> => {
-    return api.delete<{ message: string }>(`/events/registrations/${registrationId}`);
+  cancelRegistration: async (
+    registrationId: string
+  ): Promise<{ message: string }> => {
+    return api.delete<{ message: string }>(
+      `/events/registrations/${registrationId}`
+    );
   },
 };
 
 // Mentorships API endpoints
 export const mentorshipsAPI = {
   // Get available mentors (public)
-  getMentors: async (params?: { skills?: string; industry?: string; company?: string }): Promise<import('../types/api').BackendAlumni[]> => {
+  getMentors: async (params?: {
+    skills?: string;
+    industry?: string;
+    company?: string;
+  }): Promise<import("../types/api").BackendAlumni[]> => {
     const queryParams = new URLSearchParams();
-    if (params?.skills) queryParams.append('skills', params.skills);
-    if (params?.industry) queryParams.append('industry', params.industry);
-    if (params?.company) queryParams.append('company', params.company);
+    if (params?.skills) queryParams.append("skills", params.skills);
+    if (params?.industry) queryParams.append("industry", params.industry);
+    if (params?.company) queryParams.append("company", params.company);
     const query = queryParams.toString();
-    return api.get<import('../types/api').BackendAlumni[]>(`/mentorships/mentors${query ? `?${query}` : ''}`);
+    return api.get<import("../types/api").BackendAlumni[]>(
+      `/mentorships/mentors${query ? `?${query}` : ""}`
+    );
   },
 
   // Get my mentorships (authenticated - alumni/student)
-  getMy: async (status?: string): Promise<{ total: number; mentorships: import('../types/api').BackendMentorship[] }> => {
-    const query = status ? `?status=${status}` : '';
-    return api.get<{ total: number; mentorships: import('../types/api').BackendMentorship[] }>(`/mentorships/my${query}`);
+  getMy: async (
+    status?: string
+  ): Promise<{
+    total: number;
+    mentorships: import("../types/api").BackendMentorship[];
+  }> => {
+    const query = status ? `?status=${status}` : "";
+    return api.get<{
+      total: number;
+      mentorships: import("../types/api").BackendMentorship[];
+    }>(`/mentorships/my${query}`);
   },
 
   // Get pending requests (authenticated - alumni/student)
-  getPending: async (): Promise<{ total: number; requests: import('../types/api').BackendMentorship[] }> => {
-    return api.get<{ total: number; requests: import('../types/api').BackendMentorship[] }>('/mentorships/my/pending');
+  getPending: async (): Promise<{
+    total: number;
+    requests: import("../types/api").BackendMentorship[];
+  }> => {
+    return api.get<{
+      total: number;
+      requests: import("../types/api").BackendMentorship[];
+    }>("/mentorships/my/pending");
   },
 
   // Get mentorship by ID (authenticated - participants only)
-  getById: async (id: string): Promise<{ message: string; mentorship: import('../types/api').BackendMentorship }> => {
-    return api.get<{ message: string; mentorship: import('../types/api').BackendMentorship }>(`/mentorships/${id}`);
+  getById: async (
+    id: string
+  ): Promise<{
+    message: string;
+    mentorship: import("../types/api").BackendMentorship;
+  }> => {
+    return api.get<{
+      message: string;
+      mentorship: import("../types/api").BackendMentorship;
+    }>(`/mentorships/${id}`);
   },
 
   // Create mentorship request (authenticated - verified student only)
-  createRequest: async (data: import('../types/api').MentorshipRequestCreate): Promise<{ message: string; mentorship: import('../types/api').BackendMentorship }> => {
-    return api.post<{ message: string; mentorship: import('../types/api').BackendMentorship }>('/mentorships/request', data);
+  createRequest: async (
+    data: import("../types/api").MentorshipRequestCreate
+  ): Promise<{
+    message: string;
+    mentorship: import("../types/api").BackendMentorship;
+  }> => {
+    return api.post<{
+      message: string;
+      mentorship: import("../types/api").BackendMentorship;
+    }>("/mentorships/request", data);
   },
 
   // Update mentorship status (authenticated - mentor only)
-  updateStatus: async (id: string, data: import('../types/api').MentorshipStatusUpdate): Promise<{ message: string; mentorship: import('../types/api').BackendMentorship }> => {
-    return api.put<{ message: string; mentorship: import('../types/api').BackendMentorship }>(`/mentorships/${id}/status`, data);
+  updateStatus: async (
+    id: string,
+    data: import("../types/api").MentorshipStatusUpdate
+  ): Promise<{
+    message: string;
+    mentorship: import("../types/api").BackendMentorship;
+  }> => {
+    return api.put<{
+      message: string;
+      mentorship: import("../types/api").BackendMentorship;
+    }>(`/mentorships/${id}/status`, data);
   },
 
   // Update mentorship dates (authenticated - mentor only)
-  updateDates: async (id: string, data: import('../types/api').MentorshipDatesUpdate): Promise<{ message: string; mentorship: import('../types/api').BackendMentorship }> => {
-    return api.put<{ message: string; mentorship: import('../types/api').BackendMentorship }>(`/mentorships/${id}/dates`, data);
+  updateDates: async (
+    id: string,
+    data: import("../types/api").MentorshipDatesUpdate
+  ): Promise<{
+    message: string;
+    mentorship: import("../types/api").BackendMentorship;
+  }> => {
+    return api.put<{
+      message: string;
+      mentorship: import("../types/api").BackendMentorship;
+    }>(`/mentorships/${id}/dates`, data);
   },
 
   // End mentorship (authenticated - mentor/mentee)
-  end: async (id: string): Promise<{ message: string; mentorship: import('../types/api').BackendMentorship }> => {
-    return api.put<{ message: string; mentorship: import('../types/api').BackendMentorship }>(`/mentorships/${id}/end`);
+  end: async (
+    id: string
+  ): Promise<{
+    message: string;
+    mentorship: import("../types/api").BackendMentorship;
+  }> => {
+    return api.put<{
+      message: string;
+      mentorship: import("../types/api").BackendMentorship;
+    }>(`/mentorships/${id}/end`);
   },
 
   // Add feedback (authenticated - mentor/mentee)
-  addFeedback: async (id: string, data: import('../types/api').MentorshipFeedbackRequest): Promise<{ message: string; mentorship: import('../types/api').BackendMentorship }> => {
-    return api.post<{ message: string; mentorship: import('../types/api').BackendMentorship }>(`/mentorships/${id}/feedback`, data);
+  addFeedback: async (
+    id: string,
+    data: import("../types/api").MentorshipFeedbackRequest
+  ): Promise<{
+    message: string;
+    mentorship: import("../types/api").BackendMentorship;
+  }> => {
+    return api.post<{
+      message: string;
+      mentorship: import("../types/api").BackendMentorship;
+    }>(`/mentorships/${id}/feedback`, data);
   },
 };
 
 // Student API endpoints
 export const studentAPI = {
   // Profile Management
-  getProfile: async (): Promise<{ student: import('../types/api').BackendStudent }> => {
-    return api.get<{ student: import('../types/api').BackendStudent }>('/students/profile');
+  getProfile: async (): Promise<{
+    student: import("../types/api").BackendStudent;
+  }> => {
+    return api.get<{ student: import("../types/api").BackendStudent }>(
+      "/students/profile"
+    );
   },
 
-  updateProfile: async (id: string, data: Partial<import('../types/api').BackendStudent>): Promise<{ message: string; student: import('../types/api').BackendStudent }> => {
-    return api.put<{ message: string; student: import('../types/api').BackendStudent }>(`/students/profile/${id}`, data);
+  updateProfile: async (
+    id: string,
+    data: Partial<import("../types/api").BackendStudent>
+  ): Promise<{
+    message: string;
+    student: import("../types/api").BackendStudent;
+  }> => {
+    return api.put<{
+      message: string;
+      student: import("../types/api").BackendStudent;
+    }>(`/students/profile/${id}`, data);
   },
 
   deleteProfile: async (id: string): Promise<{ message: string }> => {
@@ -559,21 +772,33 @@ export const studentAPI = {
 // College API endpoints
 export const collegeAPI = {
   // Profile Management
-  getProfile: async (): Promise<{ college: import('../types/api').BackendCollege }> => {
-    return api.get<{ college: import('../types/api').BackendCollege }>('/colleges/profile');
+  getProfile: async (): Promise<{
+    college: import("../types/api").BackendCollege;
+  }> => {
+    return api.get<{ college: import("../types/api").BackendCollege }>(
+      "/colleges/profile"
+    );
   },
 
-  updateProfile: async (data: Partial<import('../types/api').BackendCollege>): Promise<{ message: string; college: import('../types/api').BackendCollege }> => {
-    return api.put<{ message: string; college: import('../types/api').BackendCollege }>('/colleges/profile', data);
+  updateProfile: async (
+    data: Partial<import("../types/api").BackendCollege>
+  ): Promise<{
+    message: string;
+    college: import("../types/api").BackendCollege;
+  }> => {
+    return api.put<{
+      message: string;
+      college: import("../types/api").BackendCollege;
+    }>("/colleges/profile", data);
   },
 
   deleteProfile: async (): Promise<{ message: string }> => {
-    return api.delete<{ message: string }>('/colleges/profile');
+    return api.delete<{ message: string }>("/colleges/profile");
   },
 
   // Public endpoint to get all college names (for signup dropdowns)
   getAllCollegeNames: async (): Promise<string[]> => {
-    const response = await api.get<{ colleges: string[] }>('/colleges/list');
+    const response = await api.get<{ colleges: string[] }>("/colleges/list");
     return response.colleges;
   },
 
@@ -593,12 +818,12 @@ export const collegeAPI = {
       studentsVerifiedCount: number;
       batchesCount?: number;
       batches?: unknown[];
-    }>('/colleges/stats');
+    }>("/colleges/stats");
   },
 
   // Alumni Management
-  getAllAlumni: async (): Promise<import('../types/api').BackendAlumni[]> => {
-    return api.get<import('../types/api').BackendAlumni[]>('/colleges/alumni');
+  getAllAlumni: async (): Promise<import("../types/api").BackendAlumni[]> => {
+    return api.get<import("../types/api").BackendAlumni[]>("/colleges/alumni");
   },
 
   addAlumni: async (data: {
@@ -612,8 +837,14 @@ export const collegeAPI = {
     company?: string;
     skills?: string[];
     linkedInProfile?: string;
-  }): Promise<{ message: string; alumni: import('../types/api').BackendAlumni }> => {
-    return api.post<{ message: string; alumni: import('../types/api').BackendAlumni }>('/colleges/alumni', data);
+  }): Promise<{
+    message: string;
+    alumni: import("../types/api").BackendAlumni;
+  }> => {
+    return api.post<{
+      message: string;
+      alumni: import("../types/api").BackendAlumni;
+    }>("/colleges/alumni", data);
   },
 
   addAlumniBulk: async (data: {
@@ -629,12 +860,29 @@ export const collegeAPI = {
       skills?: string[];
       linkedInProfile?: string;
     }>;
-  }): Promise<{ message: string; created: number; alumni: import('../types/api').BackendAlumni[] }> => {
-    return api.post<{ message: string; created: number; alumni: import('../types/api').BackendAlumni[] }>('/colleges/alumni/bulk', data);
+  }): Promise<{
+    message: string;
+    created: number;
+    alumni: import("../types/api").BackendAlumni[];
+  }> => {
+    return api.post<{
+      message: string;
+      created: number;
+      alumni: import("../types/api").BackendAlumni[];
+    }>("/colleges/alumni/bulk", data);
   },
 
-  updateAlumni: async (id: string, data: Partial<import('../types/api').BackendAlumni>): Promise<{ message: string; alumni: import('../types/api').BackendAlumni }> => {
-    return api.put<{ message: string; alumni: import('../types/api').BackendAlumni }>(`/colleges/alumni/profile/${id}`, data);
+  updateAlumni: async (
+    id: string,
+    data: Partial<import("../types/api").BackendAlumni>
+  ): Promise<{
+    message: string;
+    alumni: import("../types/api").BackendAlumni;
+  }> => {
+    return api.put<{
+      message: string;
+      alumni: import("../types/api").BackendAlumni;
+    }>(`/colleges/alumni/profile/${id}`, data);
   },
 
   deleteAlumni: async (id: string): Promise<{ message: string }> => {
@@ -642,8 +890,12 @@ export const collegeAPI = {
   },
 
   // Student Management
-  getAllStudents: async (): Promise<import('../types/api').BackendStudent[]> => {
-    return api.get<import('../types/api').BackendStudent[]>('/colleges/students');
+  getAllStudents: async (): Promise<
+    import("../types/api").BackendStudent[]
+  > => {
+    return api.get<import("../types/api").BackendStudent[]>(
+      "/colleges/students"
+    );
   },
 
   addStudent: async (data: {
@@ -655,8 +907,14 @@ export const collegeAPI = {
     department: string;
     degree: string;
     graduationYear: number;
-  }): Promise<{ message: string; student: import('../types/api').BackendStudent }> => {
-    return api.post<{ message: string; student: import('../types/api').BackendStudent }>('/colleges/students', data);
+  }): Promise<{
+    message: string;
+    student: import("../types/api").BackendStudent;
+  }> => {
+    return api.post<{
+      message: string;
+      student: import("../types/api").BackendStudent;
+    }>("/colleges/students", data);
   },
 
   addStudentsBulk: async (data: {
@@ -670,12 +928,29 @@ export const collegeAPI = {
       degree: string;
       graduationYear: number;
     }>;
-  }): Promise<{ message: string; created: number; students: import('../types/api').BackendStudent[] }> => {
-    return api.post<{ message: string; created: number; students: import('../types/api').BackendStudent[] }>('/colleges/students/bulk', data);
+  }): Promise<{
+    message: string;
+    created: number;
+    students: import("../types/api").BackendStudent[];
+  }> => {
+    return api.post<{
+      message: string;
+      created: number;
+      students: import("../types/api").BackendStudent[];
+    }>("/colleges/students/bulk", data);
   },
 
-  updateStudent: async (id: string, data: Partial<import('../types/api').BackendStudent>): Promise<{ message: string; student: import('../types/api').BackendStudent }> => {
-    return api.put<{ message: string; student: import('../types/api').BackendStudent }>(`/colleges/student/profile/${id}`, data);
+  updateStudent: async (
+    id: string,
+    data: Partial<import("../types/api").BackendStudent>
+  ): Promise<{
+    message: string;
+    student: import("../types/api").BackendStudent;
+  }> => {
+    return api.put<{
+      message: string;
+      student: import("../types/api").BackendStudent;
+    }>(`/colleges/student/profile/${id}`, data);
   },
 
   deleteStudent: async (id: string): Promise<{ message: string }> => {
@@ -683,22 +958,38 @@ export const collegeAPI = {
   },
 
   // Verification
-  verifyAlumni: async (alumniId: string): Promise<{ message: string; alumni: import('../types/api').BackendAlumni }> => {
-    return api.put<{ message: string; alumni: import('../types/api').BackendAlumni }>(`/colleges/verify/alumni/${alumniId}`);
+  verifyAlumni: async (
+    alumniId: string
+  ): Promise<{
+    message: string;
+    alumni: import("../types/api").BackendAlumni;
+  }> => {
+    return api.put<{
+      message: string;
+      alumni: import("../types/api").BackendAlumni;
+    }>(`/colleges/verify/alumni/${alumniId}`);
   },
 
-  verifyStudent: async (studentId: string): Promise<{ message: string; student: import('../types/api').BackendStudent }> => {
-    return api.put<{ message: string; student: import('../types/api').BackendStudent }>(`/colleges/verify/student/${studentId}`);
+  verifyStudent: async (
+    studentId: string
+  ): Promise<{
+    message: string;
+    student: import("../types/api").BackendStudent;
+  }> => {
+    return api.put<{
+      message: string;
+      student: import("../types/api").BackendStudent;
+    }>(`/colleges/verify/student/${studentId}`);
   },
 
   getPendingVerifications: async (): Promise<{
-    alumni: import('../types/api').BackendAlumni[];
-    students: import('../types/api').BackendStudent[];
+    alumni: import("../types/api").BackendAlumni[];
+    students: import("../types/api").BackendStudent[];
   }> => {
     const response = await api.get<{
-      pendingAlumni: import('../types/api').BackendAlumni[];
-      pendingStudents: import('../types/api').BackendStudent[];
-    }>('/colleges/pending-verifications');
+      pendingAlumni: import("../types/api").BackendAlumni[];
+      pendingStudents: import("../types/api").BackendStudent[];
+    }>("/colleges/pending-verifications");
 
     return {
       alumni: response.pendingAlumni ?? [],
@@ -710,28 +1001,49 @@ export const collegeAPI = {
 // Campaigns API endpoints
 export const campaignsAPI = {
   // Get all campaigns (public)
-  getAll: async (): Promise<import('../types/api').BackendCampaign[]> => {
-    return api.get<import('../types/api').BackendCampaign[]>('/campaigns');
+  getAll: async (): Promise<import("../types/api").BackendCampaign[]> => {
+    return api.get<import("../types/api").BackendCampaign[]>("/campaigns");
   },
 
   // Get active campaigns (public)
-  getActive: async (): Promise<import('../types/api').BackendCampaign[]> => {
-    return api.get<import('../types/api').BackendCampaign[]>('/campaigns/active');
+  getActive: async (): Promise<import("../types/api").BackendCampaign[]> => {
+    return api.get<import("../types/api").BackendCampaign[]>(
+      "/campaigns/active"
+    );
   },
 
   // Get campaign by ID (public)
-  getById: async (id: string): Promise<import('../types/api').BackendCampaign> => {
-    return api.get<import('../types/api').BackendCampaign>(`/campaigns/${id}`);
+  getById: async (
+    id: string
+  ): Promise<import("../types/api").BackendCampaign> => {
+    return api.get<import("../types/api").BackendCampaign>(`/campaigns/${id}`);
   },
 
   // Create campaign (authenticated - college only)
-  create: async (data: import('../types/api').CampaignCreateRequest): Promise<{ message: string; campaign: import('../types/api').BackendCampaign }> => {
-    return api.post<{ message: string; campaign: import('../types/api').BackendCampaign }>('/campaigns', data);
+  create: async (
+    data: import("../types/api").CampaignCreateRequest
+  ): Promise<{
+    message: string;
+    campaign: import("../types/api").BackendCampaign;
+  }> => {
+    return api.post<{
+      message: string;
+      campaign: import("../types/api").BackendCampaign;
+    }>("/campaigns", data);
   },
 
   // Update campaign (authenticated - college owner only)
-  update: async (id: string, data: Partial<import('../types/api').CampaignCreateRequest>): Promise<{ message: string; campaign: import('../types/api').BackendCampaign }> => {
-    return api.put<{ message: string; campaign: import('../types/api').BackendCampaign }>(`/campaigns/${id}`, data);
+  update: async (
+    id: string,
+    data: Partial<import("../types/api").CampaignCreateRequest>
+  ): Promise<{
+    message: string;
+    campaign: import("../types/api").BackendCampaign;
+  }> => {
+    return api.put<{
+      message: string;
+      campaign: import("../types/api").BackendCampaign;
+    }>(`/campaigns/${id}`, data);
   },
 
   // Delete campaign (authenticated - college owner only)
@@ -740,32 +1052,76 @@ export const campaignsAPI = {
   },
 
   // Get my campaigns (authenticated - college only)
-  getMyCampaigns: async (): Promise<import('../types/api').BackendCampaign[]> => {
-    return api.get<import('../types/api').BackendCampaign[]>('/campaigns/my/campaigns');
+  getMyCampaigns: async (): Promise<
+    import("../types/api").BackendCampaign[]
+  > => {
+    return api.get<import("../types/api").BackendCampaign[]>(
+      "/campaigns/my/campaigns"
+    );
+  },
+
+  // Get campaign statistics (authenticated - college owner only)
+  getCampaignStats: async (
+    campaignId: string
+  ): Promise<{
+    totalRaised: number;
+    totalVolunteeringHours: number;
+    countFinancialContributors: number;
+    countVolunteeringContributors: number;
+  }> => {
+    return api.get<{
+      totalRaised: number;
+      totalVolunteeringHours: number;
+      countFinancialContributors: number;
+      countVolunteeringContributors: number;
+    }>(`/campaigns/${campaignId}/stats`);
+  },
+
+  // Get campaign contributions (authenticated - college owner only)
+  getCampaignContributions: async (
+    campaignId: string
+  ): Promise<import("../types/api").BackendContribution[]> => {
+    return api.get<import("../types/api").BackendContribution[]>(
+      `/campaigns/${campaignId}/contributions`
+    );
   },
 
   // Contribute financially (authenticated - verified alumni/student)
-  contributeFinancial: async (
-    data: { campaignId: string; amount: number; paymentMethod: string }
-  ): Promise<{ message: string; contribution: import('../types/api').BackendContribution }> => {
-    return api.post<{ message: string; contribution: import('../types/api').BackendContribution }>(
-      '/campaigns/contribute/financial',
-      data,
-    );
+  contributeFinancial: async (data: {
+    campaignId: string;
+    amount: number;
+    paymentMethod: string;
+  }): Promise<{
+    message: string;
+    contribution: import("../types/api").BackendContribution;
+  }> => {
+    return api.post<{
+      message: string;
+      contribution: import("../types/api").BackendContribution;
+    }>("/campaigns/contribute/financial", data);
   },
 
   // Contribute volunteer hours (authenticated - verified alumni/student)
-  contributeVolunteer: async (
-    data: { campaignId: string; hours: number; date: string }
-  ): Promise<{ message: string; contribution: import('../types/api').BackendContribution }> => {
-    return api.post<{ message: string; contribution: import('../types/api').BackendContribution }>(
-      '/campaigns/contribute/volunteer',
-      data,
-    );
+  contributeVolunteer: async (data: {
+    campaignId: string;
+    hours: number;
+    date: string;
+  }): Promise<{
+    message: string;
+    contribution: import("../types/api").BackendContribution;
+  }> => {
+    return api.post<{
+      message: string;
+      contribution: import("../types/api").BackendContribution;
+    }>("/campaigns/contribute/volunteer", data);
   },
 
   // Get my contributions (authenticated)
-  getMyContributions: async (): Promise<import('../types/api').BackendContribution[]> => {
-    return api.get<import('../types/api').BackendContribution[]>('/campaigns/my/contributions');
+  getMyContributions: async (): Promise<
+    import("../types/api").BackendContribution[]
+  > => {
+    return api.get<import("../types/api").BackendContribution[]>(
+      "/campaigns/my/contributions"
+    );
   },
 };

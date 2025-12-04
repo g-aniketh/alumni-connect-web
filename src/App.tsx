@@ -17,14 +17,31 @@ import AlumniEventCreationPage from './pages/alumni/AlumniEventCreationPage';
 import CollegeAlumniPage from './pages/college/CollegeAlumniPage';
 import CollegeStudentsPage from './pages/college/CollegeStudentsPage';
 import CollegeJobCreationPage from './pages/college/CollegeJobCreationPage';
+import CollegeJobManagementPage from './pages/college/CollegeJobManagementPage';
+import CollegeJobEditPage from './pages/college/CollegeJobEditPage';
 import CollegeEventCreationPage from './pages/college/CollegeEventCreationPage';
+import CollegeEventManagementPage from './pages/college/CollegeEventManagementPage';
+import CollegeEventEditPage from './pages/college/CollegeEventEditPage';
 import CollegeCampaignCreationPage from './pages/college/CollegeCampaignCreationPage';
 import CollegeNewslettersPage from './pages/college/CollegeNewslettersPage';
 import CollegeNewsletterCreationPage from './pages/college/CollegeNewsletterCreationPage';
+import AlumniJobApplicationsPage from './pages/alumni/AlumniJobApplicationsPage';
+import CollegeJobApplicationsPage from './pages/college/CollegeJobApplicationsPage';
 import StudentApplicationsPage from './pages/student/StudentApplicationsPage';
 import StudentMentorshipsPage from './pages/student/StudentMentorshipsPage';
+import StudentEventRegistrationsPage from './pages/student/StudentEventRegistrationsPage';
+import AlumniEventRegistrationsPage from './pages/alumni/AlumniEventRegistrationsPage';
+import CollegeEventRegistrationsPage from './pages/college/CollegeEventRegistrationsPage';
 import AlumniMentorshipsPage from './pages/alumni/AlumniMentorshipsPage';
+import AlumniJobManagementPage from './pages/alumni/AlumniJobManagementPage';
+import AlumniJobEditPage from './pages/alumni/AlumniJobEditPage';
+import AlumniEventManagementPage from './pages/alumni/AlumniEventManagementPage';
+import AlumniEventEditPage from './pages/alumni/AlumniEventEditPage';
 import ProfilePage from './pages/ProfilePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import CollegeBulkImportPage from './pages/college/CollegeBulkImportPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserRole, type Alumni, type Student } from './types';
@@ -77,6 +94,9 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/signup" element={<AuthPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/verify-email" element={<EmailVerificationPage />} />
 
             {/* Pending verification */}
             <Route path="/pending-verification" element={<PendingVerificationPage />} />
@@ -168,6 +188,14 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route
+              path="/student/events"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Student]}>
+                  <StudentEventRegistrationsPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Alumni Routes */}
             <Route 
@@ -195,10 +223,42 @@ function App() {
               } 
             />
             <Route 
+              path="/alumni/jobs" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniJobManagementPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alumni/jobs/edit/:id" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniJobEditPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/alumni/events/create" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniEventCreationPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alumni/events" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniEventManagementPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alumni/events/edit/:id" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniEventEditPage />
                 </ProtectedRoute>
               } 
             />
@@ -209,6 +269,22 @@ function App() {
                   <AlumniMentorshipsPage />
                 </ProtectedRoute>
               } 
+            />
+            <Route
+              path="/alumni/events/registrations"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniEventRegistrationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alumni/jobs/applications"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniJobApplicationsPage />
+                </ProtectedRoute>
+              }
             />
 
             {/* College Routes */}
@@ -237,10 +313,42 @@ function App() {
               } 
             />
             <Route 
+              path="/college/jobs" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeJobManagementPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/college/jobs/edit/:id" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeJobEditPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/college/events/create" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeEventCreationPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/college/events" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeEventManagementPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/college/events/edit/:id" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeEventEditPage />
                 </ProtectedRoute>
               } 
             />
@@ -267,6 +375,30 @@ function App() {
                   <CollegeNewsletterCreationPage />
                 </ProtectedRoute>
               } 
+            />
+            <Route
+              path="/college/events/registrations"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeEventRegistrationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/college/jobs/applications"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeJobApplicationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/college/bulk-import"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeBulkImportPage />
+                </ProtectedRoute>
+              }
             />
 
             {/* Legacy route for alumni directory (public) */}

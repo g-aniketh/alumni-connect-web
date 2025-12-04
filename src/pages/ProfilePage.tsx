@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { UserRole, Department, type Alumni, type Student, type College } from '../types';
-import { User, Mail, Building2, GraduationCap, MapPin, Briefcase, Save, Edit2, X } from 'lucide-react';
+import { User, Mail, Building2, GraduationCap, MapPin, Briefcase, Save, Edit2, X, Linkedin, Github, Globe, FileText } from 'lucide-react';
 import { alumniAPI, studentAPI, collegeAPI } from '../lib/api';
+import { ChangePasswordForm } from '../components/auth/ChangePasswordForm';
 
 const ProfilePage = () => {
   const { user, refreshUser } = useAuth();
@@ -40,6 +41,12 @@ const ProfilePage = () => {
         department: alumni.department || '',
         skills: alumni.skills?.join(', ') || '',
         mentorshipAvailable: alumni.mentorshipAvailable || false,
+        linkedInProfile: alumni.linkedInProfile || '',
+        githubProfile: alumni.githubProfile || '',
+        personalWebsite: alumni.personalWebsite || '',
+        resumeUrl: alumni.resumeUrl || '',
+        bio: alumni.bio || '',
+        location: alumni.location || '',
       };
     } else if (user.role === UserRole.Student) {
       const student = user as Student;
@@ -50,6 +57,11 @@ const ProfilePage = () => {
         degree: student.degree || '',
         department: student.department || '',
         skills: student.skills?.join(', ') || '',
+        linkedInProfile: student.linkedInProfile || '',
+        githubProfile: student.githubProfile || '',
+        personalWebsite: student.personalWebsite || '',
+        resumeUrl: student.resumeUrl || '',
+        bio: student.bio || '',
       };
     } else {
       const college = user as College;
@@ -97,6 +109,12 @@ const ProfilePage = () => {
           department: formData.department,
           skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(s => s) : [],
           mentorshipAvailable: formData.mentorshipAvailable,
+          linkedInProfile: formData.linkedInProfile?.trim() || undefined,
+          githubProfile: formData.githubProfile?.trim() || undefined,
+          personalWebsite: formData.personalWebsite?.trim() || undefined,
+          resumeUrl: formData.resumeUrl?.trim() || undefined,
+          bio: formData.bio?.trim() || undefined,
+          location: formData.location?.trim() || undefined,
         };
         await alumniAPI.updateProfile(user.id, updateData);
       } else if (user.role === UserRole.Student) {
@@ -109,6 +127,11 @@ const ProfilePage = () => {
           degree: formData.degree,
           department: formData.department,
           skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(s => s) : [],
+          linkedInProfile: formData.linkedInProfile?.trim() || undefined,
+          githubProfile: formData.githubProfile?.trim() || undefined,
+          personalWebsite: formData.personalWebsite?.trim() || undefined,
+          resumeUrl: formData.resumeUrl?.trim() || undefined,
+          bio: formData.bio?.trim() || undefined,
         };
         await studentAPI.updateProfile(user.id, updateData);
       } else if (user.role === UserRole.College) {
@@ -361,6 +384,141 @@ const ProfilePage = () => {
                     </div>
                   )}
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  {isEditing ? (
+                    <Textarea
+                      id="bio"
+                      value={formData.bio}
+                      onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                      placeholder="Tell us about yourself..."
+                      rows={3}
+                    />
+                  ) : (
+                    <div className="text-sm">{(user as Alumni).bio || 'Not specified'}</div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  {isEditing ? (
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="e.g., San Francisco, CA"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      {(user as Alumni).location || 'Not specified'}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Online Presence</CardTitle>
+                <CardDescription>Your professional links and portfolio</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="linkedIn">LinkedIn Profile</Label>
+                    {isEditing ? (
+                      <Input
+                        id="linkedIn"
+                        type="url"
+                        value={formData.linkedInProfile}
+                        onChange={(e) => setFormData(prev => ({ ...prev, linkedInProfile: e.target.value }))}
+                        placeholder="https://linkedin.com/in/yourprofile"
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Linkedin className="h-4 w-4 text-muted-foreground" />
+                        {(user as Alumni).linkedInProfile ? (
+                          <a href={(user as Alumni).linkedInProfile} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            View Profile
+                          </a>
+                        ) : (
+                          <span className="text-muted-foreground">Not specified</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="github">GitHub Profile</Label>
+                    {isEditing ? (
+                      <Input
+                        id="github"
+                        type="url"
+                        value={formData.githubProfile}
+                        onChange={(e) => setFormData(prev => ({ ...prev, githubProfile: e.target.value }))}
+                        placeholder="https://github.com/yourusername"
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Github className="h-4 w-4 text-muted-foreground" />
+                        {(user as Alumni).githubProfile ? (
+                          <a href={(user as Alumni).githubProfile} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            View Profile
+                          </a>
+                        ) : (
+                          <span className="text-muted-foreground">Not specified</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="website">Personal Website</Label>
+                    {isEditing ? (
+                      <Input
+                        id="website"
+                        type="url"
+                        value={formData.personalWebsite}
+                        onChange={(e) => setFormData(prev => ({ ...prev, personalWebsite: e.target.value }))}
+                        placeholder="https://yourwebsite.com"
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Globe className="h-4 w-4 text-muted-foreground" />
+                        {(user as Alumni).personalWebsite ? (
+                          <a href={(user as Alumni).personalWebsite} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            Visit Website
+                          </a>
+                        ) : (
+                          <span className="text-muted-foreground">Not specified</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="resume">Resume URL</Label>
+                    {isEditing ? (
+                      <Input
+                        id="resume"
+                        type="url"
+                        value={formData.resumeUrl}
+                        onChange={(e) => setFormData(prev => ({ ...prev, resumeUrl: e.target.value }))}
+                        placeholder="https://example.com/resume.pdf"
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm">
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        {(user as Alumni).resumeUrl ? (
+                          <a href={(user as Alumni).resumeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            View Resume
+                          </a>
+                        ) : (
+                          <span className="text-muted-foreground">Not specified</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </>
@@ -454,6 +612,125 @@ const ProfilePage = () => {
                   </div>
                 )}
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Bio</Label>
+                {isEditing ? (
+                  <Textarea
+                    id="bio"
+                    value={formData.bio}
+                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                    placeholder="Tell us about yourself..."
+                    rows={3}
+                  />
+                ) : (
+                  <div className="text-sm">{(user as Student).bio || 'Not specified'}</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Online Presence</CardTitle>
+              <CardDescription>Your professional links and portfolio</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="linkedIn">LinkedIn Profile</Label>
+                  {isEditing ? (
+                    <Input
+                      id="linkedIn"
+                      type="url"
+                      value={formData.linkedInProfile}
+                      onChange={(e) => setFormData(prev => ({ ...prev, linkedInProfile: e.target.value }))}
+                      placeholder="https://linkedin.com/in/yourprofile"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Linkedin className="h-4 w-4 text-muted-foreground" />
+                      {(user as Student).linkedInProfile ? (
+                        <a href={(user as Student).linkedInProfile} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          View Profile
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">Not specified</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="github">GitHub Profile</Label>
+                  {isEditing ? (
+                    <Input
+                      id="github"
+                      type="url"
+                      value={formData.githubProfile}
+                      onChange={(e) => setFormData(prev => ({ ...prev, githubProfile: e.target.value }))}
+                      placeholder="https://github.com/yourusername"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Github className="h-4 w-4 text-muted-foreground" />
+                      {(user as Student).githubProfile ? (
+                        <a href={(user as Student).githubProfile} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          View Profile
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">Not specified</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="website">Personal Website</Label>
+                  {isEditing ? (
+                    <Input
+                      id="website"
+                      type="url"
+                      value={formData.personalWebsite}
+                      onChange={(e) => setFormData(prev => ({ ...prev, personalWebsite: e.target.value }))}
+                      placeholder="https://yourwebsite.com"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      {(user as Student).personalWebsite ? (
+                        <a href={(user as Student).personalWebsite} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          Visit Website
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">Not specified</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="resume">Resume URL</Label>
+                  {isEditing ? (
+                    <Input
+                      id="resume"
+                      type="url"
+                      value={formData.resumeUrl}
+                      onChange={(e) => setFormData(prev => ({ ...prev, resumeUrl: e.target.value }))}
+                      placeholder="https://example.com/resume.pdf"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm">
+                      <FileText className="h-4 w-4 text-muted-foreground" />
+                      {(user as Student).resumeUrl ? (
+                        <a href={(user as Student).resumeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          View Resume
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">Not specified</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -516,21 +793,9 @@ const ProfilePage = () => {
         )}
 
         {/* Account Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Actions</CardTitle>
-            <CardDescription>Manage your account settings</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full sm:w-auto">
-              Change Password
-            </Button>
-            <Separator />
-            <Button variant="destructive" className="w-full sm:w-auto">
-              Delete Account
-            </Button>
-          </CardContent>
-        </Card>
+        <ChangePasswordForm onSuccess={() => {
+          // Optionally refresh user data or show success message
+        }} />
       </div>
     </div>
   );

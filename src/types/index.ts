@@ -57,6 +57,12 @@ export interface Alumni {
   skills: string[];
   avatar?: string;
   mentorshipAvailable?: boolean; // true = Open for Mentorship, false/undefined = Busy
+  linkedInProfile?: string;
+  githubProfile?: string;
+  personalWebsite?: string;
+  resumeUrl?: string;
+  bio?: string;
+  location?: string;
 }
 
 export interface Student {
@@ -71,6 +77,11 @@ export interface Student {
   degree: string;
   skills: string[];
   avatar?: string;
+  linkedInProfile?: string;
+  githubProfile?: string;
+  personalWebsite?: string;
+  resumeUrl?: string;
+  bio?: string;
 }
 
 export interface College {
