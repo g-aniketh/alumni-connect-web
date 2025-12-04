@@ -34,7 +34,10 @@ const StudentMentorshipsPage = () => {
       const response = await mentorshipsAPI.getMy();
       // Filter mentorships where current user is the mentee
       const allMentorships = response.mentorships.filter((m: BackendMentorship) => {
-        const menteeId = typeof m.menteeId === 'object' ? (m.menteeId as any)._id : m.menteeId;
+        const menteeId =
+          typeof m.menteeId === 'object'
+            ? (m.menteeId as BackendStudent)._id ?? ''
+            : m.menteeId;
         return menteeId === user?.id;
       });
       setMyMentorships(allMentorships);

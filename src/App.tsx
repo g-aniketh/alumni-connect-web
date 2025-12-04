@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
@@ -25,27 +25,80 @@ import StudentApplicationsPage from './pages/student/StudentApplicationsPage';
 import StudentMentorshipsPage from './pages/student/StudentMentorshipsPage';
 import AlumniMentorshipsPage from './pages/alumni/AlumniMentorshipsPage';
 import ProfilePage from './pages/ProfilePage';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { UserRole } from './types';
+import { UserRole, type Alumni, type Student } from './types';
+import PendingVerificationPage from './pages/PendingVerificationPage';
+import { tokenService } from './lib/api';
 import './App.css';
 
+// Global app shell to enforce pending-verification redirect and navbar visibility
+const AppShell = () => {
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  // Check verification both from in-memory user and from cookie so that
+  // direct URL access / hard refreshes are still locked down.
+  const isUnverifiedByUser =
+    isAuthenticated &&
+    user &&
+    (user.role === UserRole.Alumni || user.role === UserRole.Student) &&
+    !(user as Alumni | Student).isVerified;
+
+  const cookieVerified = tokenService.getVerificationStatus();
+  const isUnverifiedByCookie = cookieVerified === false;
+
+  const isUnverifiedUser = isUnverifiedByUser || isUnverifiedByCookie;
+
+  // If unverified alumni/student tries to access anything except pending-verification,
+  // force redirect to the pending verification page.
+  if (isUnverifiedUser && location.pathname !== '/pending-verification') {
+    return <Navigate to="/pending-verification" replace />;
+  }
+
+  // Hide navbar entirely for unverified users on the pending verification flow
+  const showNavbar = !isUnverifiedUser;
+
+  return (
+    <div className="min-h-screen bg-background font-sans antialiased">
+      {showNavbar && <Navbar />}
+      <Outlet />
+    </div>
+  );
+};
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-background font-sans antialiased">
-          <Navbar />
-          <Routes>
+        <Routes>
+          <Route element={<AppShell />}>
+            {/* Auth */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/signup" element={<AuthPage />} />
-            
-            {/* Public Pages */}
-            <Route path="/jobs" element={<JobsPage />} />
-            <Route path="/events" element={<EventsCampaignsPage />} />
-            
+
+            {/* Pending verification */}
+            <Route path="/pending-verification" element={<PendingVerificationPage />} />
+
+            {/* Jobs & Events - require authentication (no public access) */}
+            <Route
+              path="/jobs"
+              element={
+                <ProtectedRoute>
+                  <JobsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <ProtectedRoute>
+                  <EventsCampaignsPage />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Role-based Dashboards */}
             <Route 
               path="/dashboard" 
@@ -79,7 +132,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
+
             {/* College Dashboard (legacy - redirects to role dashboard) */}
             <Route 
               path="/college/dashboard" 
@@ -89,7 +142,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
+
             {/* Student Routes */}
             <Route 
               path="/student/alumni" 
@@ -115,7 +168,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
+
             {/* Alumni Routes */}
             <Route 
               path="/alumni/network" 
@@ -157,7 +210,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
+
             {/* College Routes */}
             <Route 
               path="/college/alumni" 
@@ -215,10 +268,10 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
+
             {/* Legacy route for alumni directory (public) */}
             <Route path="/alumni" element={<AlumniDirectoryPage />} />
-            
+
             {/* Profile Page */}
             <Route 
               path="/profile" 
@@ -228,8 +281,8 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-          </Routes>
-        </div>
+          </Route>
+        </Routes>
       </Router>
     </AuthProvider>
   );

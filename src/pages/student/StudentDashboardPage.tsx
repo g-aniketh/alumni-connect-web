@@ -17,6 +17,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { jobsAPI, mentorshipsAPI, eventsAPI } from '../../lib/api';
 import type { BackendJobApplication, BackendMentorship, BackendEvent, BackendJob } from '../../types/api';
+import { UserRole, type Student } from '../../types';
 
 const StudentDashboardPage = () => {
   const { user } = useAuth();
@@ -43,7 +44,10 @@ const StudentDashboardPage = () => {
       // Load my mentorships
       const mentorshipsResponse = await mentorshipsAPI.getMy();
       const allMentorships = mentorshipsResponse.mentorships.filter((m: BackendMentorship) => {
-        const menteeId = typeof m.menteeId === 'object' ? (m.menteeId as any)._id : m.menteeId;
+        const menteeId =
+          typeof m.menteeId === 'object'
+            ? (m.menteeId as BackendStudent)._id ?? ''
+            : m.menteeId;
         return menteeId === user?.id;
       });
       setMyMentorships(allMentorships);
@@ -55,8 +59,10 @@ const StudentDashboardPage = () => {
 
       // Load featured jobs (filtered by college context)
       const jobsResponse = await jobsAPI.getFiltered({ available: true });
-      const jobs = Array.isArray(jobsResponse) ? jobsResponse : (jobsResponse as any).jobs || [];
-      setFeaturedJobs(jobs.slice(0, 3));
+      const jobsArray = Array.isArray(jobsResponse)
+        ? jobsResponse
+        : (jobsResponse as { jobs?: typeof featuredJobs }).jobs ?? [];
+      setFeaturedJobs(jobsArray.slice(0, 3));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
     } finally {
@@ -114,6 +120,22 @@ const StudentDashboardPage = () => {
       <div className="container py-8">
         <div className="flex items-center justify-center py-12">
           <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Block unverified students at the page level as a safety net
+  if (user && user.role === UserRole.Student && !(user as Student).isVerified) {
+    return (
+      <div className="container py-8 min-h-screen flex items-center justify-center">
+        <div className="max-w-md w-full text-center space-y-4">
+          <h1 className="text-2xl font-semibold">Account Pending Verification</h1>
+          <p className="text-muted-foreground">
+            Your student account has been created but is not yet verified by your college.
+            Once your college administrator verifies your account, you&apos;ll be able to
+            access your dashboard and all student features.
+          </p>
         </div>
       </div>
     );
@@ -337,28 +359,28 @@ const StudentDashboardPage = () => {
               
               return (
                 <Card key={job._id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{job.title}</CardTitle>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg">{job.title}</CardTitle>
                         <CardDescription className="mt-1">{posterName}</CardDescription>
-                      </div>
+                    </div>
                       {job.referral && (
-                        <Badge variant="secondary" className="text-xs">Referral</Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                      <Badge variant="secondary" className="text-xs">Referral</Badge>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                       <span>{job.jobType}</span>
-                      <span>•</span>
-                      <span>{job.location}</span>
-                    </div>
-                    <Button asChild variant="outline" className="w-full">
+                    <span>•</span>
+                    <span>{job.location}</span>
+                  </div>
+                  <Button asChild variant="outline" className="w-full">
                       <Link to={`/jobs/${job._id}`}>View Details</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                  </Button>
+                </CardContent>
+              </Card>
               );
             })}
           </div>

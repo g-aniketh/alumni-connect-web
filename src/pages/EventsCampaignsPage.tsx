@@ -95,7 +95,7 @@ const EventsCampaignsPage = () => {
       date: backendEvent.eventDate,
       location: backendEvent.location,
       organizer: organizerName,
-      status: 'Upcoming' as any, // Assuming upcoming since we filtered for it
+      status: 'Upcoming',
       image: backendEvent.eventBannerUrl || '',
     };
   };
@@ -119,11 +119,11 @@ const EventsCampaignsPage = () => {
     // Determine status: Upcoming (not started), Ongoing (active), or Completed (ended)
     let status: 'Ongoing' | 'Completed' | 'Upcoming';
     if (now < startDate) {
-      status = 'Upcoming' as any;
+      status = 'Upcoming';
     } else if (now >= startDate && now <= endDate) {
-      status = 'Ongoing' as any;
+      status = 'Ongoing';
     } else {
-      status = 'Completed' as any;
+      status = 'Completed';
     }
     
     const organizerName = typeof backendCampaign.createdBy === 'object' 

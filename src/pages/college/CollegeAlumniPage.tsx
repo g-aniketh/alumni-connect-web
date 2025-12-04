@@ -27,6 +27,7 @@ const CollegeAlumniPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [alumni, setAlumni] = useState<BackendAlumni[]>([]);
+  const [pendingAlumni, setPendingAlumni] = useState<BackendAlumni[]>([]);
   const [search, setSearch] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [yearFilter, setYearFilter] = useState<string>('all');
@@ -39,8 +40,14 @@ const CollegeAlumniPage = () => {
     try {
       setLoading(true);
       setError('');
+
+      // Fetch verified alumni linked to this college
       const alumniData = await collegeAPI.getAllAlumni();
       setAlumni(alumniData);
+
+      // Fetch pending verifications (alumni + students)
+      const pending = await collegeAPI.getPendingVerifications();
+      setPendingAlumni(pending.alumni);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load alumni');
     } finally {
@@ -51,7 +58,7 @@ const CollegeAlumniPage = () => {
   const handleVerify = async (alumniId: string) => {
     try {
       await collegeAPI.verifyAlumni(alumniId);
-      await loadAlumni(); // Reload to update verification status
+      await loadAlumni(); // Reload to move from pending to verified list
       alert('Alumni verified successfully!');
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to verify alumni');
@@ -83,11 +90,11 @@ const CollegeAlumniPage = () => {
   }
 
   return (
-    <div className="container py-8 min-h-screen">
-      <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Alumni Directory</h1>
+    <div className="container py-8 min-h-screen space-y-8">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">Alumni Management</h1>
         <p className="text-muted-foreground">
-          View and manage all registered alumni from your institution.
+          Review pending alumni and manage the verified alumni directory for your institution.
         </p>
       </div>
 
@@ -97,7 +104,72 @@ const CollegeAlumniPage = () => {
         </div>
       )}
 
+      {/* Pending Verifications */}
       <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Pending Alumni Verifications</h2>
+        <p className="text-sm text-muted-foreground">
+          These alumni have signed up but are not yet verified. Verify them to grant full access.
+        </p>
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Alumni</TableHead>
+                <TableHead>Batch</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>Current Company</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pendingAlumni.map((alumni) => (
+                <TableRow key={alumni._id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={alumni.profilePictureUrl} alt={alumni.name} />
+                        <AvatarFallback>{alumni.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-medium">{alumni.name}</div>
+                        <div className="text-sm text-muted-foreground">{alumni.email}</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>{alumni.graduationYear}</TableCell>
+                  <TableCell>{alumni.department}</TableCell>
+                  <TableCell>{alumni.currentEmployer || 'N/A'}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleVerify(alumni._id)}
+                    >
+                      <CheckCircle2 className="h-4 w-4 mr-1" />
+                      Verify
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {pendingAlumni.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-20 text-center text-sm text-muted-foreground">
+                    No pending alumni verifications.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Verified Alumni Directory */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Alumni Directory</h2>
+        <p className="text-sm text-muted-foreground">
+          Search and manage all alumni associated with your college.
+        </p>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />

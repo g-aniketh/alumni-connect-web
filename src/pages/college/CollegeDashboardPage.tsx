@@ -63,8 +63,10 @@ const CollegeDashboardPage = () => {
       try {
         // Get jobs count
         const jobsResponse = await jobsAPI.getFiltered({ by: 'college' });
-        const jobs = Array.isArray(jobsResponse) ? jobsResponse : (jobsResponse as any).jobs || [];
-        mappedStats.totalJobs = jobs.length;
+        const jobsArray = Array.isArray(jobsResponse)
+          ? jobsResponse
+          : (jobsResponse as { jobs?: unknown[] }).jobs ?? [];
+        mappedStats.totalJobs = jobsArray.length;
       } catch (err) {
         console.error('Failed to load jobs:', err);
       }
@@ -72,13 +74,17 @@ const CollegeDashboardPage = () => {
       try {
         // Get events count
         const eventsResponse = await eventsAPI.getFiltered({ by: 'college' });
-        const events = Array.isArray(eventsResponse) ? eventsResponse : (eventsResponse as any).events || [];
-        mappedStats.totalEvents = events.length;
-        
+        const eventsArray = Array.isArray(eventsResponse)
+          ? eventsResponse
+          : (eventsResponse as { events?: unknown[] }).events ?? [];
+        mappedStats.totalEvents = eventsArray.length;
+
         // Get upcoming events count
         const upcomingResponse = await eventsAPI.getFiltered({ upcoming: true });
-        const upcomingEvents = Array.isArray(upcomingResponse) ? upcomingResponse : (upcomingResponse as any).events || [];
-        setUpcomingEvents(upcomingEvents.length);
+        const upcomingArray = Array.isArray(upcomingResponse)
+          ? upcomingResponse
+          : (upcomingResponse as { events?: unknown[] }).events ?? [];
+        setUpcomingEvents(upcomingArray.length);
       } catch (err) {
         console.error('Failed to load events:', err);
       }
@@ -87,10 +93,10 @@ const CollegeDashboardPage = () => {
         // Get campaigns and calculate totalRaised
         const campaigns = await campaignsAPI.getMyCampaigns();
         mappedStats.totalCampaigns = campaigns.length;
-        
+
         // Calculate total raised from all campaigns
-        mappedStats.totalRaised = campaigns.reduce((sum: number, campaign: any) => {
-          return sum + (campaign.totalRaised || 0);
+        mappedStats.totalRaised = campaigns.reduce((sum: number, campaign) => {
+          return sum + (campaign.totalRaised ?? 0);
         }, 0);
       } catch (err) {
         console.error('Failed to load campaigns:', err);

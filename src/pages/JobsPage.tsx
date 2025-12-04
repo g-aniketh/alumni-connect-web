@@ -33,7 +33,9 @@ const JobsPage = () => {
       // Otherwise, get all public jobs
       if (user) {
         const response = await jobsAPI.getFiltered({ available: true });
-        const jobsList = Array.isArray(response) ? response : (response as any).jobs || [];
+        const jobsList = Array.isArray(response)
+          ? response
+          : (response as { jobs?: typeof jobs }).jobs ?? [];
         setJobs(jobsList);
       } else {
         const allJobs = await jobsAPI.getAll();

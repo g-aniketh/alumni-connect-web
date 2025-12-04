@@ -42,7 +42,10 @@ const AlumniDashboardPage = () => {
       // Load mentorships
       const mentorshipsResponse = await mentorshipsAPI.getMy();
       const allMentorships = mentorshipsResponse.mentorships.filter((m: BackendMentorship) => {
-        const mentorId = typeof m.mentorId === 'object' ? (m.mentorId as any)._id : m.mentorId;
+        const mentorId =
+          typeof m.mentorId === 'object'
+            ? (m.mentorId as BackendAlumni)._id ?? ''
+            : m.mentorId;
         return mentorId === user?.id;
       });
       

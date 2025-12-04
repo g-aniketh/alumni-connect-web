@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { UserRole } from '../../types';
+import { UserRole, type Alumni, type Student } from '../../types';
+import { tokenService } from '../../lib/api';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -25,6 +26,18 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Block access for unverified alumni and students - send them to dedicated page
+  if (user && (user.role === UserRole.Alumni || user.role === UserRole.Student)) {
+    const typedUser = user as Alumni | Student;
+    const cookieVerified = tokenService.getVerificationStatus();
+    const isUnverified =
+      !typedUser.isVerified || cookieVerified === false;
+
+    if (isUnverified) {
+      return <Navigate to="/pending-verification" replace />;
+    }
   }
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {

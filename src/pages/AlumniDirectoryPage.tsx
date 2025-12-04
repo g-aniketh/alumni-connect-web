@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AlumniProfileCard } from '../components/alumni/AlumniProfileCard';
 import { AlumniSearchFilters } from '../components/alumni/AlumniSearchFilters';
-import { type Alumni } from '../types';
+import { type Alumni, UserRole } from '../types';
 import {
   Dialog,
   DialogContent,
@@ -69,12 +69,13 @@ const AlumniDirectoryPage = () => {
       name: backendAlumni.name,
       email: backendAlumni.email,
       avatar: backendAlumni.profilePictureUrl || '',
-      role: 'Alumni' as any,
+      role: UserRole.Alumni,
+      isVerified: backendAlumni.isVerified,
       designation: backendAlumni.currentDesignation || '',
       currentEmployer: backendAlumni.currentEmployer || '',
       graduationYear: backendAlumni.graduationYear,
       degree: backendAlumni.degree,
-      department: backendAlumni.department,
+      department: backendAlumni.department as unknown as import('../types').Department,
       skills: backendAlumni.skills || [],
       mentorshipAvailable: true, // Available mentors are shown
     };

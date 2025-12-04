@@ -48,6 +48,7 @@ export interface Alumni {
   name: string;
   email: string;
   role: typeof UserRole.Alumni;
+  isVerified: boolean;
   department: Department;
   graduationYear: number;
   degree: string;
@@ -63,6 +64,7 @@ export interface Student {
   name: string;
   email: string;
   role: typeof UserRole.Student;
+  isVerified: boolean;
   department: Department;
   rollNumber: string;
   enrollmentYear: number;

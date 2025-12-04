@@ -27,6 +27,7 @@ const CollegeStudentsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [students, setStudents] = useState<BackendStudent[]>([]);
+  const [pendingStudents, setPendingStudents] = useState<BackendStudent[]>([]);
   const [search, setSearch] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
 
@@ -40,6 +41,9 @@ const CollegeStudentsPage = () => {
       setError('');
       const studentsData = await collegeAPI.getAllStudents();
       setStudents(studentsData);
+
+      const pending = await collegeAPI.getPendingVerifications();
+      setPendingStudents(pending.students);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load students');
     } finally {
@@ -50,7 +54,7 @@ const CollegeStudentsPage = () => {
   const handleVerify = async (studentId: string) => {
     try {
       await collegeAPI.verifyStudent(studentId);
-      await loadStudents(); // Reload to update verification status
+      await loadStudents(); // Reload to move from pending to verified list
       alert('Student verified successfully!');
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to verify student');
@@ -77,11 +81,11 @@ const CollegeStudentsPage = () => {
   }
 
   return (
-    <div className="container py-8 min-h-screen">
-      <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Student Directory</h1>
+    <div className="container py-8 min-h-screen space-y-8">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">Student Management</h1>
         <p className="text-muted-foreground">
-          View and manage all registered students in your institution.
+          Review pending student accounts and manage the verified student directory.
         </p>
       </div>
 
@@ -91,7 +95,72 @@ const CollegeStudentsPage = () => {
         </div>
       )}
 
+      {/* Pending Verifications */}
       <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Pending Student Verifications</h2>
+        <p className="text-sm text-muted-foreground">
+          These students have signed up but are not yet verified. Verify them to grant full access.
+        </p>
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Student</TableHead>
+                <TableHead>Roll Number</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>Enrollment Year</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pendingStudents.map((student) => (
+                <TableRow key={student._id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={student.profilePictureUrl} alt={student.name} />
+                        <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-medium">{student.name}</div>
+                        <div className="text-sm text-muted-foreground">{student.email}</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>{student.rollNumber}</TableCell>
+                  <TableCell>{student.department}</TableCell>
+                  <TableCell>{student.enrollmentYear}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleVerify(student._id as string)}
+                    >
+                      <CheckCircle2 className="h-4 w-4 mr-1" />
+                      Verify
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {pendingStudents.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-20 text-center text-sm text-muted-foreground">
+                    No pending student verifications.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Verified Student Directory */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Student Directory</h2>
+        <p className="text-sm text-muted-foreground">
+          Search and manage all verified students associated with your college.
+        </p>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />

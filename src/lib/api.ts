@@ -25,6 +25,7 @@ type User = Alumni | Student | College;
 
 // Token management
 export const tokenService = {
+  // Access/refresh tokens in localStorage
   getAccessToken: (): string | null => {
     return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
   },
@@ -39,6 +40,10 @@ export const tokenService = {
     localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER);
+    // Clear verification cookie as well
+    if (typeof document !== "undefined") {
+      document.cookie = "ac_isVerified=; Path=/; Max-Age=0; SameSite=Lax";
+    }
   },
   setUser: (user: User): void => {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
@@ -46,6 +51,25 @@ export const tokenService = {
   getUser: (): User | null => {
     const userStr = localStorage.getItem(STORAGE_KEYS.USER);
     return userStr ? JSON.parse(userStr) : null;
+  },
+  // Lightweight verification status cookie for quick checks across tabs
+  setVerificationStatus: (isVerified: boolean): void => {
+    if (typeof document === "undefined") return;
+    const value = isVerified ? "true" : "false";
+    document.cookie = `ac_isVerified=${value}; Path=/; SameSite=Lax`;
+  },
+  getVerificationStatus: (): boolean | null => {
+    if (typeof document === "undefined") return null;
+    const cookies = document.cookie.split(";");
+    for (const rawCookie of cookies) {
+      const cookie = rawCookie.trim();
+      if (cookie.startsWith("ac_isVerified=")) {
+        const value = cookie.split("=")[1];
+        if (value === "true") return true;
+        if (value === "false") return false;
+      }
+    }
+    return null;
   },
 };
 
@@ -560,7 +584,7 @@ export const collegeAPI = {
     studentCount: number;
     studentsVerifiedCount: number;
     batchesCount?: number;
-    batches?: any[];
+    batches?: unknown[];
   }> => {
     return api.get<{
       alumniCount: number;
@@ -568,7 +592,7 @@ export const collegeAPI = {
       studentCount: number;
       studentsVerifiedCount: number;
       batchesCount?: number;
-      batches?: any[];
+      batches?: unknown[];
     }>('/colleges/stats');
   },
 
@@ -671,10 +695,15 @@ export const collegeAPI = {
     alumni: import('../types/api').BackendAlumni[];
     students: import('../types/api').BackendStudent[];
   }> => {
-    return api.get<{
-      alumni: import('../types/api').BackendAlumni[];
-      students: import('../types/api').BackendStudent[];
+    const response = await api.get<{
+      pendingAlumni: import('../types/api').BackendAlumni[];
+      pendingStudents: import('../types/api').BackendStudent[];
     }>('/colleges/pending-verifications');
+
+    return {
+      alumni: response.pendingAlumni ?? [],
+      students: response.pendingStudents ?? [],
+    };
   },
 };
 
@@ -716,17 +745,27 @@ export const campaignsAPI = {
   },
 
   // Contribute financially (authenticated - verified alumni/student)
-  contributeFinancial: async (data: { campaignId: string; amount: number; paymentMethod: string }): Promise<{ message: string; contribution: any }> => {
-    return api.post<{ message: string; contribution: any }>('/campaigns/contribute/financial', data);
+  contributeFinancial: async (
+    data: { campaignId: string; amount: number; paymentMethod: string }
+  ): Promise<{ message: string; contribution: import('../types/api').BackendContribution }> => {
+    return api.post<{ message: string; contribution: import('../types/api').BackendContribution }>(
+      '/campaigns/contribute/financial',
+      data,
+    );
   },
 
   // Contribute volunteer hours (authenticated - verified alumni/student)
-  contributeVolunteer: async (data: { campaignId: string; hours: number; date: string }): Promise<{ message: string; contribution: any }> => {
-    return api.post<{ message: string; contribution: any }>('/campaigns/contribute/volunteer', data);
+  contributeVolunteer: async (
+    data: { campaignId: string; hours: number; date: string }
+  ): Promise<{ message: string; contribution: import('../types/api').BackendContribution }> => {
+    return api.post<{ message: string; contribution: import('../types/api').BackendContribution }>(
+      '/campaigns/contribute/volunteer',
+      data,
+    );
   },
 
   // Get my contributions (authenticated)
-  getMyContributions: async (): Promise<any[]> => {
-    return api.get<any[]>('/campaigns/my/contributions');
+  getMyContributions: async (): Promise<import('../types/api').BackendContribution[]> => {
+    return api.get<import('../types/api').BackendContribution[]>('/campaigns/my/contributions');
   },
 };

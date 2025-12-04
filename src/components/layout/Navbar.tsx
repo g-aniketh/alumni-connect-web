@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, GraduationCap } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../ui/button";
@@ -20,6 +20,7 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const publicLinks = [
     { name: "Home", path: "/" },
@@ -128,7 +129,14 @@ const Navbar = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await logout();
+                    navigate("/login");
+                  }}
+                >
+                  Log out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -202,9 +210,10 @@ const Navbar = () => {
                         </div>
                       </div>
                       <Button
-                        onClick={() => {
-                          logout();
+                        onClick={async () => {
+                          await logout();
                           setIsOpen(false);
+                          navigate("/login");
                         }}
                       >
                         Log out

@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 import { UserRole, type Alumni, type Student, type College } from "../types";
 import { authAPI, tokenService } from "../lib/api";
 import type {
@@ -28,7 +34,7 @@ const transformUser = (
   role: UserRole
 ): User => {
   const baseUser = {
-    id: backendUser._id || (backendUser as { id?: string }).id || '',
+    id: backendUser._id || (backendUser as { id?: string }).id || "",
     name: backendUser.name,
     email: backendUser.email,
     role,
@@ -39,11 +45,12 @@ const transformUser = (
     return {
       ...baseUser,
       role: UserRole.Alumni,
+      isVerified: alumni.isVerified,
       department: alumni.department as import("../types").Department,
       graduationYear: alumni.graduationYear,
       degree: alumni.degree,
-      currentEmployer: alumni.currentEmployer || '',
-      designation: alumni.currentDesignation || '',
+      currentEmployer: alumni.currentEmployer || "",
+      designation: alumni.currentDesignation || "",
       skills: alumni.skills || [],
       avatar: alumni.profilePictureUrl,
       mentorshipAvailable: true, // Default, can be updated
@@ -53,6 +60,7 @@ const transformUser = (
     return {
       ...baseUser,
       role: UserRole.Student,
+      isVerified: student.isVerified,
       department: student.department as import("../types").Department,
       rollNumber: student.rollNumber,
       enrollmentYear: student.enrollmentYear,
@@ -66,7 +74,7 @@ const transformUser = (
       ...baseUser,
       role: UserRole.College,
       establishedYear: college.establishedYear,
-      website: college.website || '',
+      website: college.website || "",
       location: college.address,
       stats: {
         alumniCount: college.alumniCount || 0,
@@ -93,7 +101,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           try {
             const response = await authAPI.getCurrentUser();
             if (response.user) {
-              const transformedUser = transformUser(response.user, response.role as UserRole);
+              const transformedUser = transformUser(
+                response.user,
+                response.role as UserRole
+              );
               setUser(transformedUser);
               tokenService.setUser(transformedUser);
             }
@@ -114,20 +125,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loadUser();
   }, []);
 
-  const login = async (role: UserRole, email: string, password: string): Promise<void> => {
+  const login = async (
+    role: UserRole,
+    email: string,
+    password: string
+  ): Promise<void> => {
     try {
       let response: import("../types/api").LoginResponse;
 
-      switch (role) {
-        case UserRole.Alumni:
+    switch (role) {
+      case UserRole.Alumni:
           response = await authAPI.loginAlumni(email, password);
-          break;
-        case UserRole.Student:
+        break;
+      case UserRole.Student:
           response = await authAPI.loginStudent(email, password);
-          break;
-        case UserRole.College:
+        break;
+      case UserRole.College:
           response = await authAPI.loginCollege(email, password);
-          break;
+        break;
         default:
           throw new Error("Invalid role");
       }
@@ -143,9 +158,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const transformedUser = transformUser(userResponse.user, role);
         setUser(transformedUser);
         tokenService.setUser(transformedUser);
+
+        // Persist verification status in cookie for alumni/students
+        if (role === UserRole.Alumni || role === UserRole.Student) {
+          const typedUser = transformedUser as Alumni | Student;
+          tokenService.setVerificationStatus(typedUser.isVerified);
+        } else {
+          tokenService.setVerificationStatus(true);
+        }
       } else {
         // Fallback to basic user info from login response
-        const userData = response.alumni || response.student || response.college;
+        const userData =
+          response.alumni || response.student || response.college;
         if (userData) {
           // Create a minimal user object for transformation
           const minimalUser = {
@@ -153,13 +177,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             name: userData.name,
             email: userData.email,
           };
-          const transformedUser = transformUser(minimalUser as BackendAlumni | BackendStudent | BackendCollege, role);
+          const transformedUser = transformUser(
+            minimalUser as BackendAlumni | BackendStudent | BackendCollege,
+            role
+          );
           setUser(transformedUser);
           tokenService.setUser(transformedUser);
+
+          if (role === UserRole.Alumni || role === UserRole.Student) {
+            const typedUser = transformedUser as Alumni | Student;
+            tokenService.setVerificationStatus(typedUser.isVerified);
+          } else {
+            tokenService.setVerificationStatus(true);
+          }
         }
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Login failed";
+      const errorMessage =
+        error instanceof Error ? error.message : "Login failed";
       console.error("Login error:", error);
       throw new Error(errorMessage);
     }
@@ -169,19 +204,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       switch (role) {
         case UserRole.Alumni:
-          await authAPI.signupAlumni(data as import("../types/api").AlumniSignupRequest);
+          await authAPI.signupAlumni(
+            data as import("../types/api").AlumniSignupRequest
+          );
           break;
         case UserRole.Student:
-          await authAPI.signupStudent(data as import("../types/api").StudentSignupRequest);
+          await authAPI.signupStudent(
+            data as import("../types/api").StudentSignupRequest
+          );
           break;
         case UserRole.College:
-          await authAPI.signupCollege(data as import("../types/api").CollegeSignupRequest);
+          await authAPI.signupCollege(
+            data as import("../types/api").CollegeSignupRequest
+          );
           break;
         default:
           throw new Error("Invalid role");
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Signup failed";
+      const errorMessage =
+        error instanceof Error ? error.message : "Signup failed";
       console.error("Signup error:", error);
       throw new Error(errorMessage);
     }
@@ -202,15 +244,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await authAPI.getCurrentUser();
       if (response.user) {
-        const transformedUser = transformUser(response.user, response.role as UserRole);
+        const transformedUser = transformUser(
+          response.user,
+          response.role as UserRole
+        );
         setUser(transformedUser);
         tokenService.setUser(transformedUser);
+
+        const role = response.role as UserRole;
+        if (role === UserRole.Alumni || role === UserRole.Student) {
+          const typedUser = transformedUser as Alumni | Student;
+          tokenService.setVerificationStatus(typedUser.isVerified);
+        } else {
+          tokenService.setVerificationStatus(true);
+        }
       }
     } catch (error: unknown) {
       console.error("Error refreshing user:", error);
       // If refresh fails, logout user
       tokenService.clearTokens();
-      setUser(null);
+    setUser(null);
     }
   };
 

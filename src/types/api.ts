@@ -307,3 +307,17 @@ export interface CampaignCreateRequest {
   endDate: string;
   targetAmount?: number;
 }
+
+export interface BackendContribution {
+  _id: string;
+  campaignId: string | BackendCampaign;
+  contributorType: 'alumni' | 'student';
+  contributorId: string;
+  contributionType: string;
+  amount?: number;
+  hours?: number;
+  date: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
