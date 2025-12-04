@@ -13,10 +13,11 @@ import { Separator } from '../ui/separator';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
-import { type Job, JobApplicationStatus } from '../../types';
+import { type Job } from '../../types';
 import { Briefcase, MapPin, DollarSign, Calendar, Building2, Upload, FileText } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types';
+import { jobsAPI } from '../../lib/api';
 
 interface JobDetailsProps {
   job: Job | null;
@@ -26,9 +27,11 @@ interface JobDetailsProps {
 
 export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [applicationData, setApplicationData] = useState({
-    coverLetter: '',
+    message: '',
     resumeFile: null as File | null,
     resumeFileName: '',
   });
@@ -54,22 +57,32 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
     }
   };
 
-  const handleSubmitApplication = () => {
-    if (user && user.role === UserRole.Student) {
-      const submissionData = {
-        id: `app-${Date.now()}`,
-        jobId: job.id,
-        studentId: user.id,
-        appliedOn: new Date().toISOString().split('T')[0],
-        status: JobApplicationStatus.Applied,
-        coverLetter: applicationData.coverLetter,
-        resumeFileName: applicationData.resumeFileName,
+  const handleSubmitApplication = async () => {
+    if (!user || user.role !== UserRole.Student || !job) return;
+
+    try {
+      setLoading(true);
+      setError('');
+
+      // TODO: Upload resume file to storage service and get URL
+      // For now, we'll just send the message
+      const applicationDataToSend = {
+        message: applicationData.message || undefined,
+        resumeUrl: applicationData.resumeFileName ? `resume-${Date.now()}.pdf` : undefined, // Placeholder
       };
-      console.log('Job Application Submitted:', submissionData);
-      // In real app, would upload resume and submit to API
+
+      await jobsAPI.apply(job.id, applicationDataToSend);
+      
       setShowApplicationForm(false);
-      setApplicationData({ coverLetter: '', resumeFile: null, resumeFileName: '' });
+      setApplicationData({ message: '', resumeFile: null, resumeFileName: '' });
       onOpenChange(false);
+      
+      // Show success message (could use a toast notification)
+      alert('Application submitted successfully!');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit application');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -196,17 +209,23 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                 </p>
               </div>
 
+              {error && (
+                <div className="p-3 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300 text-sm">
+                  {error}
+                </div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="coverLetter">Cover Letter</Label>
+                <Label htmlFor="message">Message / Cover Letter</Label>
                 <Textarea
-                  id="coverLetter"
+                  id="message"
                   placeholder="Tell us why you're interested in this position and what makes you a great fit..."
-                  value={applicationData.coverLetter}
-                  onChange={(e) => setApplicationData(prev => ({ ...prev, coverLetter: e.target.value }))}
+                  value={applicationData.message}
+                  onChange={(e) => setApplicationData(prev => ({ ...prev, message: e.target.value }))}
                   rows={6}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Optional: Add a personalized cover letter to stand out
+                  Optional: Add a personalized message to stand out
                 </p>
               </div>
 
@@ -231,9 +250,9 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
               </Button>
               <Button
                 onClick={handleSubmitApplication}
-                disabled={!applicationData.resumeFile}
+                disabled={loading || !applicationData.resumeFile}
               >
-                Submit Application
+                {loading ? 'Submitting...' : 'Submit Application'}
               </Button>
             </DialogFooter>
           </>

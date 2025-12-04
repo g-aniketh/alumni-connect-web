@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -14,28 +15,64 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { mockJobs, mockJobApplications, mockMentorshipRequests, mockEvents } from '../../data/mockData';
-import { JobApplicationStatus, MentorshipStatus, EventStatus } from '../../types';
+import { jobsAPI, mentorshipsAPI, eventsAPI } from '../../lib/api';
+import type { BackendJobApplication, BackendMentorship, BackendEvent, BackendJob } from '../../types/api';
 
 const StudentDashboardPage = () => {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+  const [applications, setApplications] = useState<BackendJobApplication[]>([]);
+  const [myMentorships, setMyMentorships] = useState<BackendMentorship[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<BackendEvent[]>([]);
+  const [featuredJobs, setFeaturedJobs] = useState<BackendJob[]>([]);
 
-  // Mock data calculations
-  const totalApplications = mockJobApplications.length;
-  const activeApplications = mockJobApplications.filter(
-    app => app.status === JobApplicationStatus.Applied || app.status === JobApplicationStatus.UnderReview
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      // Load my applications
+      const myApplications = await jobsAPI.getMyApplications();
+      setApplications(myApplications);
+
+      // Load my mentorships
+      const mentorshipsResponse = await mentorshipsAPI.getMy();
+      const allMentorships = mentorshipsResponse.mentorships.filter((m: BackendMentorship) => {
+        const menteeId = typeof m.menteeId === 'object' ? (m.menteeId as any)._id : m.menteeId;
+        return menteeId === user?.id;
+      });
+      setMyMentorships(allMentorships);
+
+      // Load upcoming events (filtered by college context)
+      const eventsResponse = await eventsAPI.getFiltered({ upcoming: true });
+      const events = Array.isArray(eventsResponse) ? eventsResponse : eventsResponse.events;
+      setUpcomingEvents(events.slice(0, 3));
+
+      // Load featured jobs (filtered by college context)
+      const jobsResponse = await jobsAPI.getFiltered({ available: true });
+      const jobs = Array.isArray(jobsResponse) ? jobsResponse : (jobsResponse as any).jobs || [];
+      setFeaturedJobs(jobs.slice(0, 3));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const totalApplications = applications.length;
+  const activeApplications = applications.filter(
+    app => app.status === 'applied' || app.status === 'under_review' || app.status === 'interviewing'
   ).length;
 
-  const activeMentorships = mockMentorshipRequests.filter(
-    req => req.status === MentorshipStatus.Accepted
-  ).length;
-  const pendingMentorships = mockMentorshipRequests.filter(
-    req => req.status === MentorshipStatus.Pending
-  ).length;
+  const activeMentorships = myMentorships.filter(m => m.status.toLowerCase() === 'active').length;
+  const pendingMentorships = myMentorships.filter(m => m.status.toLowerCase() === 'pending').length;
 
-  const upcomingEvents = mockEvents.filter(e => e.status === EventStatus.Upcoming).slice(0, 3);
-  const recentApplications = mockJobApplications.slice(0, 3);
-  const recentJobs = mockJobs.slice(0, 3);
+  const recentApplications = applications.slice(0, 3);
 
   const stats = [
     {
@@ -72,6 +109,16 @@ const StudentDashboardPage = () => {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="container py-8">
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container py-8 space-y-8">
       {/* Header */}
@@ -81,6 +128,12 @@ const StudentDashboardPage = () => {
           Welcome back, {user?.name}! Track your applications, mentorships, and opportunities.
         </p>
       </div>
+
+      {error && (
+        <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -166,38 +219,42 @@ const StudentDashboardPage = () => {
             {recentApplications.length > 0 ? (
               <div className="space-y-4">
                 {recentApplications.map((app) => {
-                  const job = mockJobs.find(j => j.id === app.jobId);
+                  const job = typeof app.jobId === 'object' ? app.jobId as BackendJob : null;
                   if (!job) return null;
 
-                  const getStatusBadge = (status: JobApplicationStatus) => {
-                    switch (status) {
-                      case JobApplicationStatus.Applied:
+                  const getStatusBadge = (status: string) => {
+                    switch (status.toLowerCase()) {
+                      case 'applied':
                         return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200"><Clock className="h-3 w-3 mr-1" />Applied</Badge>;
-                      case JobApplicationStatus.UnderReview:
+                      case 'under_review':
                         return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200"><Clock className="h-3 w-3 mr-1" />Under Review</Badge>;
-                      case JobApplicationStatus.Offered:
+                      case 'offered':
                         return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle2 className="h-3 w-3 mr-1" />Offered</Badge>;
-                      case JobApplicationStatus.Rejected:
+                      case 'rejected':
                         return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Rejected</Badge>;
                       default:
                         return <Badge variant="outline">{status}</Badge>;
                     }
                   };
 
+                  const posterName = typeof job.postedBy.posterId === 'object' 
+                    ? job.postedBy.posterId.name 
+                    : 'Company';
+
                   return (
-                    <div key={app.id} className="flex items-start justify-between p-3 border rounded-lg hover:bg-accent transition-colors">
+                    <div key={app._id} className="flex items-start justify-between p-3 border rounded-lg hover:bg-accent transition-colors">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold">{job.title}</h4>
-                          {job.referralAvailable && (
+                          {job.referral && (
                             <Badge variant="secondary" className="text-xs">Referral</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{job.company}</p>
+                        <p className="text-sm text-muted-foreground mb-2">{posterName}</p>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(app.status)}
                           <span className="text-xs text-muted-foreground">
-                            Applied {new Date(app.appliedOn).toLocaleDateString()}
+                            Applied {new Date(app.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
@@ -235,11 +292,11 @@ const StudentDashboardPage = () => {
             {upcomingEvents.length > 0 ? (
               <div className="space-y-4">
                 {upcomingEvents.map((event) => (
-                  <div key={event.id} className="p-3 border rounded-lg hover:bg-accent transition-colors">
+                  <div key={event._id} className="p-3 border rounded-lg hover:bg-accent transition-colors">
                     <h4 className="font-semibold text-sm mb-1 line-clamp-1">{event.title}</h4>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Calendar className="h-3 w-3" />
-                      <span>{new Date(event.date).toLocaleDateString()}</span>
+                      <span>{new Date(event.eventDate).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                       <span>{event.location}</span>
@@ -273,38 +330,37 @@ const StudentDashboardPage = () => {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            {recentJobs.map((job) => (
-              <Card key={job.id} className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{job.title}</CardTitle>
-                      <CardDescription className="mt-1">{job.company}</CardDescription>
+            {featuredJobs.map((job) => {
+              const posterName = typeof job.postedBy.posterId === 'object' 
+                ? job.postedBy.posterId.name 
+                : 'Company';
+              
+              return (
+                <Card key={job._id} className="hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{job.title}</CardTitle>
+                        <CardDescription className="mt-1">{posterName}</CardDescription>
+                      </div>
+                      {job.referral && (
+                        <Badge variant="secondary" className="text-xs">Referral</Badge>
+                      )}
                     </div>
-                    {job.referralAvailable && (
-                      <Badge variant="secondary" className="text-xs">Referral</Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    <span>{job.type}</span>
-                    <span>•</span>
-                    <span>{job.location}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {job.department.slice(0, 2).map((dept) => (
-                      <Badge key={dept} variant="outline" className="text-xs">
-                        {dept}
-                      </Badge>
-                    ))}
-                  </div>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link to="/jobs">View Details</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                      <span>{job.jobType}</span>
+                      <span>•</span>
+                      <span>{job.location}</span>
+                    </div>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link to={`/jobs/${job._id}`}>View Details</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </CardContent>
       </Card>

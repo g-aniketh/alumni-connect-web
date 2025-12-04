@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -9,42 +9,84 @@ import {
 } from '../../components/ui/table';
 import { Badge } from '../../components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { mockJobs, mockJobApplications } from '../../data/mockData';
-import { JobApplicationStatus } from '../../types';
-import { Calendar, Building2, MapPin } from 'lucide-react';
+import { Button } from '../../components/ui/button';
+import { jobsAPI } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
+import type { BackendJobApplication, BackendJob } from '../../types/api';
+import { Calendar, Building2, MapPin, X } from 'lucide-react';
 
 const StudentApplicationsPage = () => {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+  const [applications, setApplications] = useState<BackendJobApplication[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  // Get applications for current student (in real app, would filter by studentId from auth)
-  const studentApplications = mockJobApplications.filter((app) => {
+  useEffect(() => {
+    loadApplications();
+  }, []);
+
+  const loadApplications = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const myApplications = await jobsAPI.getMyApplications();
+      setApplications(myApplications);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load applications');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleWithdraw = async (applicationId: string) => {
+    if (!confirm('Are you sure you want to withdraw this application?')) return;
+    
+    try {
+      await jobsAPI.withdrawApplication(applicationId);
+      await loadApplications();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to withdraw application');
+    }
+  };
+
+  // Filter applications by status
+  const studentApplications = applications.filter((app) => {
     if (statusFilter === 'all') return true;
-    return app.status === statusFilter;
+    return app.status.toLowerCase() === statusFilter.toLowerCase().replace(' ', '_');
   });
 
 
-  const getStatusColor = (status: JobApplicationStatus) => {
-    switch (status) {
-      case JobApplicationStatus.Applied:
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'applied':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100';
-      case JobApplicationStatus.UnderReview:
+      case 'under_review':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100';
-      case JobApplicationStatus.Interviewing:
+      case 'interviewing':
         return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100';
-      case JobApplicationStatus.Rejected:
+      case 'rejected':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
-      case JobApplicationStatus.Offered:
+      case 'offered':
         return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
       default:
         return '';
     }
   };
 
-  // Get job details for each application
-  const applicationsWithJobs = studentApplications.map((app) => {
-    const job = mockJobs.find((j) => j.id === app.jobId);
-    return { ...app, job };
-  });
+  const formatStatus = (status: string) => {
+    return status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
+
+  if (loading) {
+    return (
+      <div className="container py-8 min-h-screen">
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Loading applications...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-8 min-h-screen">
@@ -55,7 +97,13 @@ const StudentApplicationsPage = () => {
         </p>
       </div>
 
-      {applicationsWithJobs.length === 0 ? (
+      {error && (
+        <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      )}
+
+      {studentApplications.length === 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>No Applications Yet</CardTitle>
@@ -79,14 +127,14 @@ const StudentApplicationsPage = () => {
             >
               All
             </Badge>
-            {Object.values(JobApplicationStatus).map((status) => (
+            {['applied', 'under_review', 'interviewing', 'offered', 'rejected'].map((status) => (
               <Badge
                 key={status}
                 variant={statusFilter === status ? 'default' : 'outline'}
                 className="cursor-pointer"
                 onClick={() => setStatusFilter(status)}
               >
-                {status}
+                {formatStatus(status)}
               </Badge>
             ))}
           </div>
@@ -100,49 +148,70 @@ const StudentApplicationsPage = () => {
                   <TableHead>Location</TableHead>
                   <TableHead>Applied Date</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {applicationsWithJobs.map((app) => (
-                  <TableRow key={app.id}>
-                    <TableCell>
-                      <div className="font-medium">
-                        {app.job?.title || 'Job Not Found'}
-                      </div>
-                      {app.job?.referralAvailable && (
-                        <Badge variant="outline" className="mt-1 text-xs">
-                          Alumni Referral
+                {studentApplications.map((app) => {
+                  const job = typeof app.jobId === 'object' ? app.jobId as BackendJob : null;
+                  const posterName = job && typeof job.postedBy.posterId === 'object' 
+                    ? job.postedBy.posterId.name 
+                    : job ? 'Company' : 'N/A';
+                  
+                  return (
+                    <TableRow key={app._id}>
+                      <TableCell>
+                        <div className="font-medium">
+                          {job?.title || 'Job Not Found'}
+                        </div>
+                        {job?.referral && (
+                          <Badge variant="outline" className="mt-1 text-xs">
+                            Alumni Referral
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-muted-foreground" />
+                          {posterName}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                          {job?.location || 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          {new Date(app.createdAt).toLocaleDateString()}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={getStatusColor(app.status)}
+                        >
+                          {formatStatus(app.status)}
                         </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-muted-foreground" />
-                        {app.job?.company || 'N/A'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        {app.job?.location || 'N/A'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        {new Date(app.appliedOn).toLocaleDateString()}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={getStatusColor(app.status)}
-                      >
-                        {app.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell>
+                        {(app.status === 'applied' || app.status === 'under_review') && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleWithdraw(app._id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Withdraw
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

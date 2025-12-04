@@ -515,3 +515,19 @@ export const mentorshipsAPI = {
     return api.post<{ message: string; mentorship: import('../types/api').BackendMentorship }>(`/mentorships/${id}/feedback`, data);
   },
 };
+
+// Student API endpoints
+export const studentAPI = {
+  // Profile Management
+  getProfile: async (): Promise<{ student: import('../types/api').BackendStudent }> => {
+    return api.get<{ student: import('../types/api').BackendStudent }>('/students/profile');
+  },
+
+  updateProfile: async (id: string, data: Partial<import('../types/api').BackendStudent>): Promise<{ message: string; student: import('../types/api').BackendStudent }> => {
+    return api.put<{ message: string; student: import('../types/api').BackendStudent }>(`/students/profile/${id}`, data);
+  },
+
+  deleteProfile: async (id: string): Promise<{ message: string }> => {
+    return api.delete<{ message: string }>(`/students/profile/${id}`);
+  },
+};
