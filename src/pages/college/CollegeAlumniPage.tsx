@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -17,28 +17,70 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { mockAlumni } from '../../data/mockData';
+import { Button } from '../../components/ui/button';
+import { collegeAPI } from '../../lib/api';
+import type { BackendAlumni } from '../../types/api';
 import { Department } from '../../types';
-import { Search } from 'lucide-react';
+import { Search, CheckCircle2 } from 'lucide-react';
 
 const CollegeAlumniPage = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+  const [alumni, setAlumni] = useState<BackendAlumni[]>([]);
   const [search, setSearch] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [yearFilter, setYearFilter] = useState<string>('all');
 
-  const years = Array.from(new Set<number>(mockAlumni.map(a => a.graduationYear))).sort(
+  useEffect(() => {
+    loadAlumni();
+  }, []);
+
+  const loadAlumni = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const alumniData = await collegeAPI.getAllAlumni();
+      setAlumni(alumniData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load alumni');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = async (alumniId: string) => {
+    try {
+      await collegeAPI.verifyAlumni(alumniId);
+      await loadAlumni(); // Reload to update verification status
+      alert('Alumni verified successfully!');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to verify alumni');
+    }
+  };
+
+  const years = Array.from(new Set<number>(alumni.map(a => a.graduationYear))).sort(
     (a, b) => b - a,
   );
 
-  const filteredAlumni = mockAlumni.filter((alumni) => {
+  const filteredAlumni = alumni.filter((alumni) => {
     const matchesSearch = search === '' || 
       alumni.name.toLowerCase().includes(search.toLowerCase()) ||
-      alumni.currentEmployer.toLowerCase().includes(search.toLowerCase());
+      (alumni.currentEmployer && alumni.currentEmployer.toLowerCase().includes(search.toLowerCase()));
     const matchesDept = departmentFilter === 'all' || alumni.department === departmentFilter;
     const matchesYear = yearFilter === 'all' || alumni.graduationYear.toString() === yearFilter;
 
     return matchesSearch && matchesDept && matchesYear;
   });
+
+  if (loading) {
+    return (
+      <div className="container py-8 min-h-screen">
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Loading alumni...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-8 min-h-screen">
@@ -48,6 +90,12 @@ const CollegeAlumniPage = () => {
           View and manage all registered alumni from your institution.
         </p>
       </div>
+
+      {error && (
+        <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      )}
 
       <div className="space-y-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -101,15 +149,16 @@ const CollegeAlumniPage = () => {
                 <TableHead>Current Company</TableHead>
                 <TableHead>Designation</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredAlumni.map((alumni) => (
-                <TableRow key={alumni.id}>
+                <TableRow key={alumni._id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={alumni.avatar} alt={alumni.name} />
+                        <AvatarImage src={alumni.profilePictureUrl} alt={alumni.name} />
                         <AvatarFallback>{alumni.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
@@ -120,12 +169,30 @@ const CollegeAlumniPage = () => {
                   </TableCell>
                   <TableCell>{alumni.graduationYear}</TableCell>
                   <TableCell>{alumni.department}</TableCell>
-                  <TableCell>{alumni.currentEmployer}</TableCell>
-                  <TableCell>{alumni.designation}</TableCell>
+                  <TableCell>{alumni.currentEmployer || 'N/A'}</TableCell>
+                  <TableCell>{alumni.currentDesignation || 'N/A'}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100">
-                      Verified
+                    <Badge 
+                      variant="secondary" 
+                      className={alumni.isVerified 
+                        ? "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100"
+                        : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-100"
+                      }
+                    >
+                      {alumni.isVerified ? 'Verified' : 'Pending'}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {!alumni.isVerified && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleVerify(alumni._id)}
+                      >
+                        <CheckCircle2 className="h-4 w-4 mr-1" />
+                        Verify
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

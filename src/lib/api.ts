@@ -531,3 +531,147 @@ export const studentAPI = {
     return api.delete<{ message: string }>(`/students/profile/${id}`);
   },
 };
+
+// College API endpoints
+export const collegeAPI = {
+  // Profile Management
+  getProfile: async (): Promise<{ college: import('../types/api').BackendCollege }> => {
+    return api.get<{ college: import('../types/api').BackendCollege }>('/colleges/profile');
+  },
+
+  updateProfile: async (data: Partial<import('../types/api').BackendCollege>): Promise<{ message: string; college: import('../types/api').BackendCollege }> => {
+    return api.put<{ message: string; college: import('../types/api').BackendCollege }>('/colleges/profile', data);
+  },
+
+  deleteProfile: async (): Promise<{ message: string }> => {
+    return api.delete<{ message: string }>('/colleges/profile');
+  },
+
+  // Stats
+  getStats: async (): Promise<{
+    totalAlumni: number;
+    verifiedAlumni: number;
+    totalStudents: number;
+    verifiedStudents: number;
+    totalJobs: number;
+    totalEvents: number;
+    totalCampaigns: number;
+    totalRaised: number;
+  }> => {
+    return api.get<{
+      totalAlumni: number;
+      verifiedAlumni: number;
+      totalStudents: number;
+      verifiedStudents: number;
+      totalJobs: number;
+      totalEvents: number;
+      totalCampaigns: number;
+      totalRaised: number;
+    }>('/colleges/stats');
+  },
+
+  // Alumni Management
+  getAllAlumni: async (): Promise<import('../types/api').BackendAlumni[]> => {
+    return api.get<import('../types/api').BackendAlumni[]>('/colleges/alumni');
+  },
+
+  addAlumni: async (data: {
+    name: string;
+    email: string;
+    password?: string;
+    graduationYear: number;
+    degree: string;
+    department: string;
+    currentJobTitle?: string;
+    company?: string;
+    skills?: string[];
+    linkedInProfile?: string;
+  }): Promise<{ message: string; alumni: import('../types/api').BackendAlumni }> => {
+    return api.post<{ message: string; alumni: import('../types/api').BackendAlumni }>('/colleges/alumni', data);
+  },
+
+  addAlumniBulk: async (data: {
+    alumni: Array<{
+      name: string;
+      email: string;
+      password?: string;
+      graduationYear: number;
+      degree: string;
+      department: string;
+      currentJobTitle?: string;
+      company?: string;
+      skills?: string[];
+      linkedInProfile?: string;
+    }>;
+  }): Promise<{ message: string; created: number; alumni: import('../types/api').BackendAlumni[] }> => {
+    return api.post<{ message: string; created: number; alumni: import('../types/api').BackendAlumni[] }>('/colleges/alumni/bulk', data);
+  },
+
+  updateAlumni: async (id: string, data: Partial<import('../types/api').BackendAlumni>): Promise<{ message: string; alumni: import('../types/api').BackendAlumni }> => {
+    return api.put<{ message: string; alumni: import('../types/api').BackendAlumni }>(`/colleges/alumni/profile/${id}`, data);
+  },
+
+  deleteAlumni: async (id: string): Promise<{ message: string }> => {
+    return api.delete<{ message: string }>(`/colleges/alumni/profile/${id}`);
+  },
+
+  // Student Management
+  getAllStudents: async (): Promise<import('../types/api').BackendStudent[]> => {
+    return api.get<import('../types/api').BackendStudent[]>('/colleges/students');
+  },
+
+  addStudent: async (data: {
+    name: string;
+    email: string;
+    password?: string;
+    rollNumber: string;
+    enrollmentYear: number;
+    department: string;
+    degree: string;
+    graduationYear: number;
+  }): Promise<{ message: string; student: import('../types/api').BackendStudent }> => {
+    return api.post<{ message: string; student: import('../types/api').BackendStudent }>('/colleges/students', data);
+  },
+
+  addStudentsBulk: async (data: {
+    students: Array<{
+      name: string;
+      email: string;
+      password?: string;
+      rollNumber: string;
+      enrollmentYear: number;
+      department: string;
+      degree: string;
+      graduationYear: number;
+    }>;
+  }): Promise<{ message: string; created: number; students: import('../types/api').BackendStudent[] }> => {
+    return api.post<{ message: string; created: number; students: import('../types/api').BackendStudent[] }>('/colleges/students/bulk', data);
+  },
+
+  updateStudent: async (id: string, data: Partial<import('../types/api').BackendStudent>): Promise<{ message: string; student: import('../types/api').BackendStudent }> => {
+    return api.put<{ message: string; student: import('../types/api').BackendStudent }>(`/colleges/student/profile/${id}`, data);
+  },
+
+  deleteStudent: async (id: string): Promise<{ message: string }> => {
+    return api.delete<{ message: string }>(`/colleges/student/profile/${id}`);
+  },
+
+  // Verification
+  verifyAlumni: async (alumniId: string): Promise<{ message: string; alumni: import('../types/api').BackendAlumni }> => {
+    return api.put<{ message: string; alumni: import('../types/api').BackendAlumni }>(`/colleges/verify/alumni/${alumniId}`);
+  },
+
+  verifyStudent: async (studentId: string): Promise<{ message: string; student: import('../types/api').BackendStudent }> => {
+    return api.put<{ message: string; student: import('../types/api').BackendStudent }>(`/colleges/verify/student/${studentId}`);
+  },
+
+  getPendingVerifications: async (): Promise<{
+    alumni: import('../types/api').BackendAlumni[];
+    students: import('../types/api').BackendStudent[];
+  }> => {
+    return api.get<{
+      alumni: import('../types/api').BackendAlumni[];
+      students: import('../types/api').BackendStudent[];
+    }>('/colleges/pending-verifications');
+  },
+};

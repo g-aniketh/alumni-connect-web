@@ -13,14 +13,18 @@ import {
 } from '../../components/ui/select';
 import { EventStatus } from '../../types';
 import { useNavigate } from 'react-router-dom';
+import { eventsAPI } from '../../lib/api';
 
 const CollegeEventCreationPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
     date: string;
-    time: string;
+    startTime: string;
+    endTime: string;
     location: string;
     status: EventStatus;
     image: string;
@@ -28,21 +32,40 @@ const CollegeEventCreationPage = () => {
     title: '',
     description: '',
     date: '',
-    time: '',
+    startTime: '',
+    endTime: '',
     location: '',
     status: EventStatus.Upcoming,
     image: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const eventData = {
-      ...formData,
-      date: `${formData.date}T${formData.time}:00`,
-      organizer: 'college-id', // Would come from auth context
-    };
-    console.log('Event Created by College:', eventData);
-    navigate('/events');
+    try {
+      setLoading(true);
+
+      // Combine date and time
+      const eventDate = `${formData.date}T${formData.startTime}:00`;
+      const endTime = formData.endTime ? `${formData.date}T${formData.endTime}:00` : undefined;
+
+      const eventData = {
+        title: formData.title,
+        description: formData.description,
+        eventDate,
+        endTime,
+        location: formData.location,
+        eventBannerUrl: formData.image || undefined,
+      };
+
+      await eventsAPI.create(eventData);
+      
+      alert('Event created successfully!');
+      navigate('/events');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create event');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

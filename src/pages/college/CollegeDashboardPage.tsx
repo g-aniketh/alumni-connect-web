@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -14,27 +15,56 @@ import {
   Activity
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { mockAlumni, mockStudents, mockJobs, mockEvents, mockCampaigns, mockNewsletters } from '../../data/mockData';
-import { EventStatus } from '../../types';
+import { collegeAPI, jobsAPI, eventsAPI } from '../../lib/api';
+import { mockNewsletters } from '../../data/mockData';
 import { EmploymentChart } from '../../components/dashboard/EmploymentChart';
 
 const CollegeDashboardPage = () => {
   const { user } = useAuth();
-
-  // Mock data calculations
-  const totalAlumni = mockAlumni.length;
-  const totalStudents = mockStudents.length;
-  const totalJobs = mockJobs.length;
-  const activeCampaigns = mockCampaigns.filter(c => c.status === EventStatus.Ongoing).length;
-  const totalRaised = mockCampaigns.reduce((sum, c) => sum + c.totalRaised, 0);
-  const upcomingEvents = mockEvents.filter(e => e.status === EventStatus.Upcoming).length;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+  const [stats, setStats] = useState({
+    totalAlumni: 0,
+    verifiedAlumni: 0,
+    totalStudents: 0,
+    verifiedStudents: 0,
+    totalJobs: 0,
+    totalEvents: 0,
+    totalCampaigns: 0,
+    totalRaised: 0,
+  });
+  const [upcomingEvents, setUpcomingEvents] = useState(0);
   const recentNewsletters = mockNewsletters.slice(0, 3);
 
-  const stats = [
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      // Load stats
+      const statsData = await collegeAPI.getStats();
+      setStats(statsData);
+
+      // Load upcoming events count
+      const eventsResponse = await eventsAPI.getFiltered({ upcoming: true });
+      const events = Array.isArray(eventsResponse) ? eventsResponse : eventsResponse.events;
+      setUpcomingEvents(events.length);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statsCards = [
     {
       title: 'Total Alumni',
-      value: totalAlumni,
-      description: 'Registered members',
+      value: stats.totalAlumni,
+      description: `${stats.verifiedAlumni} verified`,
       icon: Users,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50 dark:bg-blue-950',
@@ -42,8 +72,8 @@ const CollegeDashboardPage = () => {
     },
     {
       title: 'Total Students',
-      value: totalStudents,
-      description: 'Active students',
+      value: stats.totalStudents,
+      description: `${stats.verifiedStudents} verified`,
       icon: GraduationCap,
       color: 'text-green-600',
       bgColor: 'bg-green-50 dark:bg-green-950',
@@ -51,7 +81,7 @@ const CollegeDashboardPage = () => {
     },
     {
       title: 'Job Postings',
-      value: totalJobs,
+      value: stats.totalJobs,
       description: 'Active opportunities',
       icon: Briefcase,
       color: 'text-purple-600',
@@ -60,7 +90,7 @@ const CollegeDashboardPage = () => {
     },
     {
       title: 'Funds Raised',
-      value: `$${(totalRaised / 1000).toFixed(0)}k`,
+      value: `$${(stats.totalRaised / 1000).toFixed(0)}k`,
       description: 'From campaigns',
       icon: DollarSign,
       color: 'text-orange-600',
@@ -68,6 +98,16 @@ const CollegeDashboardPage = () => {
       link: '/events',
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="container py-8">
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-8 space-y-8">
@@ -79,9 +119,15 @@ const CollegeDashboardPage = () => {
         </p>
       </div>
 
+      {error && (
+        <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      )}
+
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
+        {statsCards.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card key={stat.title} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => window.location.href = stat.link}>
@@ -219,7 +265,7 @@ const CollegeDashboardPage = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Active Jobs</span>
-              <span className="text-2xl font-bold">{totalJobs}</span>
+              <span className="text-2xl font-bold">{stats.totalJobs}</span>
             </div>
             <Button asChild variant="outline" className="w-full">
               <Link to="/college/jobs/create">
@@ -273,11 +319,11 @@ const CollegeDashboardPage = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Active</span>
-              <span className="text-2xl font-bold">{activeCampaigns}</span>
+              <span className="text-2xl font-bold">{stats.totalCampaigns}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Total Raised</span>
-              <span className="text-lg font-semibold">${(totalRaised / 1000).toFixed(0)}k</span>
+              <span className="text-lg font-semibold">${(stats.totalRaised / 1000).toFixed(0)}k</span>
             </div>
             <Button asChild variant="outline" className="w-full">
               <Link to="/college/campaigns/create">
@@ -366,9 +412,9 @@ const CollegeDashboardPage = () => {
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div>
                 <p className="font-semibold">Total Alumni</p>
-                <p className="text-sm text-muted-foreground">Registered members</p>
+                <p className="text-sm text-muted-foreground">{stats.verifiedAlumni} verified</p>
               </div>
-              <div className="text-3xl font-bold">{totalAlumni}</div>
+              <div className="text-3xl font-bold">{stats.totalAlumni}</div>
             </div>
             <Button asChild className="w-full">
               <Link to="/college/alumni">View Alumni Directory</Link>
@@ -388,9 +434,9 @@ const CollegeDashboardPage = () => {
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div>
                 <p className="font-semibold">Total Students</p>
-                <p className="text-sm text-muted-foreground">Active students</p>
+                <p className="text-sm text-muted-foreground">{stats.verifiedStudents} verified</p>
               </div>
-              <div className="text-3xl font-bold">{totalStudents}</div>
+              <div className="text-3xl font-bold">{stats.totalStudents}</div>
             </div>
             <Button asChild className="w-full">
               <Link to="/college/students">View Student Directory</Link>

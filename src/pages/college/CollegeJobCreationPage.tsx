@@ -14,9 +14,12 @@ import {
 import { Checkbox } from '../../components/ui/checkbox';
 import { Department, JobType } from '../../types';
 import { useNavigate } from 'react-router-dom';
+import { jobsAPI } from '../../lib/api';
 
 const CollegeJobCreationPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
@@ -41,17 +44,51 @@ const CollegeJobCreationPage = () => {
     applyLink: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const jobData = {
-      ...formData,
-      salaryMin: formData.salaryMin ? parseFloat(formData.salaryMin) : undefined,
-      salaryMax: formData.salaryMax ? parseFloat(formData.salaryMax) : undefined,
-      postedBy: 'college-id', // Would come from auth context
-      postedDate: new Date().toISOString().split('T')[0],
-    };
-    console.log('Job Created by College:', jobData);
-    navigate('/jobs');
+    try {
+      setLoading(true);
+
+      // Map frontend JobType to backend format
+      const jobTypeMap: Record<JobType, string> = {
+        [JobType.FullTime]: 'full_time',
+        [JobType.PartTime]: 'part_time',
+        [JobType.Contract]: 'contract',
+        [JobType.Internship]: 'internship',
+      };
+
+      // Map frontend Department to backend format
+      const departmentMap: Record<Department, string> = {
+        [Department.ComputerScience]: 'Computer Science',
+        [Department.ElectricalEngineering]: 'Electrical Engineering',
+        [Department.MechanicalEngineering]: 'Mechanical Engineering',
+        [Department.CivilEngineering]: 'Civil Engineering',
+        [Department.ChemicalEngineering]: 'Chemical Engineering',
+        [Department.BusinessAdministration]: 'Business Administration',
+        [Department.Economics]: 'Economics',
+        [Department.Psychology]: 'Psychology',
+      };
+
+      const jobData = {
+        title: formData.title,
+        description: formData.description,
+        location: formData.location,
+        jobType: jobTypeMap[formData.type],
+        salaryMin: formData.salaryMin ? parseFloat(formData.salaryMin) : undefined,
+        salaryMax: formData.salaryMax ? parseFloat(formData.salaryMax) : undefined,
+        requirements: formData.description.split('\n').filter(line => line.trim()),
+        referral: formData.referralAvailable,
+      };
+
+      await jobsAPI.create(jobData);
+      
+      alert('Job posted successfully!');
+      navigate('/jobs');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to post job');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleDepartment = (dept: Department) => {
@@ -79,6 +116,11 @@ const CollegeJobCreationPage = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="title">Job Title *</Label>
               <Input
