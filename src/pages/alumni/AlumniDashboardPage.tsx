@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -16,31 +17,65 @@ import {
   Plus
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { mockMentorshipRequests, mockStudents, mockJobs, mockEvents } from '../../data/mockData';
-import { MentorshipStatus, EventStatus } from '../../types';
+import { mentorshipsAPI, jobsAPI, eventsAPI } from '../../lib/api';
+import type { BackendMentorship, BackendJob, BackendEvent, BackendStudent } from '../../types/api';
 
 const AlumniDashboardPage = () => {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+  const [pendingMentorshipRequests, setPendingMentorshipRequests] = useState<BackendMentorship[]>([]);
+  const [activeMentorships, setActiveMentorships] = useState<BackendMentorship[]>([]);
+  const [totalMentorships, setTotalMentorships] = useState(0);
+  const [myJobs, setMyJobs] = useState<BackendJob[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<BackendEvent[]>([]);
 
-  // Mock data calculations
-  const pendingMentorshipRequests = mockMentorshipRequests.filter(
-    req => req.status === MentorshipStatus.Pending
-  ).length;
-  const activeMentorships = mockMentorshipRequests.filter(
-    req => req.status === MentorshipStatus.Accepted
-  ).length;
-  const totalMentorships = mockMentorshipRequests.length;
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
 
-  const myJobs = mockJobs.filter(job => job.postedBy.startsWith('a')).length;
-  const upcomingEvents = mockEvents.filter(e => e.status === EventStatus.Upcoming).slice(0, 3);
-  const recentMentorshipRequests = mockMentorshipRequests.filter(
-    req => req.status === MentorshipStatus.Pending
-  ).slice(0, 3);
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      // Load mentorships
+      const mentorshipsResponse = await mentorshipsAPI.getMy();
+      const allMentorships = mentorshipsResponse.mentorships.filter((m: BackendMentorship) => {
+        const mentorId = typeof m.mentorId === 'object' ? (m.mentorId as any)._id : m.mentorId;
+        return mentorId === user?.id;
+      });
+      
+      setPendingMentorshipRequests(allMentorships.filter((m: BackendMentorship) => m.status.toLowerCase() === 'pending').slice(0, 3));
+      setActiveMentorships(allMentorships.filter((m: BackendMentorship) => m.status.toLowerCase() === 'active'));
+      setTotalMentorships(allMentorships.length);
+
+      // Load my posted jobs
+      const jobs = await jobsAPI.getMyPosted();
+      setMyJobs(jobs.slice(0, 3));
+
+      // Load upcoming events (filtered by college context)
+      const eventsResponse = await eventsAPI.getFiltered({ upcoming: true });
+      const events = Array.isArray(eventsResponse) ? eventsResponse : eventsResponse.events;
+      setUpcomingEvents(events.slice(0, 3));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStudentInfo = (mentorship: BackendMentorship): BackendStudent | null => {
+    if (typeof mentorship.menteeId === 'object') {
+      return mentorship.menteeId as BackendStudent;
+    }
+    return null;
+  };
 
   const stats = [
     {
       title: 'Pending Requests',
-      value: pendingMentorshipRequests,
+      value: pendingMentorshipRequests.length,
       description: 'Awaiting response',
       icon: MessageSquare,
       color: 'text-yellow-600',
@@ -49,7 +84,7 @@ const AlumniDashboardPage = () => {
     },
     {
       title: 'Active Mentorships',
-      value: activeMentorships,
+      value: activeMentorships.length,
       description: 'Ongoing relationships',
       icon: Users,
       color: 'text-green-600',
@@ -58,7 +93,7 @@ const AlumniDashboardPage = () => {
     },
     {
       title: 'Jobs Posted',
-      value: myJobs,
+      value: myJobs.length,
       description: 'Your opportunities',
       icon: Briefcase,
       color: 'text-blue-600',
@@ -76,6 +111,16 @@ const AlumniDashboardPage = () => {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="container py-8">
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container py-8 space-y-8">
       {/* Header */}
@@ -85,6 +130,12 @@ const AlumniDashboardPage = () => {
           Welcome back, {user?.name}! Manage your mentorship requests, job postings, and network.
         </p>
       </div>
+
+      {error && (
+        <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -167,16 +218,16 @@ const AlumniDashboardPage = () => {
             </Button>
           </CardHeader>
           <CardContent>
-            {recentMentorshipRequests.length > 0 ? (
+            {pendingMentorshipRequests.length > 0 ? (
               <div className="space-y-4">
-                {recentMentorshipRequests.map((request) => {
-                  const student = mockStudents.find(s => s.id === request.studentId);
+                {pendingMentorshipRequests.map((request) => {
+                  const student = getStudentInfo(request);
                   if (!student) return null;
 
                   return (
-                    <div key={request.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-accent transition-colors">
+                    <div key={request._id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-accent transition-colors">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={student.avatar} alt={student.name} />
+                        <AvatarImage src={student.profilePictureUrl} alt={student.name} />
                         <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
@@ -224,7 +275,7 @@ const AlumniDashboardPage = () => {
             <CardDescription>Ongoing relationships</CardDescription>
           </CardHeader>
           <CardContent>
-            {activeMentorships > 0 ? (
+            {activeMentorships.length > 0 ? (
               <div className="space-y-4">
                 <div className="p-4 border rounded-lg bg-green-50 dark:bg-green-950">
                   <div className="flex items-center gap-3">
@@ -233,7 +284,7 @@ const AlumniDashboardPage = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium">Active</p>
-                      <p className="text-2xl font-bold">{activeMentorships}</p>
+                      <p className="text-2xl font-bold">{activeMentorships.length}</p>
                     </div>
                   </div>
                 </div>
@@ -271,25 +322,29 @@ const AlumniDashboardPage = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {myJobs > 0 ? (
+          {myJobs.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-3">
-              {mockJobs.filter(job => job.postedBy.startsWith('a')).slice(0, 3).map((job) => (
-                <Card key={job.id} className="hover:shadow-md transition-shadow">
+              {myJobs.map((job) => (
+                <Card key={job._id} className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <CardTitle className="text-lg">{job.title}</CardTitle>
-                    <CardDescription>{job.company}</CardDescription>
+                    <CardDescription>
+                      {typeof job.postedBy.posterId === 'object' 
+                        ? job.postedBy.posterId.name 
+                        : 'Posted by Alumni'}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                      <span>{job.type}</span>
+                      <span>{job.jobType}</span>
                       <span>•</span>
                       <span>{job.location}</span>
                     </div>
-                    {job.referralAvailable && (
+                    {job.referral && (
                       <Badge variant="secondary" className="text-xs">Referral Available</Badge>
                     )}
                     <Button asChild variant="outline" className="w-full">
-                      <Link to="/jobs">View Details</Link>
+                      <Link to={`/jobs/${job._id}`}>View Details</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -325,7 +380,7 @@ const AlumniDashboardPage = () => {
           {upcomingEvents.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-3">
               {upcomingEvents.map((event) => (
-                <Card key={event.id} className="hover:shadow-md transition-shadow">
+                <Card key={event._id} className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <CardTitle className="text-lg line-clamp-2">{event.title}</CardTitle>
                     <CardDescription className="line-clamp-2">{event.description}</CardDescription>
@@ -333,13 +388,13 @@ const AlumniDashboardPage = () => {
                   <CardContent className="space-y-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
-                      <span>{new Date(event.date).toLocaleDateString()}</span>
+                      <span>{new Date(event.eventDate).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <span>{event.location}</span>
                     </div>
                     <Button asChild variant="outline" className="w-full mt-4">
-                      <Link to="/events">View Event</Link>
+                      <Link to={`/events/${event._id}`}>View Event</Link>
                     </Button>
                   </CardContent>
                 </Card>

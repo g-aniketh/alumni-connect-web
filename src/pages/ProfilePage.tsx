@@ -17,10 +17,13 @@ import {
 } from '../components/ui/select';
 import { UserRole, Department, type Alumni, type Student, type College } from '../types';
 import { User, Mail, Building2, GraduationCap, MapPin, Briefcase, Save, Edit2, X } from 'lucide-react';
+import { alumniAPI } from '../lib/api';
 
 const ProfilePage = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const getInitialFormData = () => {
     if (!user) return { name: '', email: '' };
     
@@ -72,10 +75,64 @@ const ProfilePage = () => {
     );
   }
 
-  const handleSave = () => {
-    // In real app, would submit to API
-    console.log('Profile Updated:', formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (!user) return;
+    
+    try {
+      setError('');
+      setLoading(true);
+      
+      // Prepare update data based on user role
+      let updateData: Record<string, unknown> = {};
+      
+      if (user.role === UserRole.Alumni) {
+        const alumni = user as Alumni;
+        updateData = {
+          name: formData.name,
+          email: formData.email,
+          currentDesignation: formData.designation,
+          currentEmployer: formData.currentEmployer,
+          graduationYear: formData.graduationYear ? parseInt(formData.graduationYear) : alumni.graduationYear,
+          degree: formData.degree,
+          department: formData.department,
+          skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(s => s) : [],
+          mentorshipAvailable: formData.mentorshipAvailable,
+        };
+        await alumniAPI.updateProfile(user.id, updateData);
+      } else if (user.role === UserRole.Student) {
+        const student = user as Student;
+        updateData = {
+          name: formData.name,
+          email: formData.email,
+          rollNumber: formData.rollNumber,
+          enrollmentYear: formData.enrollmentYear ? parseInt(formData.enrollmentYear) : student.enrollmentYear,
+          degree: formData.degree,
+          department: formData.department,
+          skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(s => s) : [],
+        };
+        // TODO: Add studentAPI.updateProfile when implemented
+        console.log('Student profile update:', updateData);
+      } else if (user.role === UserRole.College) {
+        const college = user as College;
+        updateData = {
+          name: formData.name,
+          email: formData.email,
+          website: formData.website,
+          location: formData.location,
+          establishedYear: formData.establishedYear ? parseInt(formData.establishedYear) : college.establishedYear,
+        };
+        // TODO: Add collegeAPI.updateProfile when implemented
+        console.log('College profile update:', updateData);
+      }
+      
+      // Refresh user data
+      // The AuthContext should handle this automatically on next load
+      setIsEditing(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -93,6 +150,11 @@ const ProfilePage = () => {
             Manage your profile information and preferences.
           </p>
         </div>
+        {error && (
+          <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+            {error}
+          </div>
+        )}
         {!isEditing ? (
           <Button onClick={() => setIsEditing(true)}>
             <Edit2 className="h-4 w-4 mr-2" />
@@ -104,9 +166,9 @@ const ProfilePage = () => {
               <X className="h-4 w-4 mr-2" />
               Cancel
             </Button>
-            <Button onClick={handleSave}>
+            <Button onClick={handleSave} disabled={loading}>
               <Save className="h-4 w-4 mr-2" />
-              Save Changes
+              {loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         )}

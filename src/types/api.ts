@@ -141,3 +141,143 @@ export type SignupRequest =
   | AlumniSignupRequest
   | StudentSignupRequest
   | CollegeSignupRequest;
+
+// Job Types
+export interface BackendJob {
+  _id: string;
+  title: string;
+  description: string;
+  requirements: string[];
+  location: string;
+  postedBy: {
+    posterType: string;
+    posterId: string | { _id: string; name: string; email: string };
+  };
+  totalApplications: number;
+  jobType: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  salaryCurrency?: string;
+  referral?: boolean;
+  deadline?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface JobCreateRequest {
+  title: string;
+  description: string;
+  requirements: string[];
+  location: string;
+  jobType: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  salaryCurrency?: string;
+  referral?: boolean;
+  deadline?: string;
+}
+
+export interface JobApplicationRequest {
+  message?: string;
+  resumeUrl?: string;
+}
+
+export interface BackendJobApplication {
+  _id: string;
+  jobId: string | BackendJob;
+  applicantType: string;
+  applicantId: string | BackendStudent | BackendAlumni;
+  status: string;
+  message?: string;
+  resumeUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Event Types
+export interface BackendEvent {
+  _id: string;
+  title: string;
+  description: string;
+  eventDate: string;
+  startTime?: string;
+  endTime?: string;
+  location: string;
+  organizedBy: {
+    organizerType: string;
+    organizerId: string | { _id: string; name: string; email: string };
+  };
+  eventBannerUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventCreateRequest {
+  title: string;
+  description: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  eventBannerUrl?: string;
+}
+
+export interface EventRegisterRequest {
+  eventId: string;
+}
+
+export interface BackendEventRegistration {
+  _id: string;
+  eventId: string | BackendEvent;
+  participantType: string;
+  participantId: string | BackendStudent;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Mentorship Types
+export interface BackendMentorship {
+  _id: string;
+  mentorId: string | BackendAlumni;
+  menteeId: string | BackendStudent;
+  status: string;
+  startDate?: string;
+  endDate?: string;
+  message?: string;
+  areasOfInterest?: string[];
+  mentorFeedback?: {
+    rating: number;
+    comment?: string;
+    submittedAt: string;
+  };
+  menteeFeedback?: {
+    rating: number;
+    comment?: string;
+    submittedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MentorshipRequestCreate {
+  mentorId: string;
+  message?: string;
+  areasOfInterest?: string[];
+}
+
+export interface MentorshipStatusUpdate {
+  status: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface MentorshipDatesUpdate {
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface MentorshipFeedbackRequest {
+  rating: number;
+  comment?: string;
+}

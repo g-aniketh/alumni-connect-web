@@ -14,45 +14,74 @@ import {
 } from '../../components/ui/select';
 import { Department, JobType } from '../../types';
 import { useNavigate } from 'react-router-dom';
+import { jobsAPI } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
 
 const AlumniJobCreationPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
-    company: string;
     location: string;
     type: JobType;
     department: Department[];
     salaryMin: string;
     salaryMax: string;
     referralAvailable: boolean;
-    applyLink: string;
+    requirements: string;
   }>({
     title: '',
     description: '',
-    company: '',
     location: '',
     type: JobType.FullTime,
     department: [],
     salaryMin: '',
     salaryMax: '',
     referralAvailable: false,
-    applyLink: '',
+    requirements: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const jobData = {
-      ...formData,
-      salaryMin: formData.salaryMin ? parseFloat(formData.salaryMin) : undefined,
-      salaryMax: formData.salaryMax ? parseFloat(formData.salaryMax) : undefined,
-      postedBy: 'current-alumni-id', // Would come from auth context
-      postedDate: new Date().toISOString().split('T')[0],
-    };
-    console.log('Job Created:', jobData);
-    // In real app, would navigate to jobs list or show success message
-    navigate('/jobs');
+    setError('');
+    setLoading(true);
+
+    try {
+      // Convert frontend JobType to backend format
+      const jobTypeMap: Record<JobType, string> = {
+        [JobType.FullTime]: 'full_time',
+        [JobType.PartTime]: 'part_time',
+        [JobType.Contract]: 'contract',
+        [JobType.Internship]: 'internship',
+      };
+
+      // Convert departments to requirements format
+      const requirements = formData.requirements
+        ? formData.requirements.split('\n').filter(r => r.trim())
+        : formData.department.map(d => `${d} background preferred`);
+
+      const jobData = {
+        title: formData.title,
+        description: formData.description,
+        requirements,
+        location: formData.location,
+        jobType: jobTypeMap[formData.type] || formData.type.toLowerCase().replace(' ', '_'),
+        salaryMin: formData.salaryMin ? parseFloat(formData.salaryMin) : undefined,
+        salaryMax: formData.salaryMax ? parseFloat(formData.salaryMax) : undefined,
+        salaryCurrency: 'USD',
+        referral: formData.referralAvailable,
+      };
+
+      await jobsAPI.create(jobData);
+      navigate('/jobs');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create job');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleDepartment = (dept: Department) => {
@@ -91,16 +120,11 @@ const AlumniJobCreationPage = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="company">Company Name *</Label>
-              <Input
-                id="company"
-                placeholder="e.g., Google"
-                value={formData.company}
-                onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
-                required
-              />
-            </div>
+            {error && (
+              <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+                {error}
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -145,7 +169,22 @@ const AlumniJobCreationPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Target Departments *</Label>
+              <Label htmlFor="requirements">Requirements (one per line) *</Label>
+              <Textarea
+                id="requirements"
+                placeholder="e.g., Bachelor's degree in Computer Science&#10;3+ years of experience&#10;Proficiency in React and Node.js"
+                value={formData.requirements}
+                onChange={(e) => setFormData(prev => ({ ...prev, requirements: e.target.value }))}
+                rows={4}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter requirements, one per line. These will be used to match with student skills.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Target Departments (Optional)</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border rounded-md">
                 {Object.values(Department).map((dept) => (
                   <div key={dept} className="flex items-center space-x-2">
@@ -186,16 +225,6 @@ const AlumniJobCreationPage = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="applyLink">Application Link</Label>
-              <Input
-                id="applyLink"
-                type="url"
-                placeholder="https://company.com/careers/apply"
-                value={formData.applyLink}
-                onChange={(e) => setFormData(prev => ({ ...prev, applyLink: e.target.value }))}
-              />
-            </div>
 
             <div className="flex items-center space-x-2 p-4 border rounded-md bg-blue-50 dark:bg-blue-950">
               <Checkbox
@@ -211,10 +240,12 @@ const AlumniJobCreationPage = () => {
             </div>
 
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => navigate('/jobs')}>
+              <Button type="button" variant="outline" onClick={() => navigate('/jobs')} disabled={loading}>
                 Cancel
               </Button>
-              <Button type="submit">Post Job</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Posting...' : 'Post Job'}
+              </Button>
             </div>
           </form>
         </CardContent>

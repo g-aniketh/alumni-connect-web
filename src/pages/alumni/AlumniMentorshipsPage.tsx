@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { mockMentorshipRequests, mockStudents } from '../../data/mockData';
 import { MentorshipStatus } from '../../types';
 import { Calendar, CheckCircle2, XCircle, Clock, User } from 'lucide-react';
 import {
@@ -16,42 +15,71 @@ import {
 } from '../../components/ui/dialog';
 import { Textarea } from '../../components/ui/textarea';
 import { Label } from '../../components/ui/label';
+import { mentorshipsAPI } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
+import type { BackendMentorship, BackendStudent, BackendAlumni } from '../../types/api';
 
 const AlumniMentorshipsPage = () => {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
   const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
   const [actionType, setActionType] = useState<'accept' | 'reject' | 'end' | null>(null);
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [rating, setRating] = useState<number>(5);
+  const [myMentorships, setMyMentorships] = useState<BackendMentorship[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<BackendMentorship[]>([]);
+  const [activeMentorships, setActiveMentorships] = useState<BackendMentorship[]>([]);
+  const [completedMentorships, setCompletedMentorships] = useState<BackendMentorship[]>([]);
 
-  // Get mentorship requests for current alumni (as mentor)
-  const myRequests = mockMentorshipRequests.filter(req => req.alumniId === 'a1');
-  
-  // Get pending requests (incoming)
-  const pendingRequests = myRequests.filter(req => req.status === MentorshipStatus.Pending);
-  
-  // Get active mentorships
-  const activeMentorships = myRequests.filter(req => req.status === MentorshipStatus.Accepted);
-  
-  // Get completed mentorships
-  const completedMentorships = myRequests.filter(req => req.status === MentorshipStatus.Completed);
+  useEffect(() => {
+    loadMentorships();
+  }, []);
 
-  const getStatusBadge = (status: MentorshipStatus) => {
-    switch (status) {
-      case MentorshipStatus.Pending:
+  const loadMentorships = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Get all mentorships where current user is the mentor (alumni)
+      const response = await mentorshipsAPI.getMy();
+      const allMentorships = response.mentorships.filter((m: BackendMentorship) => {
+        const mentorId = typeof m.mentorId === 'object' ? (m.mentorId as BackendAlumni)._id : m.mentorId;
+        return mentorId === user?.id;
+      });
+      
+      setMyMentorships(allMentorships);
+      setPendingRequests(allMentorships.filter(m => m.status.toLowerCase() === 'pending'));
+      setActiveMentorships(allMentorships.filter(m => m.status.toLowerCase() === 'active'));
+      setCompletedMentorships(allMentorships.filter(m => m.status.toLowerCase() === 'completed'));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load mentorships');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'pending':
         return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
-      case MentorshipStatus.Accepted:
+      case 'active':
         return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle2 className="h-3 w-3 mr-1" />Active</Badge>;
-      case MentorshipStatus.Completed:
+      case 'completed':
         return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200"><CheckCircle2 className="h-3 w-3 mr-1" />Completed</Badge>;
-      case MentorshipStatus.Declined:
+      case 'declined':
         return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200"><XCircle className="h-3 w-3 mr-1" />Declined</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
-  const getStudentInfo = (studentId: string) => {
-    return mockStudents.find(s => s.id === studentId);
+  const getStudentInfo = (mentorship: BackendMentorship): BackendStudent | null => {
+    if (typeof mentorship.menteeId === 'object') {
+      return mentorship.menteeId as BackendStudent;
+    }
+    return null;
   };
 
   const handleAction = (requestId: string, type: 'accept' | 'reject' | 'end') => {
@@ -60,23 +88,45 @@ const AlumniMentorshipsPage = () => {
     setIsActionDialogOpen(true);
   };
 
-  const handleSubmitAction = () => {
-    if (selectedRequest) {
-      console.log('Mentorship Action:', {
-        requestId: selectedRequest,
-        action: actionType,
-        feedback,
-        timestamp: new Date().toISOString(),
-      });
+  const handleSubmitAction = async () => {
+    if (!selectedRequest || !actionType) return;
+
+    try {
+      setError('');
+      
+      if (actionType === 'accept') {
+        await mentorshipsAPI.updateStatus(selectedRequest, {
+          status: 'active',
+          startDate: new Date().toISOString(),
+        });
+      } else if (actionType === 'reject') {
+        await mentorshipsAPI.updateStatus(selectedRequest, {
+          status: 'declined',
+        });
+      } else if (actionType === 'end') {
+        await mentorshipsAPI.end(selectedRequest);
+        // If feedback provided, add it
+        if (feedback.trim() || rating) {
+          await mentorshipsAPI.addFeedback(selectedRequest, {
+            rating,
+            comment: feedback.trim() || undefined,
+          });
+        }
+      }
+      
+      await loadMentorships();
       setIsActionDialogOpen(false);
       setSelectedRequest(null);
       setActionType(null);
       setFeedback('');
+      setRating(5);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to perform action');
     }
   };
 
-  const PendingRequestCard = ({ request }: { request: typeof myRequests[0] }) => {
-    const student = getStudentInfo(request.studentId);
+  const PendingRequestCard = ({ request }: { request: BackendMentorship }) => {
+    const student = getStudentInfo(request);
     if (!student) return null;
 
     return (
@@ -107,9 +157,15 @@ const AlumniMentorshipsPage = () => {
               <p className="text-sm">{request.message}</p>
             </div>
           )}
+          {request.areasOfInterest && (
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Areas of Interest:</p>
+              <p className="text-sm">{Array.isArray(request.areasOfInterest) ? request.areasOfInterest.join(', ') : request.areasOfInterest}</p>
+            </div>
+          )}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            <span>Requested on {new Date(request.requestedOn).toLocaleDateString()}</span>
+            <span>Requested on {new Date(request.createdAt).toLocaleDateString()}</span>
           </div>
           <div className="flex gap-2 pt-2">
             <Button 
@@ -135,8 +191,8 @@ const AlumniMentorshipsPage = () => {
     );
   };
 
-  const ActiveMentorshipCard = ({ request }: { request: typeof myRequests[0] }) => {
-    const student = getStudentInfo(request.studentId);
+  const ActiveMentorshipCard = ({ request }: { request: BackendMentorship }) => {
+    const student = getStudentInfo(request);
     if (!student) return null;
 
     return (
@@ -161,10 +217,10 @@ const AlumniMentorshipsPage = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {request.updatedOn && (
+          {request.startDate && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Started on {new Date(request.updatedOn).toLocaleDateString()}</span>
+              <span>Started on {new Date(request.startDate).toLocaleDateString()}</span>
             </div>
           )}
           <Button 
@@ -181,8 +237,8 @@ const AlumniMentorshipsPage = () => {
     );
   };
 
-  const CompletedMentorshipCard = ({ request }: { request: typeof myRequests[0] }) => {
-    const student = getStudentInfo(request.studentId);
+  const CompletedMentorshipCard = ({ request }: { request: BackendMentorship }) => {
+    const student = getStudentInfo(request);
     if (!student) return null;
 
     return (
@@ -207,16 +263,26 @@ const AlumniMentorshipsPage = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {request.updatedOn && (
+          {request.endDate && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Completed on {new Date(request.updatedOn).toLocaleDateString()}</span>
+              <span>Completed on {new Date(request.endDate).toLocaleDateString()}</span>
             </div>
           )}
         </CardContent>
       </Card>
     );
   };
+
+  if (loading) {
+    return (
+      <div className="container py-8 min-h-screen">
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Loading mentorships...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-8 min-h-screen">
@@ -226,6 +292,12 @@ const AlumniMentorshipsPage = () => {
           Manage mentorship requests from students and track your active mentorship relationships.
         </p>
       </div>
+
+      {error && (
+        <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      )}
 
       <Tabs defaultValue="pending" className="w-full">
         <TabsList className="grid w-full max-w-2xl grid-cols-3">
@@ -316,9 +388,36 @@ const AlumniMentorshipsPage = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
-            {(actionType === 'end' || actionType === 'reject') && (
+            {actionType === 'end' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="rating">Rating (1-5)</Label>
+                  <select
+                    id="rating"
+                    value={rating}
+                    onChange={(e) => setRating(parseInt(e.target.value))}
+                    className="w-full p-2 border rounded-md"
+                  >
+                    {[1, 2, 3, 4, 5].map(r => (
+                      <option key={r} value={r}>{r} {r === 5 ? '⭐' : ''}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="feedback">Feedback (Optional)</Label>
+                  <Textarea
+                    id="feedback"
+                    placeholder="Add any feedback or notes..."
+                    value={feedback}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFeedback(e.target.value)}
+                    rows={4}
+                  />
+                </div>
+              </>
+            )}
+            {actionType === 'reject' && (
               <div className="space-y-2">
-                <Label htmlFor="feedback">Feedback (Optional)</Label>
+                <Label htmlFor="feedback">Reason for Decline (Optional)</Label>
                 <Textarea
                   id="feedback"
                   placeholder="Add any feedback or notes..."

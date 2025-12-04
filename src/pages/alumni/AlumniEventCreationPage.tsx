@@ -11,38 +11,57 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { EventStatus } from '../../types';
 import { useNavigate } from 'react-router-dom';
+import { eventsAPI } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
 
 const AlumniEventCreationPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
     date: string;
-    time: string;
+    startTime: string;
+    endTime: string;
     location: string;
-    status: EventStatus;
-    image: string;
+    eventBannerUrl: string;
   }>({
     title: '',
     description: '',
     date: '',
-    time: '',
+    startTime: '',
+    endTime: '',
     location: '',
-    status: EventStatus.Upcoming,
-    image: '',
+    eventBannerUrl: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const eventData = {
-      ...formData,
-      date: `${formData.date}T${formData.time}:00`,
-      organizer: 'current-alumni-id', // Would come from auth context
-    };
-    console.log('Event Created:', eventData);
-    navigate('/events');
+    setError('');
+    setLoading(true);
+
+    try {
+      // Backend expects startTime and endTime in HH:MM format (24-hour)
+      const eventData = {
+        title: formData.title,
+        description: formData.description,
+        eventDate: formData.date,
+        startTime: formData.startTime || '00:00',
+        endTime: formData.endTime || '23:59',
+        location: formData.location,
+        eventBannerUrl: formData.eventBannerUrl || undefined,
+      };
+
+      await eventsAPI.create(eventData);
+      navigate('/events');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create event');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,6 +80,11 @@ const AlumniEventCreationPage = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="title">Event Title *</Label>
               <Input
@@ -84,25 +108,36 @@ const AlumniEventCreationPage = () => {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="date">Event Date *</Label>
+              <Input
+                id="date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                required
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="date">Date *</Label>
+                <Label htmlFor="startTime">Start Time *</Label>
                 <Input
-                  id="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                  id="startTime"
+                  type="time"
+                  value={formData.startTime}
+                  onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="time">Time *</Label>
+                <Label htmlFor="endTime">End Time *</Label>
                 <Input
-                  id="time"
+                  id="endTime"
                   type="time"
-                  value={formData.time}
-                  onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
+                  value={formData.endTime}
+                  onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
                   required
                 />
               </div>
@@ -120,38 +155,23 @@ const AlumniEventCreationPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">Event Status *</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as EventStatus }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(EventStatus).map((status) => (
-                    <SelectItem key={status} value={status}>{status}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="image">Event Image URL (Optional)</Label>
+              <Label htmlFor="eventBannerUrl">Event Banner Image URL (Optional)</Label>
               <Input
-                id="image"
+                id="eventBannerUrl"
                 type="url"
                 placeholder="https://example.com/event-image.jpg"
-                value={formData.image}
-                onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
+                value={formData.eventBannerUrl}
+                onChange={(e) => setFormData(prev => ({ ...prev, eventBannerUrl: e.target.value }))}
               />
             </div>
 
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => navigate('/events')}>
+              <Button type="button" variant="outline" onClick={() => navigate('/events')} disabled={loading}>
                 Cancel
               </Button>
-              <Button type="submit">Create Event</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Creating...' : 'Create Event'}
+              </Button>
             </div>
           </form>
         </CardContent>
