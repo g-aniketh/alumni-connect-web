@@ -79,7 +79,9 @@ export interface BackendCollege {
 
 // API Response Types
 export interface LoginResponse {
-  token: string;
+  token?: string;
+  accessToken?: string;
+  refreshToken?: string;
   alumni?: { id: string; name: string; email: string };
   student?: { id: string; name: string; email: string };
   college?: { id: string; name: string; email: string };
@@ -311,7 +313,7 @@ export interface CampaignCreateRequest {
 export interface BackendContribution {
   _id: string;
   campaignId: string | BackendCampaign;
-  contributorType: 'alumni' | 'student';
+  contributorType: "alumni" | "student";
   contributorId: string;
   contributionType: string;
   amount?: number;

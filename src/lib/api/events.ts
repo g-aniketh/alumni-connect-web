@@ -134,10 +134,14 @@ export const eventsAPI = {
   // Cancel registration (authenticated - student only)
   cancelRegistration: async (
     registrationId: string
-  ): Promise<{ message: string }> => {
-    return api.delete<{ message: string }>(
-      `/events/registrations/${registrationId}`
-    );
+  ): Promise<{
+    message: string;
+    registration: BackendEventRegistration;
+  }> => {
+    return api.put<{
+      message: string;
+      registration: BackendEventRegistration;
+    }>(`/events/registrations/${registrationId}/cancel`);
   },
 };
 

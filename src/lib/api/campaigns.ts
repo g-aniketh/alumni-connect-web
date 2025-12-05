@@ -59,26 +59,40 @@ export const campaignsAPI = {
   },
 
   // Get my campaigns (authenticated - college only)
-  getMyCampaigns: async (): Promise<BackendCampaign[]> => {
-    return api.get<BackendCampaign[]>(
-      "/campaigns/my/campaigns"
-    );
+  getMyCampaigns: async (): Promise<{
+    total: number;
+    campaigns: BackendCampaign[];
+  }> => {
+    return api.get<{
+      total: number;
+      campaigns: BackendCampaign[];
+    }>("/campaigns/my/campaigns");
   },
 
   // Get campaign statistics (authenticated - college owner only)
   getCampaignStats: async (
     campaignId: string
   ): Promise<{
+    campaignId: string;
+    title: string;
+    targetAmount: number;
     totalRaised: number;
     totalVolunteeringHours: number;
-    countFinancialContributors: number;
-    countVolunteeringContributors: number;
+    totalContributors: number;
+    financialContributions: number;
+    volunteeringContributions: number;
+    progress: number;
   }> => {
     return api.get<{
+      campaignId: string;
+      title: string;
+      targetAmount: number;
       totalRaised: number;
       totalVolunteeringHours: number;
-      countFinancialContributors: number;
-      countVolunteeringContributors: number;
+      totalContributors: number;
+      financialContributions: number;
+      volunteeringContributions: number;
+      progress: number;
     }>(`/campaigns/${campaignId}/stats`);
   },
 
@@ -110,7 +124,7 @@ export const campaignsAPI = {
   contributeVolunteer: async (data: {
     campaignId: string;
     hours: number;
-    date: string;
+    activityDescription: string;
   }): Promise<{
     message: string;
     contribution: BackendContribution;
@@ -122,10 +136,14 @@ export const campaignsAPI = {
   },
 
   // Get my contributions (authenticated)
-  getMyContributions: async (): Promise<BackendContribution[]> => {
-    return api.get<BackendContribution[]>(
-      "/campaigns/my/contributions"
-    );
+  getMyContributions: async (): Promise<{
+    total: number;
+    contributions: BackendContribution[];
+  }> => {
+    return api.get<{
+      total: number;
+      contributions: BackendContribution[];
+    }>("/campaigns/my/contributions");
   },
 };
 

@@ -201,9 +201,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           throw new Error("Invalid role");
       }
 
-      // Store token (backend returns single token, use it as both access and refresh)
+      // Store token (backend login returns single token, use it as both access and refresh)
+      // When token expires, use refresh-token endpoint to get new access/refresh tokens
       if (response.token) {
         tokenService.setTokens(response.token, response.token);
+      } else if (response.accessToken && response.refreshToken) {
+        // Handle case where backend returns separate tokens
+        tokenService.setTokens(response.accessToken, response.refreshToken);
       }
 
       // Fetch full user profile
@@ -285,7 +289,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async (): Promise<void> => {
     try {
-      await authAPI.logout();
+      // Call role-specific logout endpoint
+      if (user) {
+        switch (user.role) {
+          case UserRole.Alumni:
+            await authAPI.logoutAlumni();
+            break;
+          case UserRole.Student:
+            await authAPI.logoutStudent();
+            break;
+          case UserRole.College:
+            await authAPI.logoutCollege();
+            break;
+        }
+      }
     } catch (error: unknown) {
       console.error("Logout error:", error);
     } finally {

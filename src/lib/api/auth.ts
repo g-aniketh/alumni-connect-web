@@ -49,9 +49,17 @@ export const authAPI = {
     return api.post<LoginResponse>("/colleges/login", { email, password });
   },
 
-  // Logout
-  logout: async (): Promise<{ message: string }> => {
-    return api.post<{ message: string }>("/auth/logout");
+  // Logout (role-specific)
+  logoutAlumni: async (): Promise<{ message: string }> => {
+    return api.post<{ message: string }>("/alumni/logout");
+  },
+
+  logoutStudent: async (): Promise<{ message: string }> => {
+    return api.post<{ message: string }>("/students/logout");
+  },
+
+  logoutCollege: async (): Promise<{ message: string }> => {
+    return api.post<{ message: string }>("/colleges/logout");
   },
 
   // Get current user

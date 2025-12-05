@@ -156,7 +156,7 @@ export class ApiClient {
     }
 
     try {
-      const response = await fetch(`${this.baseURL}/auth/refresh`, {
+      const response = await fetch(`${this.baseURL}/auth/refresh-token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -170,13 +170,13 @@ export class ApiClient {
       }
 
       const data = await response.json();
-      if (data.token) {
-        // Backend returns single token, use it as both access and refresh
-        tokenService.setTokens(data.token, data.token);
-        return true;
-      } else if (data.accessToken && data.refreshToken) {
-        // Fallback for different response format
+      if (data.accessToken && data.refreshToken) {
+        // Backend returns both accessToken and refreshToken
         tokenService.setTokens(data.accessToken, data.refreshToken);
+        return true;
+      } else if (data.token) {
+        // Fallback for single token response (legacy)
+        tokenService.setTokens(data.token, data.token);
         return true;
       }
       return false;

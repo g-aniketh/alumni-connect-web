@@ -44,8 +44,8 @@ const ResetPasswordPage = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters long');
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters long');
       return;
     }
 
@@ -121,10 +121,10 @@ const ResetPasswordPage = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
               />
               <p className="text-xs text-muted-foreground">
-                Password must be at least 6 characters long.
+                Password must be at least 8 characters long.
               </p>
             </div>
 
@@ -137,7 +137,7 @@ const ResetPasswordPage = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
 
