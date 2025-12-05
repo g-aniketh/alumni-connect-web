@@ -5,6 +5,8 @@ import { Button } from '../ui/button';
 import { Search, X } from 'lucide-react';
 
 interface AlumniSearchFiltersProps {
+  nameSearch?: string;
+  onNameSearchChange?: (value: string) => void;
   skillSearch: string;
   onSkillSearchChange: (value: string) => void;
   companySearch: string;
@@ -13,13 +15,15 @@ interface AlumniSearchFiltersProps {
 }
 
 export const AlumniSearchFilters = ({
+  nameSearch = "",
+  onNameSearchChange,
   skillSearch,
   onSkillSearchChange,
   companySearch,
   onCompanySearchChange,
   onClearFilters,
 }: AlumniSearchFiltersProps) => {
-  const hasActiveFilters = skillSearch || companySearch;
+  const hasActiveFilters = nameSearch || skillSearch || companySearch;
 
   return (
     <Card>
@@ -30,6 +34,20 @@ export const AlumniSearchFilters = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {onNameSearchChange && (
+          <div className="space-y-2">
+            <Label htmlFor="name-search">Search by Name</Label>
+            <Input
+              id="name-search"
+              placeholder="e.g., John Doe"
+              value={nameSearch}
+              onChange={(e) => onNameSearchChange(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Search for alumni by name
+            </p>
+          </div>
+        )}
         <div className="space-y-2">
           <Label htmlFor="skill-search">Search by Skillset</Label>
           <Input

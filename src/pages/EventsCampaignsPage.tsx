@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { EventCard } from '../components/events/EventCard';
 import { CampaignCard } from '../components/events/CampaignCard';
 import { DonationModal } from '../components/events/DonationModal';
-import { type AlumniEvent } from '../types';
-import { campaignsAPI } from '../lib/api';
-import type { BackendCampaign } from '../types/api';
+import { Button } from '../components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -13,10 +12,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog';
-import { Button } from '../components/ui/button';
-import { eventsAPI } from '../lib/api';
+import { type AlumniEvent } from '../types';
+import { campaignsAPI, eventsAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
-import type { BackendEvent } from '../types/api';
+import { UserRole } from '../types';
+import type { BackendCampaign, BackendEvent } from '../types/api';
+import { Plus } from 'lucide-react';
 
 const EventsCampaignsPage = () => {
   const { user } = useAuth();
@@ -30,12 +31,17 @@ const EventsCampaignsPage = () => {
   const [selectedEvent, setSelectedEvent] = useState<BackendEvent | null>(null);
   const [isRSVPDialogOpen, setIsRSVPDialogOpen] = useState(false);
   const [myRegistrations, setMyRegistrations] = useState<string[]>([]); // Array of event IDs the user is registered for
+  const [myEvents, setMyEvents] = useState<BackendEvent[]>([]);
+  const [loadingMyEvents, setLoadingMyEvents] = useState(false);
 
   useEffect(() => {
     loadEvents();
     loadCampaigns();
     if (user?.role === 'Student') {
       loadMyRegistrations();
+    }
+    if (user && (user.role === UserRole.Alumni || user.role === UserRole.College)) {
+      loadMyEvents();
     }
   }, [user]);
 
@@ -103,6 +109,18 @@ const EventsCampaignsPage = () => {
     } catch (err) {
       // Silently fail - registrations are optional
       console.error('Failed to load registrations:', err);
+    }
+  };
+
+  const loadMyEvents = async () => {
+    try {
+      setLoadingMyEvents(true);
+      const myOrganizedEvents = await eventsAPI.getMyOrganized();
+      setMyEvents(myOrganizedEvents);
+    } catch (err) {
+      console.error('Failed to load my events:', err);
+    } finally {
+      setLoadingMyEvents(false);
     }
   };
 
@@ -187,6 +205,12 @@ const EventsCampaignsPage = () => {
     }
   };
 
+  const canCreateEvents = user && (user.role === UserRole.Alumni || user.role === UserRole.College);
+  const canCreateCampaigns = user && user.role === UserRole.College;
+  const createEventPath = user?.role === UserRole.Alumni 
+    ? '/alumni/events/create' 
+    : '/college/events/create';
+
   if (loading) {
     return (
       <div className="container py-8 min-h-screen">
@@ -200,10 +224,32 @@ const EventsCampaignsPage = () => {
   return (
     <div className="container py-8 min-h-screen">
       <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Events & Campaigns</h1>
-        <p className="text-muted-foreground">
-          Stay connected through events and support fundraising initiatives.
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Events & Campaigns</h1>
+            <p className="text-muted-foreground">
+              Stay connected through events and support fundraising initiatives.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            {canCreateEvents && (
+              <Button asChild>
+                <Link to={createEventPath}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Event
+                </Link>
+              </Button>
+            )}
+            {canCreateCampaigns && (
+              <Button asChild>
+                <Link to="/college/campaigns/create">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Campaign
+                </Link>
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {error && (
@@ -213,8 +259,9 @@ const EventsCampaignsPage = () => {
       )}
 
       <Tabs defaultValue="events" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className={`grid w-full ${canCreateEvents ? 'max-w-2xl grid-cols-3' : 'max-w-md grid-cols-2'}`}>
           <TabsTrigger value="events">Upcoming Events</TabsTrigger>
+          {canCreateEvents && <TabsTrigger value="my-events">My Events</TabsTrigger>}
           <TabsTrigger value="campaigns">Fundraising Campaigns</TabsTrigger>
         </TabsList>
 
@@ -241,6 +288,60 @@ const EventsCampaignsPage = () => {
             </div>
           )}
         </TabsContent>
+
+        {canCreateEvents && (
+          <TabsContent value="my-events" className="mt-6">
+            {loadingMyEvents ? (
+              <div className="text-center py-12 text-muted-foreground">
+                Loading your events...
+              </div>
+            ) : myEvents.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {myEvents.map((backendEvent) => {
+                  const event = transformEvent(backendEvent);
+                  return (
+                    <div key={backendEvent._id} className="border rounded-lg p-4">
+                      <EventCard 
+                        event={event} 
+                        onRSVP={() => handleRSVP(backendEvent)}
+                        isRegistered={false}
+                      />
+                      <div className="mt-4 flex gap-2">
+                        <Button variant="outline" asChild className="flex-1">
+                          <Link to={user?.role === UserRole.Alumni 
+                            ? `/alumni/events/edit/${backendEvent._id}`
+                            : `/college/events/edit/${backendEvent._id}`
+                          }>
+                            Edit
+                          </Link>
+                        </Button>
+                        <Button variant="outline" asChild className="flex-1">
+                          <Link to={user?.role === UserRole.Alumni 
+                            ? `/alumni/events/registrations?eventId=${backendEvent._id}`
+                            : `/college/events/registrations?eventId=${backendEvent._id}`
+                          }>
+                            View Registrations
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                <p className="text-lg font-medium mb-2">No events organized yet</p>
+                <p className="text-sm mb-4">Start by creating your first event</p>
+                <Button asChild>
+                  <Link to={createEventPath}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Event
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </TabsContent>
+        )}
 
         <TabsContent value="campaigns" className="mt-6">
           {campaignsLoading ? (

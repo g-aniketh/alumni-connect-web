@@ -19,6 +19,7 @@ const AlumniNetworkPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [alumni, setAlumni] = useState<BackendAlumni[]>([]);
+  const [nameSearch, setNameSearch] = useState("");
   const [skillSearch, setSkillSearch] = useState("");
   const [companySearch, setCompanySearch] = useState("");
   const [selectedAlumni, setSelectedAlumni] = useState<BackendAlumni | null>(
@@ -68,6 +69,12 @@ const AlumniNetworkPage = () => {
 
   // Filter alumni based on search criteria
   const filteredAlumni = alumni.filter(alumni => {
+    // Name search (case-insensitive)
+    const matchesName =
+      nameSearch === "" ||
+      (alumni.name &&
+        alumni.name.toLowerCase().includes(nameSearch.toLowerCase()));
+
     const matchesSkill =
       skillSearch === "" ||
       (alumni.skills &&
@@ -82,7 +89,7 @@ const AlumniNetworkPage = () => {
           .toLowerCase()
           .includes(companySearch.toLowerCase()));
 
-    return matchesSkill && matchesCompany;
+    return matchesName && matchesSkill && matchesCompany;
   });
 
   // Transform BackendAlumni to Alumni for the component
@@ -125,6 +132,7 @@ const AlumniNetworkPage = () => {
   };
 
   const handleClearFilters = () => {
+    setNameSearch("");
     setSkillSearch("");
     setCompanySearch("");
   };
@@ -159,6 +167,8 @@ const AlumniNetworkPage = () => {
         <aside className="lg:col-span-1">
           <div className="sticky top-20">
             <AlumniSearchFilters
+              nameSearch={nameSearch}
+              onNameSearchChange={setNameSearch}
               skillSearch={skillSearch}
               onSkillSearchChange={setSkillSearch}
               companySearch={companySearch}

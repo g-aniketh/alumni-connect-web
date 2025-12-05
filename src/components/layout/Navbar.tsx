@@ -38,7 +38,9 @@ const Navbar = () => {
           { name: "Alumni", path: "/student/alumni" },
           { name: "Jobs", path: "/jobs" },
           { name: "Applications", path: "/student/applications" },
+          { name: "Mentorships", path: "/student/mentorships" },
           { name: "Events", path: "/events" },
+          { name: "My Events", path: "/student/events" },
         ];
       case UserRole.Alumni:
         return [
@@ -46,7 +48,11 @@ const Navbar = () => {
           { name: "Alumni Network", path: "/alumni/network" },
           { name: "Students", path: "/alumni/students" },
           { name: "Jobs", path: "/jobs" },
+          { name: "My Jobs", path: "/alumni/jobs" },
+          { name: "Applications", path: "/alumni/jobs/applications" },
           { name: "Events", path: "/events" },
+          { name: "My Events", path: "/alumni/events" },
+          { name: "Mentorships", path: "/alumni/mentorships" },
         ];
       case UserRole.College:
         return [
@@ -54,7 +60,11 @@ const Navbar = () => {
           { name: "Alumni", path: "/college/alumni" },
           { name: "Students", path: "/college/students" },
           { name: "Jobs", path: "/jobs" },
+          { name: "My Jobs", path: "/college/jobs" },
+          { name: "Applications", path: "/college/jobs/applications" },
           { name: "Events", path: "/events" },
+          { name: "My Events", path: "/college/events" },
+          { name: "Campaigns", path: "/events" },
         ];
       default:
         return publicLinks;
