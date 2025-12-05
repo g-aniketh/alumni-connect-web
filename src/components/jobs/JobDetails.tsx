@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { UserRole } from "../../types";
-import { jobsAPI } from "../../lib/api";
+import { jobsAPI, uploadAPI } from "../../lib/api";
 
 interface JobDetailsProps {
   job: Job | null;
@@ -72,13 +72,30 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
       setLoading(true);
       setError("");
 
-      // TODO: Upload resume file to storage service and get URL
-      // For now, we'll just send the message
+      let resumeUrl: string | undefined = undefined;
+
+      // Upload resume file if provided
+      if (applicationData.resumeFile) {
+        try {
+          const uploadResult = await uploadAPI.uploadResume(applicationData.resumeFile);
+          resumeUrl = uploadResult.url;
+        } catch (uploadErr) {
+          setError(
+            uploadErr instanceof Error
+              ? `Failed to upload resume: ${uploadErr.message}`
+              : "Failed to upload resume"
+          );
+          setLoading(false);
+          return;
+        }
+      } else if (user.resumeUrl) {
+        // Use existing resume URL if no new file is uploaded
+        resumeUrl = user.resumeUrl;
+      }
+
       const applicationDataToSend = {
         message: applicationData.message || undefined,
-        resumeUrl: applicationData.resumeFileName
-          ? `resume-${Date.now()}.pdf`
-          : undefined, // Placeholder
+        resumeUrl: resumeUrl,
       };
 
       await jobsAPI.apply(job.id, applicationDataToSend);

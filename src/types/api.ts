@@ -7,6 +7,8 @@ export interface BackendAlumni {
   gender?: string;
   phoneNumber?: string;
   profilePictureUrl?: string;
+  profilePictureUrlHD?: string;
+  profilePictureUrlOptimized?: string;
   bio?: string;
   isVerified: boolean;
   graduationYear: number;
@@ -36,6 +38,8 @@ export interface BackendStudent {
   phoneNumber?: string;
   bio?: string;
   profilePictureUrl?: string;
+  profilePictureUrlHD?: string;
+  profilePictureUrlOptimized?: string;
   isVerified: boolean;
   rollNumber: string;
   collegeId?: string;
@@ -68,6 +72,8 @@ export interface BackendCollege {
   degreesOffered: string[];
   linkedInProfile?: string;
   collegeLogoUrl?: string;
+  collegeLogoUrlHD?: string;
+  collegeLogoUrlOptimized?: string;
   alumniCount?: number;
   alumniVerifiedCount?: number;
   studentCount?: number;

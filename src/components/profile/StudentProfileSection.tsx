@@ -12,12 +12,13 @@ import {
 } from '../ui/select';
 import { Department, type Student } from '../../types';
 import { OnlinePresenceSection } from './OnlinePresenceSection';
+import type { StudentFormData } from '../../types/profile';
 
 interface StudentProfileSectionProps {
   user: Student;
   isEditing: boolean;
-  formData: Record<string, any>;
-  onFormDataChange: (data: Record<string, any>) => void;
+  formData: StudentFormData;
+  onFormDataChange: (data: StudentFormData) => void;
 }
 
 export const StudentProfileSection = ({ user, isEditing, formData, onFormDataChange }: StudentProfileSectionProps) => {

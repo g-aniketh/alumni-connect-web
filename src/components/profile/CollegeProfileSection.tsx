@@ -3,15 +3,63 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { MapPin } from 'lucide-react';
 import type { College } from '../../types';
+import { FileUpload } from './FileUpload';
+import { useState, useEffect } from 'react';
+import { uploadAPI } from '../../lib/api';
+import type { CollegeFormData } from '../../types/profile';
 
 interface CollegeProfileSectionProps {
   user: College;
   isEditing: boolean;
-  formData: Record<string, any>;
-  onFormDataChange: (data: Record<string, any>) => void;
+  formData: CollegeFormData;
+  onFormDataChange: (data: CollegeFormData) => void;
 }
 
 export const CollegeProfileSection = ({ user, isEditing, formData, onFormDataChange }: CollegeProfileSectionProps) => {
+  const [collegeLogoUrl, setCollegeLogoUrl] = useState<string | undefined>(user.avatar);
+  const [loadingFiles, setLoadingFiles] = useState(false);
+
+  // Load college logo from backend
+  useEffect(() => {
+    const loadCollegeLogo = async () => {
+      if (!isEditing) {
+        setLoadingFiles(true);
+        try {
+          const files = await uploadAPI.getMyFiles();
+          // Use optimized URL if available, fallback to HD, then original
+          const logoUrl = files.collegeLogo?.optimized || 
+                         files.collegeLogo?.hd || 
+                         files.collegeLogo?.original ||
+                         user.avatar;
+          setCollegeLogoUrl(logoUrl || undefined);
+        } catch (err) {
+          // If error, use the avatar from user object
+          setCollegeLogoUrl(user.avatar);
+        } finally {
+          setLoadingFiles(false);
+        }
+      } else {
+        // When editing, use the current user avatar
+        setCollegeLogoUrl(user.avatar);
+      }
+    };
+
+    loadCollegeLogo();
+  }, [user.avatar, isEditing]);
+
+  const handleLogoUpload = (url: string, urlHD?: string, urlOptimized?: string) => {
+    // Use optimized URL if available, fallback to HD, then original
+    const bestUrl = urlOptimized || urlHD || url;
+    setCollegeLogoUrl(bestUrl);
+    // Update form data if needed
+    onFormDataChange({ ...formData, avatar: bestUrl } as CollegeFormData);
+  };
+
+  const handleLogoDelete = () => {
+    setCollegeLogoUrl(undefined);
+    onFormDataChange({ ...formData, avatar: undefined } as CollegeFormData);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -19,6 +67,16 @@ export const CollegeProfileSection = ({ user, isEditing, formData, onFormDataCha
         <CardDescription>Your college or university details</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {isEditing && (
+          <FileUpload
+            type="profile-picture"
+            currentUrl={collegeLogoUrl}
+            onUploadSuccess={handleLogoUpload}
+            onDelete={handleLogoDelete}
+            label="College Logo"
+            description="Upload your college logo (JPEG, PNG, GIF, WebP - Max 5MB)"
+          />
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="website">Website</Label>

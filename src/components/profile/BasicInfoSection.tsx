@@ -2,12 +2,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { User, Mail } from 'lucide-react';
+import type { ProfileFormData } from '../../types/profile';
 
 interface BasicInfoSectionProps {
   user: { name: string; email: string };
   isEditing: boolean;
-  formData: Record<string, any>;
-  onFormDataChange: (data: Record<string, any>) => void;
+  formData: ProfileFormData;
+  onFormDataChange: (data: ProfileFormData) => void;
 }
 
 export const BasicInfoSection = ({ user, isEditing, formData, onFormDataChange }: BasicInfoSectionProps) => {
@@ -24,8 +25,8 @@ export const BasicInfoSection = ({ user, isEditing, formData, onFormDataChange }
             {isEditing ? (
               <Input
                 id="name"
-                value={formData.name}
-                onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
+                value={'name' in formData ? formData.name : ''}
+                onChange={(e) => onFormDataChange({ ...formData, name: e.target.value } as ProfileFormData)}
               />
             ) : (
               <div className="flex items-center gap-2 text-sm">
@@ -40,8 +41,8 @@ export const BasicInfoSection = ({ user, isEditing, formData, onFormDataChange }
               <Input
                 id="email"
                 type="email"
-                value={formData.email}
-                onChange={(e) => onFormDataChange({ ...formData, email: e.target.value })}
+                value={'email' in formData ? formData.email : ''}
+                onChange={(e) => onFormDataChange({ ...formData, email: e.target.value } as ProfileFormData)}
               />
             ) : (
               <div className="flex items-center gap-2 text-sm">

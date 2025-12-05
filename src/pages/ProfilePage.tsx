@@ -11,6 +11,7 @@ import { StudentProfileSection } from "../components/profile/StudentProfileSecti
 import { CollegeProfileSection } from "../components/profile/CollegeProfileSection";
 import { useProfileForm } from "../hooks/useProfileForm";
 import { useProfileSave } from "../hooks/useProfileSave";
+import type { ProfileFormData, AlumniFormData, StudentFormData, CollegeFormData } from "../types/profile";
 
 const ProfilePage = () => {
   const { user, refreshUser } = useAuth();
@@ -94,8 +95,8 @@ const ProfilePage = () => {
           <AlumniProfileSection
             user={user as Alumni}
             isEditing={isEditing}
-            formData={formData}
-            onFormDataChange={setFormData}
+            formData={formData as AlumniFormData}
+            onFormDataChange={(data) => setFormData(data as ProfileFormData)}
           />
         )}
 
@@ -103,8 +104,8 @@ const ProfilePage = () => {
           <StudentProfileSection
             user={user as Student}
             isEditing={isEditing}
-            formData={formData}
-            onFormDataChange={setFormData}
+            formData={formData as StudentFormData}
+            onFormDataChange={(data) => setFormData(data as ProfileFormData)}
           />
         )}
 
@@ -112,8 +113,8 @@ const ProfilePage = () => {
           <CollegeProfileSection
             user={user as College}
             isEditing={isEditing}
-            formData={formData}
-            onFormDataChange={setFormData}
+            formData={formData as CollegeFormData}
+            onFormDataChange={(data) => setFormData(data as ProfileFormData)}
           />
         )}
 

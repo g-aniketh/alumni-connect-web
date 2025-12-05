@@ -14,11 +14,13 @@ import { Building2, Briefcase, GraduationCap, MapPin } from 'lucide-react';
 import { Department, type Alumni } from '../../types';
 import { OnlinePresenceSection } from './OnlinePresenceSection';
 
+import type { AlumniFormData } from '../../types/profile';
+
 interface AlumniProfileSectionProps {
   user: Alumni;
   isEditing: boolean;
-  formData: Record<string, any>;
-  onFormDataChange: (data: Record<string, any>) => void;
+  formData: AlumniFormData;
+  onFormDataChange: (data: AlumniFormData) => void;
 }
 
 export const AlumniProfileSection = ({ user, isEditing, formData, onFormDataChange }: AlumniProfileSectionProps) => {

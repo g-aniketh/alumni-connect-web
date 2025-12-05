@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { UserRole, type Alumni, type Student, type College } from '../types';
+import type { AlumniFormData, StudentFormData, CollegeFormData, ProfileFormData } from '../types/profile';
 
 export const useProfileForm = (user: Alumni | Student | College | null) => {
-  const getInitialFormData = (): Record<string, any> => {
-    if (!user) return { name: '', email: '' };
+  const getInitialFormData = (): ProfileFormData => {
+    if (!user) {
+      return { name: '', email: '' } as CollegeFormData;
+    }
     
     const base = { name: user.name || '', email: user.email || '' };
     
@@ -24,7 +27,8 @@ export const useProfileForm = (user: Alumni | Student | College | null) => {
         resumeUrl: alumni.resumeUrl || '',
         bio: alumni.bio || '',
         location: alumni.location || '',
-      };
+        avatar: alumni.avatar,
+      } as AlumniFormData;
     } else if (user.role === UserRole.Student) {
       const student = user as Student;
       return {
@@ -39,7 +43,8 @@ export const useProfileForm = (user: Alumni | Student | College | null) => {
         personalWebsite: student.personalWebsite || '',
         resumeUrl: student.resumeUrl || '',
         bio: student.bio || '',
-      };
+        avatar: student.avatar,
+      } as StudentFormData;
     } else {
       const college = user as College;
       return {
@@ -47,17 +52,18 @@ export const useProfileForm = (user: Alumni | Student | College | null) => {
         website: college.website || '',
         location: college.location || '',
         establishedYear: college.establishedYear?.toString() || '',
-      };
+        avatar: college.avatar,
+      } as CollegeFormData;
     }
   };
 
-  const [formData, setFormData] = useState<Record<string, any>>(getInitialFormData());
+  const [formData, setFormData] = useState<ProfileFormData>(getInitialFormData());
 
   const resetFormData = () => {
     setFormData(getInitialFormData());
   };
 
-  const updateFormData = (updates: Record<string, any>) => {
+  const updateFormData = (updates: Partial<ProfileFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 

@@ -3,15 +3,56 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Linkedin, Github, Globe, FileText } from 'lucide-react';
 import type { Alumni, Student } from '../../types';
+import { FileUpload } from './FileUpload';
+import { useState, useEffect } from 'react';
+import { uploadAPI } from '../../lib/api';
+import type { ProfileFormData, AlumniFormData, StudentFormData } from '../../types/profile';
 
 interface OnlinePresenceSectionProps {
   user: Alumni | Student;
   isEditing: boolean;
-  formData: Record<string, any>;
-  onFormDataChange: (data: Record<string, any>) => void;
+  formData: AlumniFormData | StudentFormData;
+  onFormDataChange: (data: AlumniFormData | StudentFormData) => void;
 }
 
 export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataChange }: OnlinePresenceSectionProps) => {
+  const [resumeUrl, setResumeUrl] = useState<string | undefined>(user.resumeUrl);
+  const [loadingFiles, setLoadingFiles] = useState(false);
+
+  // Load resume URL from backend
+  useEffect(() => {
+    const loadResume = async () => {
+      if (!isEditing) {
+        setLoadingFiles(true);
+        try {
+          const files = await uploadAPI.getMyFiles();
+          setResumeUrl(files.resumeUrl || user.resumeUrl || undefined);
+        } catch (err) {
+          // If error, use the resumeUrl from user object
+          setResumeUrl(user.resumeUrl);
+        } finally {
+          setLoadingFiles(false);
+        }
+      } else {
+        // When editing, use the current user resumeUrl
+        setResumeUrl(user.resumeUrl);
+      }
+    };
+
+    loadResume();
+  }, [user.resumeUrl, isEditing]);
+
+  const handleResumeUpload = (url: string) => {
+    setResumeUrl(url);
+    // Update form data
+    onFormDataChange({ ...formData, resumeUrl: url } as AlumniFormData | StudentFormData);
+  };
+
+  const handleResumeDelete = () => {
+    setResumeUrl(undefined);
+    onFormDataChange({ ...formData, resumeUrl: '' } as AlumniFormData | StudentFormData);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -92,26 +133,27 @@ export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataCha
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="resume">Resume URL</Label>
             {isEditing ? (
-              <Input
-                id="resume"
-                type="url"
-                value={formData.resumeUrl || ''}
-                onChange={(e) => onFormDataChange({ ...formData, resumeUrl: e.target.value })}
-                placeholder="https://example.com/resume.pdf"
+              <FileUpload
+                type="resume"
+                currentUrl={resumeUrl}
+                onUploadSuccess={handleResumeUpload}
+                onDelete={handleResumeDelete}
               />
             ) : (
-              <div className="flex items-center gap-2 text-sm">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                {user.resumeUrl ? (
-                  <a href={user.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    View Resume
-                  </a>
-                ) : (
-                  <span className="text-muted-foreground">Not specified</span>
-                )}
-              </div>
+              <>
+                <Label htmlFor="resume">Resume</Label>
+                <div className="flex items-center gap-2 text-sm">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  {resumeUrl ? (
+                    <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      View Resume
+                    </a>
+                  ) : (
+                    <span className="text-muted-foreground">Not uploaded</span>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>

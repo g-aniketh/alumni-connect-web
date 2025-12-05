@@ -53,7 +53,7 @@ const transformUser = (
       currentEmployer: alumni.currentEmployer || "",
       designation: alumni.currentDesignation || "",
       skills: alumni.skills || [],
-      avatar: alumni.profilePictureUrl,
+      avatar: alumni.profilePictureUrlOptimized || alumni.profilePictureUrlHD || alumni.profilePictureUrl,
       mentorshipAvailable: true, // Default, can be updated
       linkedInProfile: alumni.linkedInProfile,
       githubProfile: alumni.githubProfile,
@@ -73,7 +73,7 @@ const transformUser = (
       enrollmentYear: student.enrollmentYear,
       degree: student.degree,
       skills: student.skills || [],
-      avatar: student.profilePictureUrl,
+      avatar: student.profilePictureUrlOptimized || student.profilePictureUrlHD || student.profilePictureUrl,
       linkedInProfile: student.linkedInProfile,
       githubProfile: student.githubProfile,
       personalWebsite: student.personalWebsite,
@@ -92,7 +92,7 @@ const transformUser = (
         alumniCount: college.alumniCount || 0,
         studentCount: college.studentCount || 0,
       },
-      avatar: college.collegeLogoUrl,
+      avatar: college.collegeLogoUrlOptimized || college.collegeLogoUrlHD || college.collegeLogoUrl,
     } as College;
   }
 };
