@@ -1,32 +1,34 @@
-import { useState, useEffect } from 'react';
-import { AlumniProfileCard } from '../components/alumni/AlumniProfileCard';
-import { AlumniSearchFilters } from '../components/alumni/AlumniSearchFilters';
-import { type Alumni, UserRole } from '../types';
+import { useState, useEffect } from "react";
+import { AlumniProfileCard } from "../components/alumni/AlumniProfileCard";
+import { AlumniSearchFilters } from "../components/alumni/AlumniSearchFilters";
+import { type Alumni, UserRole } from "../types";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../components/ui/dialog';
-import { Button } from '../components/ui/button';
-import { Textarea } from '../components/ui/textarea';
-import { Label } from '../components/ui/label';
-import { mentorshipsAPI } from '../lib/api';
-import { useAuth } from '../context/AuthContext';
-import type { BackendAlumni } from '../types/api';
+} from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
+import { Label } from "../components/ui/label";
+import { mentorshipsAPI } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
+import type { BackendAlumni } from "../types/api";
 
 const AlumniDirectoryPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [alumni, setAlumni] = useState<BackendAlumni[]>([]);
-  const [skillSearch, setSkillSearch] = useState('');
-  const [companySearch, setCompanySearch] = useState('');
-  const [selectedAlumni, setSelectedAlumni] = useState<BackendAlumni | null>(null);
+  const [skillSearch, setSkillSearch] = useState("");
+  const [companySearch, setCompanySearch] = useState("");
+  const [selectedAlumni, setSelectedAlumni] = useState<BackendAlumni | null>(
+    null
+  );
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
-  const [requestMessage, setRequestMessage] = useState('');
-  const [areasOfInterest, setAreasOfInterest] = useState('');
+  const [requestMessage, setRequestMessage] = useState("");
+  const [areasOfInterest, setAreasOfInterest] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -36,28 +38,55 @@ const AlumniDirectoryPage = () => {
   const loadAlumni = async () => {
     try {
       setLoading(true);
-      setError('');
+      setError("");
+      // Clear any existing data first - ensure no stale data
+      setAlumni([]);
+      
+      // Fetch real data from API - no mock data, no fallback
       const mentors = await mentorshipsAPI.getMentors();
+      
+      // Validate response is an array
+      if (!Array.isArray(mentors)) {
+        console.error("Invalid API response:", mentors);
+        throw new Error("Invalid response from server: expected array");
+      }
+      
+      // Ensure we only use real data - filter out any invalid entries
+      const validMentors = mentors.filter((a: BackendAlumni) => {
+        return a && a._id && typeof a._id === 'string' && a.name;
+      });
+      
       // Filter out current user if they're an alumni
-      const filtered = mentors.filter((a: BackendAlumni) => a._id !== user?.id);
+      const filtered = validMentors.filter((a: BackendAlumni) => a._id !== user?.id);
+      
+      // Only set data if we have valid results
       setAlumni(filtered);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load alumni');
+      console.error("Error loading alumni:", err);
+      setError(err instanceof Error ? err.message : "Failed to load alumni");
+      // Set empty array on error - no mock data, no fallback
+      setAlumni([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredAlumni = alumni.filter((alumni) => {
+  const filteredAlumni = alumni.filter(alumni => {
     // Skill search - check if any skill matches (case-insensitive)
-    const matchesSkill = skillSearch === '' || 
-      (alumni.skills && alumni.skills.some(skill => 
-        skill.toLowerCase().includes(skillSearch.toLowerCase())
-      ));
+    const matchesSkill =
+      skillSearch === "" ||
+      (alumni.skills &&
+        alumni.skills.some(skill =>
+          skill.toLowerCase().includes(skillSearch.toLowerCase())
+        ));
 
     // Company search (case-insensitive)
-    const matchesCompany = companySearch === '' || 
-      (alumni.currentEmployer && alumni.currentEmployer.toLowerCase().includes(companySearch.toLowerCase()));
+    const matchesCompany =
+      companySearch === "" ||
+      (alumni.currentEmployer &&
+        alumni.currentEmployer
+          .toLowerCase()
+          .includes(companySearch.toLowerCase()));
 
     return matchesSkill && matchesCompany;
   });
@@ -68,14 +97,15 @@ const AlumniDirectoryPage = () => {
       id: backendAlumni._id,
       name: backendAlumni.name,
       email: backendAlumni.email,
-      avatar: backendAlumni.profilePictureUrl || '',
+      avatar: backendAlumni.profilePictureUrl || "",
       role: UserRole.Alumni,
       isVerified: backendAlumni.isVerified,
-      designation: backendAlumni.currentDesignation || '',
-      currentEmployer: backendAlumni.currentEmployer || '',
+      designation: backendAlumni.currentDesignation || "",
+      currentEmployer: backendAlumni.currentEmployer || "",
       graduationYear: backendAlumni.graduationYear,
       degree: backendAlumni.degree,
-      department: backendAlumni.department as unknown as import('../types').Department,
+      department:
+        backendAlumni.department as unknown as import("../types").Department,
       skills: backendAlumni.skills || [],
       mentorshipAvailable: true, // Available mentors are shown
     };
@@ -95,31 +125,35 @@ const AlumniDirectoryPage = () => {
 
     try {
       setSubmitting(true);
-      setError('');
+      setError("");
 
       const requestData = {
         mentorId: selectedAlumni._id,
         message: requestMessage.trim() || undefined,
-        areasOfInterest: areasOfInterest.trim() ? areasOfInterest.split(',').map(a => a.trim()) : undefined,
+        areasOfInterest: areasOfInterest.trim()
+          ? areasOfInterest.split(",").map(a => a.trim())
+          : undefined,
       };
 
       await mentorshipsAPI.createRequest(requestData);
-      
+
       setIsRequestDialogOpen(false);
       setSelectedAlumni(null);
-      setRequestMessage('');
-      setAreasOfInterest('');
-      alert('Mentorship request sent successfully!');
+      setRequestMessage("");
+      setAreasOfInterest("");
+      alert("Mentorship request sent successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send mentorship request');
+      setError(
+        err instanceof Error ? err.message : "Failed to send mentorship request"
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleClearFilters = () => {
-    setSkillSearch('');
-    setCompanySearch('');
+    setSkillSearch("");
+    setCompanySearch("");
   };
 
   if (loading) {
@@ -165,7 +199,7 @@ const AlumniDirectoryPage = () => {
         <div className="lg:col-span-3">
           {filteredAlumni.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredAlumni.map((backendAlumni) => {
+              {filteredAlumni.map(backendAlumni => {
                 const alumni = transformAlumni(backendAlumni);
                 return (
                   <AlumniProfileCard
@@ -188,21 +222,29 @@ const AlumniDirectoryPage = () => {
       </div>
 
       {/* Mentorship Request Dialog */}
-      <Dialog open={isRequestDialogOpen} onOpenChange={(open) => {
-        setIsRequestDialogOpen(open);
-        if (!open) {
-          setRequestMessage('');
-          setAreasOfInterest('');
-          setError('');
-        }
-      }}>
+      <Dialog
+        open={isRequestDialogOpen}
+        onOpenChange={open => {
+          setIsRequestDialogOpen(open);
+          if (!open) {
+            setRequestMessage("");
+            setAreasOfInterest("");
+            setError("");
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Request Mentorship</DialogTitle>
             <DialogDescription>
               {selectedAlumni && (
                 <>
-                  Send a mentorship request to <strong>{selectedAlumni.name}</strong> {selectedAlumni.currentEmployer ? `at ${selectedAlumni.currentEmployer}` : ''}.
+                  Send a mentorship request to{" "}
+                  <strong>{selectedAlumni.name}</strong>{" "}
+                  {selectedAlumni.currentEmployer
+                    ? `at ${selectedAlumni.currentEmployer}`
+                    : ""}
+                  .
                 </>
               )}
             </DialogDescription>
@@ -218,7 +260,7 @@ const AlumniDirectoryPage = () => {
               <p className="text-sm text-muted-foreground">
                 Please log in as a student to request mentorship.
               </p>
-            ) : user.role !== 'Student' ? (
+            ) : user.role !== "Student" ? (
               <p className="text-sm text-muted-foreground">
                 Only students can request mentorship.
               </p>
@@ -230,17 +272,19 @@ const AlumniDirectoryPage = () => {
                     id="message"
                     placeholder="Tell the mentor why you're interested in their guidance..."
                     value={requestMessage}
-                    onChange={(e) => setRequestMessage(e.target.value)}
+                    onChange={e => setRequestMessage(e.target.value)}
                     rows={4}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="areasOfInterest">Areas of Interest (Optional)</Label>
+                  <Label htmlFor="areasOfInterest">
+                    Areas of Interest (Optional)
+                  </Label>
                   <Textarea
                     id="areasOfInterest"
                     placeholder="e.g., Career guidance, Technical skills, Industry insights (comma-separated)"
                     value={areasOfInterest}
-                    onChange={(e) => setAreasOfInterest(e.target.value)}
+                    onChange={e => setAreasOfInterest(e.target.value)}
                     rows={2}
                   />
                   <p className="text-xs text-muted-foreground">
@@ -251,23 +295,23 @@ const AlumniDirectoryPage = () => {
             )}
           </div>
           <div className="flex justify-end gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setIsRequestDialogOpen(false);
-                setRequestMessage('');
-                setAreasOfInterest('');
-                setError('');
+                setRequestMessage("");
+                setAreasOfInterest("");
+                setError("");
               }}
               disabled={submitting}
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleSubmitRequest}
-              disabled={!user || user.role !== 'Student' || submitting}
+              disabled={!user || user.role !== "Student" || submitting}
             >
-              {submitting ? 'Sending...' : 'Send Request'}
+              {submitting ? "Sending..." : "Send Request"}
             </Button>
           </div>
         </DialogContent>
@@ -277,4 +321,3 @@ const AlumniDirectoryPage = () => {
 };
 
 export default AlumniDirectoryPage;
-

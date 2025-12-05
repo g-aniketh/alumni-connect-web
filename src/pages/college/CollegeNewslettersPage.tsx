@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Card, CardContent } from '../../components/ui/card';
 import { FileText } from 'lucide-react';
 
 const CollegeNewslettersPage = () => {

@@ -9,12 +9,7 @@ import {
 } from "../ui/table";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import type {
   BackendJob,
@@ -40,10 +35,12 @@ const formatStatus = (status: string) =>
   status
     .toLowerCase()
     .split("_")
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
     .join(" ");
 
-const getStatusVariant = (status: string): "default" | "secondary" | "outline" => {
+const getStatusVariant = (
+  status: string
+): "default" | "secondary" | "outline" => {
   switch (status.toLowerCase()) {
     case "applied":
       return "secondary";
@@ -84,7 +81,7 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
       setApplications(data);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to load applications",
+        err instanceof Error ? err.message : "Failed to load applications"
       );
     } finally {
       setLoading(false);
@@ -93,7 +90,7 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
 
   const handleStatusChange = async (
     applicationId: string,
-    status: (typeof statusOptions)[number],
+    status: (typeof statusOptions)[number]
   ) => {
     try {
       setError("");
@@ -102,9 +99,7 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
         await loadApplications(job._id);
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update status",
-      );
+      setError(err instanceof Error ? err.message : "Failed to update status");
     }
   };
 
@@ -114,7 +109,7 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
   };
 
   const getApplicant = (
-    application: BackendJobApplication,
+    application: BackendJobApplication
   ): BackendStudent | BackendAlumni | null => {
     if (typeof application.applicantId === "object") {
       return application.applicantId as BackendStudent | BackendAlumni;
@@ -131,7 +126,9 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading applications...</p>;
+    return (
+      <p className="text-sm text-muted-foreground">Loading applications...</p>
+    );
   }
 
   return (
@@ -159,7 +156,7 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {applications.map((app) => {
+              {applications.map(app => {
                 const applicant = getApplicant(app);
                 return (
                   <TableRow key={app._id}>
@@ -174,22 +171,24 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
                       {new Date(app.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="space-x-2 text-right">
-                      {statusOptions.map((status) => (
+                      {statusOptions.map(status => (
                         <Button
                           key={status}
-                          size="xs"
+                          size="sm"
                           variant={
                             app.status.toLowerCase() === status
                               ? "default"
                               : "outline"
                           }
-                          onClick={() => void handleStatusChange(app._id, status)}
+                          onClick={() =>
+                            void handleStatusChange(app._id, status)
+                          }
                         >
                           {formatStatus(status)}
                         </Button>
                       ))}
                       <Button
-                        size="xs"
+                        size="sm"
                         variant="ghost"
                         onClick={() => openDetails(app)}
                       >
@@ -252,5 +251,3 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
     </div>
   );
 };
-
-

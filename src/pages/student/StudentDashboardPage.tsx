@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { jobsAPI, mentorshipsAPI, eventsAPI } from '../../lib/api';
-import type { BackendJobApplication, BackendMentorship, BackendEvent, BackendJob } from '../../types/api';
+import type { BackendJobApplication, BackendMentorship, BackendEvent, BackendJob, BackendStudent } from '../../types/api';
 import { UserRole, type Student } from '../../types';
 
 const StudentDashboardPage = () => {

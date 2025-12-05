@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { authAPI } from '../lib/api';
-import { Lock, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();

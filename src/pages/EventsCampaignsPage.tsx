@@ -29,11 +29,15 @@ const EventsCampaignsPage = () => {
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<BackendEvent | null>(null);
   const [isRSVPDialogOpen, setIsRSVPDialogOpen] = useState(false);
+  const [myRegistrations, setMyRegistrations] = useState<string[]>([]); // Array of event IDs the user is registered for
 
   useEffect(() => {
     loadEvents();
     loadCampaigns();
-  }, []);
+    if (user?.role === 'Student') {
+      loadMyRegistrations();
+    }
+  }, [user]);
 
   const loadEvents = async () => {
     try {
@@ -79,6 +83,26 @@ const EventsCampaignsPage = () => {
       console.error('Failed to load campaigns:', err);
     } finally {
       setCampaignsLoading(false);
+    }
+  };
+
+  const loadMyRegistrations = async () => {
+    try {
+      if (user?.role === 'Student') {
+        const registrations = await eventsAPI.getMyRegistrations();
+        // Extract event IDs from registrations
+        const eventIds = registrations.map((reg: any) => {
+          // Handle both populated and non-populated eventId
+          if (typeof reg.eventId === 'object' && reg.eventId?._id) {
+            return reg.eventId._id;
+          }
+          return reg.eventId;
+        });
+        setMyRegistrations(eventIds);
+      }
+    } catch (err) {
+      // Silently fail - registrations are optional
+      console.error('Failed to load registrations:', err);
     }
   };
 
@@ -148,13 +172,16 @@ const EventsCampaignsPage = () => {
 
     try {
       setError('');
-      const eventId = '_id' in selectedEvent ? selectedEvent._id : selectedEvent.id;
+      const eventId = selectedEvent._id;
       await eventsAPI.register({ eventId });
       setIsRSVPDialogOpen(false);
       setSelectedEvent(null);
       alert('Successfully registered for the event!');
-      // Reload events to update registration status
+      // Reload events and registrations to update registration status
       await loadEvents();
+      if (user?.role === 'Student') {
+        await loadMyRegistrations();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to register for event');
     }
@@ -196,11 +223,13 @@ const EventsCampaignsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {events.map((backendEvent) => {
                 const event = transformEvent(backendEvent);
+                const isRegistered = user?.role === 'Student' && myRegistrations.includes(backendEvent._id);
                 return (
                   <EventCard 
                     key={backendEvent._id} 
                     event={event} 
-                    onRSVP={() => handleRSVP(backendEvent)} 
+                    onRSVP={() => handleRSVP(backendEvent)}
+                    isRegistered={isRegistered}
                   />
                 );
               })}

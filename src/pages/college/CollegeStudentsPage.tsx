@@ -257,7 +257,7 @@ const CollegeStudentsPage = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleVerify(student._id)}
+                        onClick={() => student._id && handleVerify(student._id)}
                       >
                         <CheckCircle2 className="h-4 w-4 mr-1" />
                         Verify

@@ -17,8 +17,8 @@ import { eventsAPI } from '../../lib/api';
 
 const CollegeEventCreationPage = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [, setLoading] = useState(false);
+  const [, setError] = useState<string>('');
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
@@ -122,7 +122,7 @@ const CollegeEventCreationPage = () => {
                 <Input
                   id="time"
                   type="time"
-                  value={formData.time}
+                  value={formData.startTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
                   required
                 />

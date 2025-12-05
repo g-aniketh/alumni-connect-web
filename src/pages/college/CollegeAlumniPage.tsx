@@ -40,16 +40,45 @@ const CollegeAlumniPage = () => {
     try {
       setLoading(true);
       setError('');
+      
+      // Clear any existing data first - ensure no stale data
+      setAlumni([]);
+      setPendingAlumni([]);
 
-      // Fetch verified alumni linked to this college
+      // Fetch verified alumni linked to this college - real data only
       const alumniData = await collegeAPI.getAllAlumni();
-      setAlumni(alumniData);
+      
+      // Validate response is an array
+      if (!Array.isArray(alumniData)) {
+        console.error("Invalid API response:", alumniData);
+        throw new Error("Invalid response from server: expected array");
+      }
+      
+      // Ensure we only use real data - filter out any invalid entries
+      const validAlumni = alumniData.filter((a: BackendAlumni) => {
+        return a && a._id && typeof a._id === 'string' && a.name;
+      });
+      
+      setAlumni(validAlumni);
 
-      // Fetch pending verifications (alumni + students)
+      // Fetch pending verifications (alumni + students) - real data only
       const pending = await collegeAPI.getPendingVerifications();
-      setPendingAlumni(pending.alumni);
+      
+      // Validate pending response
+      if (pending && Array.isArray(pending.alumni)) {
+        const validPending = pending.alumni.filter((a: BackendAlumni) => {
+          return a && a._id && typeof a._id === 'string' && a.name;
+        });
+        setPendingAlumni(validPending);
+      } else {
+        setPendingAlumni([]);
+      }
     } catch (err) {
+      console.error("Error loading alumni:", err);
       setError(err instanceof Error ? err.message : 'Failed to load alumni');
+      // Set empty arrays on error - no mock data, no fallback
+      setAlumni([]);
+      setPendingAlumni([]);
     } finally {
       setLoading(false);
     }

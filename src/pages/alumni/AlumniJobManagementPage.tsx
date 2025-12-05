@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import {
@@ -27,7 +27,7 @@ import { Edit2, Trash2, Briefcase, Calendar, MapPin, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AlumniJobManagementPage = () => {
-  const { user } = useAuth();
+  useAuth(); // For future use
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');

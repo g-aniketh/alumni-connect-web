@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation }
 import Navbar from './components/layout/Navbar';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
-import DashboardPage from './pages/DashboardPage';
 import RoleDashboard from './pages/RoleDashboard';
 import StudentDashboardPage from './pages/student/StudentDashboardPage';
 import AlumniDashboardPage from './pages/alumni/AlumniDashboardPage';
@@ -153,15 +152,6 @@ function App() {
               } 
             />
 
-            {/* College Dashboard (legacy - redirects to role dashboard) */}
-            <Route 
-              path="/college/dashboard" 
-              element={
-                <ProtectedRoute allowedRoles={[UserRole.College]}>
-                  <DashboardPage />
-                </ProtectedRoute>
-              } 
-            />
 
             {/* Student Routes */}
             <Route 
@@ -194,7 +184,7 @@ function App() {
                 <ProtectedRoute allowedRoles={[UserRole.Student]}>
                   <StudentEventRegistrationsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
 
             {/* Alumni Routes */}
@@ -284,7 +274,7 @@ function App() {
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniJobApplicationsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
 
             {/* College Routes */}
@@ -398,7 +388,7 @@ function App() {
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeBulkImportPage />
                 </ProtectedRoute>
-              }
+              } 
             />
 
             {/* Legacy route for alumni directory (public) */}

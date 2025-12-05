@@ -18,7 +18,7 @@ import { jobsAPI } from '../../lib/api';
 
 const CollegeJobCreationPage = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [formData, setFormData] = useState<{
     title: string;
@@ -55,18 +55,6 @@ const CollegeJobCreationPage = () => {
         [JobType.PartTime]: 'part_time',
         [JobType.Contract]: 'contract',
         [JobType.Internship]: 'internship',
-      };
-
-      // Map frontend Department to backend format
-      const departmentMap: Record<Department, string> = {
-        [Department.ComputerScience]: 'Computer Science',
-        [Department.ElectricalEngineering]: 'Electrical Engineering',
-        [Department.MechanicalEngineering]: 'Mechanical Engineering',
-        [Department.CivilEngineering]: 'Civil Engineering',
-        [Department.ChemicalEngineering]: 'Chemical Engineering',
-        [Department.BusinessAdministration]: 'Business Administration',
-        [Department.Economics]: 'Economics',
-        [Department.Psychology]: 'Psychology',
       };
 
       const jobData = {

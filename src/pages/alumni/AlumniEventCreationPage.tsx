@@ -4,20 +4,13 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../components/ui/select';
 import { useNavigate } from 'react-router-dom';
 import { eventsAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 
 const AlumniEventCreationPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  useAuth(); // For future use
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [formData, setFormData] = useState<{

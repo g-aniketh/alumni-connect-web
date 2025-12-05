@@ -1,13 +1,13 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { type AlumniEvent } from '../../types';
 import { Calendar, MapPin, Clock, User } from 'lucide-react';
 
 interface EventCardProps {
   event: AlumniEvent;
   onRSVP: (event: AlumniEvent) => void;
+  isRegistered?: boolean;
 }
 
 const formatDate = (dateString: string) => {
@@ -20,7 +20,7 @@ const formatTime = (dateString: string) => {
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 };
 
-export const EventCard = ({ event, onRSVP }: EventCardProps) => {
+export const EventCard = ({ event, onRSVP, isRegistered = false }: EventCardProps) => {
   // Organizer is now a string (name) from backend, not an ID
   const organizerName = typeof event.organizer === 'string' ? event.organizer : 'Organizer';
 
@@ -71,13 +71,24 @@ export const EventCard = ({ event, onRSVP }: EventCardProps) => {
         </div>
       </CardContent>
       <CardFooter>
-        <Button 
-          className="w-full" 
-          onClick={() => onRSVP(event)}
-          disabled={event.status !== 'Upcoming'}
-        >
-          {event.status === 'Upcoming' ? 'RSVP' : 'Event Ended'}
-        </Button>
+        {isRegistered ? (
+          <div className="w-full text-center">
+            <p className="text-sm font-medium text-green-600 dark:text-green-400 mb-1">
+              ✓ Already Registered
+            </p>
+            <p className="text-xs text-muted-foreground">
+              You're all set for this event!
+            </p>
+          </div>
+        ) : (
+          <Button 
+            className="w-full" 
+            onClick={() => onRSVP(event)}
+            disabled={event.status !== 'Upcoming'}
+          >
+            {event.status === 'Upcoming' ? 'RSVP' : 'Event Ended'}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

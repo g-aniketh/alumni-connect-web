@@ -16,7 +16,7 @@ import type { BackendJobApplication, BackendJob } from '../../types/api';
 import { Calendar, Building2, MapPin, X } from 'lucide-react';
 
 const StudentApplicationsPage = () => {
-  const { user } = useAuth();
+  useAuth(); // For future use
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [applications, setApplications] = useState<BackendJobApplication[]>([]);

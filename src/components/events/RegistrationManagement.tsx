@@ -158,7 +158,7 @@ export const RegistrationManagement = ({ event }: RegistrationManagementProps) =
                       {registrationStatuses.map((status) => (
                         <Button
                           key={status}
-                          size="xs"
+                          size="sm"
                           variant={
                             reg.status.toLowerCase() === status
                               ? "default"

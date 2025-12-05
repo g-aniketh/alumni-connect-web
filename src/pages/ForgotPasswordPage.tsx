@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { authAPI } from '../lib/api';
-import { UserRole } from '../types';
 import { Mail, ArrowLeft } from 'lucide-react';
 
 const ForgotPasswordPage = () => {

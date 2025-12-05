@@ -1,27 +1,29 @@
-import { useState, useEffect } from 'react';
-import { AlumniProfileCard } from '../../components/alumni/AlumniProfileCard';
-import { AlumniSearchFilters } from '../../components/alumni/AlumniSearchFilters';
-import { type Alumni, UserRole } from '../../types';
+import { useState, useEffect } from "react";
+import { AlumniProfileCard } from "../../components/alumni/AlumniProfileCard";
+import { AlumniSearchFilters } from "../../components/alumni/AlumniSearchFilters";
+import { type Alumni, UserRole } from "../../types";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
-import { Button } from '../../components/ui/button';
-import { useAuth } from '../../context/AuthContext';
-import { mentorshipsAPI } from '../../lib/api';
-import type { BackendAlumni } from '../../types/api';
+} from "../../components/ui/dialog";
+import { Button } from "../../components/ui/button";
+import { useAuth } from "../../context/AuthContext";
+import { mentorshipsAPI } from "../../lib/api";
+import type { BackendAlumni } from "../../types/api";
 
 const AlumniNetworkPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [alumni, setAlumni] = useState<BackendAlumni[]>([]);
-  const [skillSearch, setSkillSearch] = useState('');
-  const [companySearch, setCompanySearch] = useState('');
-  const [selectedAlumni, setSelectedAlumni] = useState<BackendAlumni | null>(null);
+  const [skillSearch, setSkillSearch] = useState("");
+  const [companySearch, setCompanySearch] = useState("");
+  const [selectedAlumni, setSelectedAlumni] = useState<BackendAlumni | null>(
+    null
+  );
   const [isConnectDialogOpen, setIsConnectDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -31,27 +33,54 @@ const AlumniNetworkPage = () => {
   const loadAlumni = async () => {
     try {
       setLoading(true);
-      setError('');
+      setError("");
+      // Clear any existing data first - ensure no stale data
+      setAlumni([]);
+      
+      // Fetch real data from API - no mock data, no fallback
       const mentors = await mentorshipsAPI.getMentors();
+      
+      // Validate response is an array
+      if (!Array.isArray(mentors)) {
+        console.error("Invalid API response:", mentors);
+        throw new Error("Invalid response from server: expected array");
+      }
+      
+      // Ensure we only use real data - filter out any invalid entries
+      const validMentors = mentors.filter((a: BackendAlumni) => {
+        return a && a._id && typeof a._id === 'string' && a.name;
+      });
+      
       // Filter out current user
-      const filtered = mentors.filter((a: BackendAlumni) => a._id !== user?.id);
+      const filtered = validMentors.filter((a: BackendAlumni) => a._id !== user?.id);
+      
+      // Only set data if we have valid results
       setAlumni(filtered);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load alumni');
+      console.error("Error loading alumni:", err);
+      setError(err instanceof Error ? err.message : "Failed to load alumni");
+      // Set empty array on error - no mock data, no fallback
+      setAlumni([]);
     } finally {
       setLoading(false);
     }
   };
 
   // Filter alumni based on search criteria
-  const filteredAlumni = alumni.filter((alumni) => {
-    const matchesSkill = skillSearch === '' || 
-      (alumni.skills && alumni.skills.some(skill => 
-        skill.toLowerCase().includes(skillSearch.toLowerCase())
-      ));
+  const filteredAlumni = alumni.filter(alumni => {
+    const matchesSkill =
+      skillSearch === "" ||
+      (alumni.skills &&
+        alumni.skills.some(skill =>
+          skill.toLowerCase().includes(skillSearch.toLowerCase())
+        ));
 
-    const matchesCompany = companySearch === '' || 
-      (alumni.currentEmployer && alumni.currentEmployer.toLowerCase().includes(companySearch.toLowerCase()));
+    const matchesCompany =
+      companySearch === "" ||
+      (alumni.currentEmployer &&
+        alumni.currentEmployer
+          .toLowerCase()
+          .includes(companySearch.toLowerCase()));
 
     return matchesSkill && matchesCompany;
   });
@@ -62,14 +91,15 @@ const AlumniNetworkPage = () => {
       id: backendAlumni._id,
       name: backendAlumni.name,
       email: backendAlumni.email,
-      avatar: backendAlumni.profilePictureUrl || '',
+      avatar: backendAlumni.profilePictureUrl || "",
       role: UserRole.Alumni,
       isVerified: backendAlumni.isVerified,
-      designation: backendAlumni.currentDesignation || '',
-      currentEmployer: backendAlumni.currentEmployer || '',
+      designation: backendAlumni.currentDesignation || "",
+      currentEmployer: backendAlumni.currentEmployer || "",
       graduationYear: backendAlumni.graduationYear,
       degree: backendAlumni.degree,
-      department: backendAlumni.department as unknown as import('../../types').Department,
+      department:
+        backendAlumni.department as unknown as import("../../types").Department,
       skills: backendAlumni.skills || [],
       mentorshipAvailable: true, // Default to true for available mentors
     };
@@ -88,15 +118,15 @@ const AlumniNetworkPage = () => {
     // Alumni-to-alumni connection feature is not yet implemented in the backend
     // This would require a separate connection/network request system
     if (selectedAlumni) {
-      alert('Alumni-to-alumni connection feature is coming soon!');
+      alert("Alumni-to-alumni connection feature is coming soon!");
       setIsConnectDialogOpen(false);
       setSelectedAlumni(null);
     }
   };
 
   const handleClearFilters = () => {
-    setSkillSearch('');
-    setCompanySearch('');
+    setSkillSearch("");
+    setCompanySearch("");
   };
 
   if (loading) {
@@ -114,7 +144,8 @@ const AlumniNetworkPage = () => {
       <div className="flex flex-col gap-2 mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Alumni Network</h1>
         <p className="text-muted-foreground">
-          Connect with fellow alumni from your institution and expand your professional network.
+          Connect with fellow alumni from your institution and expand your
+          professional network.
         </p>
       </div>
 
@@ -140,7 +171,7 @@ const AlumniNetworkPage = () => {
         <div className="lg:col-span-3">
           {filteredAlumni.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredAlumni.map((backendAlumni) => {
+              {filteredAlumni.map(backendAlumni => {
                 const alumni = transformAlumni(backendAlumni);
                 return (
                   <AlumniProfileCard
@@ -169,26 +200,30 @@ const AlumniNetworkPage = () => {
             <DialogDescription>
               {selectedAlumni && (
                 <>
-                  Send a connection request to <strong>{selectedAlumni.name}</strong> {selectedAlumni.currentEmployer ? `at ${selectedAlumni.currentEmployer}` : ''}.
+                  Send a connection request to{" "}
+                  <strong>{selectedAlumni.name}</strong>{" "}
+                  {selectedAlumni.currentEmployer
+                    ? `at ${selectedAlumni.currentEmployer}`
+                    : ""}
+                  .
                 </>
               )}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <p className="text-sm text-muted-foreground">
-              Your connection request will be sent. They will be notified and can accept your request.
+              Your connection request will be sent. They will be notified and
+              can accept your request.
             </p>
           </div>
           <div className="flex justify-end gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setIsConnectDialogOpen(false)}
             >
               Cancel
             </Button>
-            <Button onClick={handleSubmitConnect}>
-              Send Request
-            </Button>
+            <Button onClick={handleSubmitConnect}>Send Request</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -197,4 +232,3 @@ const AlumniNetworkPage = () => {
 };
 
 export default AlumniNetworkPage;
-

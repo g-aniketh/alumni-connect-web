@@ -8,7 +8,6 @@ import {
   Briefcase,
   Calendar,
   DollarSign,
-  FileText,
   Plus,
   ArrowRight,
   BarChart3,

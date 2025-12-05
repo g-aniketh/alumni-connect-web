@@ -4,7 +4,6 @@ import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { MentorshipStatus } from '../../types';
 import { Calendar, CheckCircle2, XCircle, Clock, User } from 'lucide-react';
 import {
   Dialog,
@@ -28,7 +27,7 @@ const AlumniMentorshipsPage = () => {
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState<number>(5);
-  const [myMentorships, setMyMentorships] = useState<BackendMentorship[]>([]);
+  const [, setMyMentorships] = useState<BackendMentorship[]>([]);
   const [pendingRequests, setPendingRequests] = useState<BackendMentorship[]>([]);
   const [activeMentorships, setActiveMentorships] = useState<BackendMentorship[]>([]);
   const [completedMentorships, setCompletedMentorships] = useState<BackendMentorship[]>([]);

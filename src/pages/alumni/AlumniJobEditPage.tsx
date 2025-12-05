@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '../../components/ui/select';
 import { Checkbox } from '../../components/ui/checkbox';
-import { Department, JobType } from '../../types';
+import { JobType } from '../../types';
 import { jobsAPI } from '../../lib/api';
 import type { BackendJob } from '../../types/api';
 

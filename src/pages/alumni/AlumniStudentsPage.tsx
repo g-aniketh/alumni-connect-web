@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Card, CardContent, CardDescription, CardTitle } from '../../components/ui/card';
 import { GraduationCap } from 'lucide-react';
 
 const AlumniStudentsPage = () => {

@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { mentorshipsAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
-import type { BackendMentorship, BackendAlumni } from '../../types/api';
+import type { BackendMentorship, BackendAlumni, BackendStudent } from '../../types/api';
 import { Calendar, MessageSquare, CheckCircle2, XCircle, Clock, User } from 'lucide-react';
 import {
   Dialog,
@@ -194,7 +194,7 @@ const StudentMentorshipsPage = () => {
           {activeMentorships.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {activeMentorships.map((request) => (
-                <MentorshipCard key={request.id} request={request} />
+                <MentorshipCard key={request._id} request={request} />
               ))}
             </div>
           ) : (
@@ -217,7 +217,7 @@ const StudentMentorshipsPage = () => {
           {pendingRequests.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {pendingRequests.map((request) => (
-                <MentorshipCard key={request.id} request={request} />
+                <MentorshipCard key={request._id} request={request} />
               ))}
             </div>
           ) : (
@@ -237,7 +237,7 @@ const StudentMentorshipsPage = () => {
           {completedMentorships.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {completedMentorships.map((request) => (
-                <MentorshipCard key={request.id} request={request} />
+                <MentorshipCard key={request._id} request={request} />
               ))}
             </div>
           ) : (

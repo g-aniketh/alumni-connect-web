@@ -19,7 +19,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const AlumniJobCreationPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  useAuth(); // For future use
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [formData, setFormData] = useState<{
