@@ -1,12 +1,18 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Linkedin, Github, Globe, FileText } from 'lucide-react';
-import type { Alumni, Student } from '../../types';
-import { FileUpload } from './FileUpload';
-import { useState, useEffect } from 'react';
-import { uploadAPI } from '../../lib/api';
-import type { ProfileFormData, AlumniFormData, StudentFormData } from '../../types/profile';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Linkedin, Github, Globe, FileText } from "lucide-react";
+import type { Alumni, Student } from "../../types";
+import { FileUpload } from "./FileUpload";
+import { useState, useEffect } from "react";
+import { uploadAPI } from "../../lib/api";
+import type { AlumniFormData, StudentFormData } from "../../types/profile";
 
 interface OnlinePresenceSectionProps {
   user: Alumni | Student;
@@ -15,23 +21,26 @@ interface OnlinePresenceSectionProps {
   onFormDataChange: (data: AlumniFormData | StudentFormData) => void;
 }
 
-export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataChange }: OnlinePresenceSectionProps) => {
-  const [resumeUrl, setResumeUrl] = useState<string | undefined>(user.resumeUrl);
-  const [loadingFiles, setLoadingFiles] = useState(false);
+export const OnlinePresenceSection = ({
+  user,
+  isEditing,
+  formData,
+  onFormDataChange,
+}: OnlinePresenceSectionProps) => {
+  const [resumeUrl, setResumeUrl] = useState<string | undefined>(
+    user.resumeUrl
+  );
 
   // Load resume URL from backend
   useEffect(() => {
     const loadResume = async () => {
       if (!isEditing) {
-        setLoadingFiles(true);
         try {
           const files = await uploadAPI.getMyFiles();
           setResumeUrl(files.resumeUrl || user.resumeUrl || undefined);
-        } catch (err) {
+        } catch {
           // If error, use the resumeUrl from user object
           setResumeUrl(user.resumeUrl);
-        } finally {
-          setLoadingFiles(false);
         }
       } else {
         // When editing, use the current user resumeUrl
@@ -45,12 +54,16 @@ export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataCha
   const handleResumeUpload = (url: string) => {
     setResumeUrl(url);
     // Update form data
-    onFormDataChange({ ...formData, resumeUrl: url } as AlumniFormData | StudentFormData);
+    onFormDataChange({ ...formData, resumeUrl: url } as
+      | AlumniFormData
+      | StudentFormData);
   };
 
   const handleResumeDelete = () => {
     setResumeUrl(undefined);
-    onFormDataChange({ ...formData, resumeUrl: '' } as AlumniFormData | StudentFormData);
+    onFormDataChange({ ...formData, resumeUrl: "" } as
+      | AlumniFormData
+      | StudentFormData);
   };
 
   return (
@@ -67,15 +80,25 @@ export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataCha
               <Input
                 id="linkedIn"
                 type="url"
-                value={formData.linkedInProfile || ''}
-                onChange={(e) => onFormDataChange({ ...formData, linkedInProfile: e.target.value })}
+                value={formData.linkedInProfile || ""}
+                onChange={e =>
+                  onFormDataChange({
+                    ...formData,
+                    linkedInProfile: e.target.value,
+                  })
+                }
                 placeholder="https://linkedin.com/in/yourprofile"
               />
             ) : (
               <div className="flex items-center gap-2 text-sm">
                 <Linkedin className="h-4 w-4 text-muted-foreground" />
                 {user.linkedInProfile ? (
-                  <a href={user.linkedInProfile} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a
+                    href={user.linkedInProfile}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
                     View Profile
                   </a>
                 ) : (
@@ -90,15 +113,25 @@ export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataCha
               <Input
                 id="github"
                 type="url"
-                value={formData.githubProfile || ''}
-                onChange={(e) => onFormDataChange({ ...formData, githubProfile: e.target.value })}
+                value={formData.githubProfile || ""}
+                onChange={e =>
+                  onFormDataChange({
+                    ...formData,
+                    githubProfile: e.target.value,
+                  })
+                }
                 placeholder="https://github.com/yourusername"
               />
             ) : (
               <div className="flex items-center gap-2 text-sm">
                 <Github className="h-4 w-4 text-muted-foreground" />
                 {user.githubProfile ? (
-                  <a href={user.githubProfile} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a
+                    href={user.githubProfile}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
                     View Profile
                   </a>
                 ) : (
@@ -115,15 +148,25 @@ export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataCha
               <Input
                 id="website"
                 type="url"
-                value={formData.personalWebsite || ''}
-                onChange={(e) => onFormDataChange({ ...formData, personalWebsite: e.target.value })}
+                value={formData.personalWebsite || ""}
+                onChange={e =>
+                  onFormDataChange({
+                    ...formData,
+                    personalWebsite: e.target.value,
+                  })
+                }
                 placeholder="https://yourwebsite.com"
               />
             ) : (
               <div className="flex items-center gap-2 text-sm">
                 <Globe className="h-4 w-4 text-muted-foreground" />
                 {user.personalWebsite ? (
-                  <a href={user.personalWebsite} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a
+                    href={user.personalWebsite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
                     Visit Website
                   </a>
                 ) : (
@@ -146,7 +189,12 @@ export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataCha
                 <div className="flex items-center gap-2 text-sm">
                   <FileText className="h-4 w-4 text-muted-foreground" />
                   {resumeUrl ? (
-                    <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a
+                      href={resumeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
                       View Resume
                     </a>
                   ) : (
@@ -161,4 +209,3 @@ export const OnlinePresenceSection = ({ user, isEditing, formData, onFormDataCha
     </Card>
   );
 };
-

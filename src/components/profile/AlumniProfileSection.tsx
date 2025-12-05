@@ -167,7 +167,7 @@ export const AlumniProfileSection = ({ user, isEditing, formData, onFormDataChan
         </CardContent>
       </Card>
 
-      <OnlinePresenceSection user={user} isEditing={isEditing} formData={formData} onFormDataChange={onFormDataChange} />
+      <OnlinePresenceSection user={user} isEditing={isEditing} formData={formData} onFormDataChange={(data) => onFormDataChange(data as AlumniFormData)} />
     </>
   );
 };

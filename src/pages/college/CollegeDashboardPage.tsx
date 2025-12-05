@@ -91,11 +91,11 @@ const CollegeDashboardPage = () => {
 
       try {
         // Get campaigns and calculate totalRaised
-        const campaigns = await campaignsAPI.getMyCampaigns();
-        mappedStats.totalCampaigns = campaigns.length;
+        const campaignsResponse = await campaignsAPI.getMyCampaigns();
+        mappedStats.totalCampaigns = campaignsResponse.campaigns.length;
 
         // Calculate total raised from all campaigns
-        mappedStats.totalRaised = campaigns.reduce((sum: number, campaign) => {
+        mappedStats.totalRaised = campaignsResponse.campaigns.reduce((sum: number, campaign) => {
           return sum + (campaign.totalRaised ?? 0);
         }, 0);
       } catch (err) {

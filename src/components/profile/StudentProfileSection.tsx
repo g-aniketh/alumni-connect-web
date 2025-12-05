@@ -128,7 +128,7 @@ export const StudentProfileSection = ({ user, isEditing, formData, onFormDataCha
         </CardContent>
       </Card>
 
-      <OnlinePresenceSection user={user} isEditing={isEditing} formData={formData} onFormDataChange={onFormDataChange} />
+      <OnlinePresenceSection user={user} isEditing={isEditing} formData={formData} onFormDataChange={(data) => onFormDataChange(data as StudentFormData)} />
     </>
   );
 };

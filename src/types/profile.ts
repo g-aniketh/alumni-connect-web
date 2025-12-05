@@ -1,5 +1,3 @@
-import { UserRole, type Alumni, type Student, type College } from './index';
-
 // Form data types for each user role
 export interface AlumniFormData {
   name: string;

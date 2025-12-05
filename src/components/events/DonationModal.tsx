@@ -61,7 +61,7 @@ export const DonationModal = ({
         await campaignsAPI.contributeVolunteer({
           campaignId: campaign._id,
           hours: parseFloat(hours),
-          date: new Date().toISOString(),
+          activityDescription: `Volunteered ${hours} hours for ${campaign.title}`,
         });
       }
 
