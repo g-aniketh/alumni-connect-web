@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { useAuth } from "../../context/AuthContext";
 import type { BackendEvent } from "../../types/api";
@@ -23,10 +28,10 @@ const AlumniEventRegistrationsPage = () => {
       setError("");
       const data = await eventsAPI.getMyOrganized();
       setEvents(data);
-      setSelectedEvent((prev) => prev ?? data[0] ?? null);
+      setSelectedEvent(prev => prev ?? data[0] ?? null);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to load your events",
+        err instanceof Error ? err.message : "Failed to load your events"
       );
     } finally {
       setLoading(false);
@@ -68,7 +73,7 @@ const AlumniEventRegistrationsPage = () => {
                 <CardTitle className="text-sm">Your Events</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {events.map((event) => (
+                {events.map(event => (
                   <Button
                     key={event._id}
                     variant={
@@ -110,5 +115,3 @@ const AlumniEventRegistrationsPage = () => {
 };
 
 export default AlumniEventRegistrationsPage;
-
-

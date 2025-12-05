@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, GraduationCap } from "lucide-react";
+import { Menu, GraduationCap, LayoutDashboard, Search, Briefcase, Calendar, ClipboardList, MessageSquare, Network, Users, Heart, UserCheck, FileText } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { RoleSwitcher } from "../auth/RoleSwitcher";
 import { UserRole } from "../../types";
+import { NavigationMenu } from "./NavigationMenu";
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -22,56 +23,255 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const publicLinks = [
-    { name: "Home", path: "/" },
-    { name: "Jobs", path: "/jobs" },
-    { name: "Events", path: "/events" },
-  ];
+  const getNavigationItems = () => {
+    if (!user) {
+      return [
+        {
+          name: "Home",
+          path: "/",
+          icon: <GraduationCap className="h-4 w-4" />,
+          description: "Welcome to Alumni Connect",
+        },
+        {
+          name: "Jobs",
+          path: "/jobs",
+          icon: <Briefcase className="h-4 w-4" />,
+          description: "Browse job opportunities",
+        },
+        {
+          name: "Events",
+          path: "/events",
+          icon: <Calendar className="h-4 w-4" />,
+          description: "Discover upcoming events",
+        },
+      ];
+    }
 
-  const getRoleLinks = () => {
-    if (!user) return [];
-    
     switch (user.role) {
       case UserRole.Student:
         return [
-          { name: "Dashboard", path: "/student/dashboard" },
-          { name: "Alumni", path: "/student/alumni" },
-          { name: "Jobs", path: "/jobs" },
-          { name: "Applications", path: "/student/applications" },
-          { name: "Mentorships", path: "/student/mentorships" },
-          { name: "Events", path: "/events" },
-          { name: "My Events", path: "/student/events" },
+          {
+            name: "Dashboard",
+            path: "/student/dashboard",
+            icon: <LayoutDashboard className="h-4 w-4" />,
+            description: "View your dashboard overview",
+          },
+          {
+            name: "Explore",
+            icon: <Search className="h-4 w-4" />,
+            description: "Discover opportunities and connect",
+            subItems: [
+              {
+                name: "Alumni Directory",
+                path: "/student/alumni",
+                icon: <Users className="h-5 w-5" />,
+                description: "Browse and connect with alumni mentors",
+              },
+              {
+                name: "Jobs",
+                path: "/jobs",
+                icon: <Briefcase className="h-5 w-5" />,
+                description: "Find job opportunities and internships",
+              },
+              {
+                name: "Events",
+                path: "/events",
+                icon: <Calendar className="h-5 w-5" />,
+                description: "Discover and register for events",
+              },
+            ],
+          },
+          {
+            name: "My Activity",
+            icon: <ClipboardList className="h-4 w-4" />,
+            description: "Manage your applications and activities",
+            subItems: [
+              {
+                name: "Applications",
+                path: "/student/applications",
+                icon: <FileText className="h-5 w-5" />,
+                description: "Track your job applications status",
+              },
+              {
+                name: "Mentorships",
+                path: "/student/mentorships",
+                icon: <MessageSquare className="h-5 w-5" />,
+                description: "View and manage your mentorship requests",
+              },
+              {
+                name: "My Events",
+                path: "/student/events",
+                icon: <Calendar className="h-5 w-5" />,
+                description: "View your event registrations",
+              },
+            ],
+          },
         ];
+
       case UserRole.Alumni:
         return [
-          { name: "Dashboard", path: "/alumni/dashboard" },
-          { name: "Alumni Network", path: "/alumni/network" },
-          { name: "Students", path: "/alumni/students" },
-          { name: "Jobs", path: "/jobs" },
-          { name: "My Jobs", path: "/alumni/jobs" },
-          { name: "Applications", path: "/alumni/jobs/applications" },
-          { name: "Events", path: "/events" },
-          { name: "My Events", path: "/alumni/events" },
-          { name: "Mentorships", path: "/alumni/mentorships" },
+          {
+            name: "Dashboard",
+            path: "/alumni/dashboard",
+            icon: <LayoutDashboard className="h-4 w-4" />,
+            description: "View your dashboard overview",
+          },
+          {
+            name: "Network",
+            icon: <Network className="h-4 w-4" />,
+            description: "Connect with alumni and students",
+            subItems: [
+              {
+                name: "Alumni Network",
+                path: "/alumni/network",
+                icon: <Users className="h-5 w-5" />,
+                description: "Connect with fellow alumni from your institution",
+              },
+              {
+                name: "Students",
+                path: "/alumni/students",
+                icon: <GraduationCap className="h-5 w-5" />,
+                description: "View students from your college",
+              },
+            ],
+          },
+          {
+            name: "Explore",
+            icon: <Search className="h-4 w-4" />,
+            description: "Browse jobs and events",
+            subItems: [
+              {
+                name: "Jobs",
+                path: "/jobs",
+                icon: <Briefcase className="h-5 w-5" />,
+                description: "Browse and post job opportunities",
+              },
+              {
+                name: "Events",
+                path: "/events",
+                icon: <Calendar className="h-5 w-5" />,
+                description: "Discover and organize events",
+              },
+            ],
+          },
+          {
+            name: "My Content",
+            icon: <ClipboardList className="h-4 w-4" />,
+            description: "Manage your posted jobs and events",
+            subItems: [
+              {
+                name: "My Jobs",
+                path: "/alumni/jobs",
+                icon: <Briefcase className="h-5 w-5" />,
+                description: "Manage your posted job listings",
+              },
+              {
+                name: "My Events",
+                path: "/alumni/events",
+                icon: <Calendar className="h-5 w-5" />,
+                description: "Manage your organized events",
+              },
+              {
+                name: "Applications",
+                path: "/alumni/jobs/applications",
+                icon: <FileText className="h-5 w-5" />,
+                description: "Review applications for your jobs",
+              },
+            ],
+          },
+          {
+            name: "Mentorships",
+            path: "/alumni/mentorships",
+            icon: <MessageSquare className="h-4 w-4" />,
+            description: "Manage mentorship requests and active mentorships",
+          },
         ];
+
       case UserRole.College:
         return [
-          { name: "Dashboard", path: "/college/dashboard" },
-          { name: "Alumni", path: "/college/alumni" },
-          { name: "Students", path: "/college/students" },
-          { name: "Jobs", path: "/jobs" },
-          { name: "My Jobs", path: "/college/jobs" },
-          { name: "Applications", path: "/college/jobs/applications" },
-          { name: "Events", path: "/events" },
-          { name: "My Events", path: "/college/events" },
-          { name: "Campaigns", path: "/events" },
+          {
+            name: "Dashboard",
+            path: "/college/dashboard",
+            icon: <LayoutDashboard className="h-4 w-4" />,
+            description: "View your dashboard overview",
+          },
+          {
+            name: "People",
+            icon: <Users className="h-4 w-4" />,
+            description: "Manage alumni and students",
+            subItems: [
+              {
+                name: "Alumni",
+                path: "/college/alumni",
+                icon: <UserCheck className="h-5 w-5" />,
+                description: "View and verify alumni accounts",
+              },
+              {
+                name: "Students",
+                path: "/college/students",
+                icon: <GraduationCap className="h-5 w-5" />,
+                description: "View and verify student accounts",
+              },
+            ],
+          },
+          {
+            name: "Explore",
+            icon: <Search className="h-4 w-4" />,
+            description: "Browse jobs, events, and campaigns",
+            subItems: [
+              {
+                name: "Jobs",
+                path: "/jobs",
+                icon: <Briefcase className="h-5 w-5" />,
+                description: "Browse and post job opportunities",
+              },
+              {
+                name: "Events",
+                path: "/events",
+                icon: <Calendar className="h-5 w-5" />,
+                description: "Discover and organize events",
+              },
+              {
+                name: "Campaigns",
+                path: "/events",
+                icon: <Heart className="h-5 w-5" />,
+                description: "Create and manage fundraising campaigns",
+              },
+            ],
+          },
+          {
+            name: "My Content",
+            icon: <ClipboardList className="h-4 w-4" />,
+            description: "Manage your posted jobs and events",
+            subItems: [
+              {
+                name: "My Jobs",
+                path: "/college/jobs",
+                icon: <Briefcase className="h-5 w-5" />,
+                description: "Manage your posted job listings",
+              },
+              {
+                name: "My Events",
+                path: "/college/events",
+                icon: <Calendar className="h-5 w-5" />,
+                description: "Manage your organized events",
+              },
+              {
+                name: "Applications",
+                path: "/college/jobs/applications",
+                icon: <FileText className="h-5 w-5" />,
+                description: "Review applications for your jobs",
+              },
+            ],
+          },
         ];
+
       default:
-        return publicLinks;
+        return [];
     }
   };
 
-  const navLinks = isAuthenticated ? getRoleLinks() : publicLinks;
+  const navigationItems = getNavigationItems();
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
@@ -87,18 +287,8 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6">
-          {navLinks.map(link => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                location.pathname === link.path ? "text-primary" : ""
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="hidden md:flex items-center gap-1">
+          <NavigationMenu items={navigationItems} />
         </div>
 
         <div className="hidden md:flex items-center gap-4">
@@ -181,18 +371,39 @@ const Navbar = () => {
                   <span>Alumni Connect</span>
                 </Link>
                 <div className="flex flex-col gap-4">
-                  {navLinks.map(link => (
-                    <Link
-                      key={link.name}
-                      to={link.path}
-                      className={`text-lg font-medium transition-colors hover:text-primary ${
-                        location.pathname === link.path ? "text-primary" : ""
-                      }`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
+                  {navigationItems.map((item) => {
+                    if (item.subItems && item.subItems.length > 0) {
+                      return (
+                        <div key={item.name} className="space-y-2">
+                          <p className="text-sm font-semibold text-muted-foreground">{item.name}</p>
+                          {item.subItems.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              to={subItem.path || "#"}
+                              className={`block text-base font-medium transition-colors hover:text-primary pl-4 ${
+                                location.pathname === subItem.path ? "text-primary" : ""
+                              }`}
+                              onClick={() => setIsOpen(false)}
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      );
+                    }
+                    return (
+                      <Link
+                        key={item.name}
+                        to={item.path || "#"}
+                        className={`text-lg font-medium transition-colors hover:text-primary ${
+                          location.pathname === item.path ? "text-primary" : ""
+                        }`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    );
+                  })}
                 </div>
                 <div className="border-t pt-4">
                   {!isAuthenticated && (

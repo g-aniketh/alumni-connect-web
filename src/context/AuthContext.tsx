@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useContext,
@@ -100,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user from storage on mount
+  // Load user from storage on mount - persist authentication on refresh
   useEffect(() => {
     const loadUser = async () => {
       try {
@@ -108,7 +109,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const token = tokenService.getAccessToken();
 
         if (storedUser && token) {
-          // Verify token is still valid by fetching current user
+          // Set user immediately from storage for instant UI update
+          setUser(storedUser);
+
+          // Then verify token is still valid by fetching current user
           try {
             const response = await authAPI.getCurrentUser();
             if (response.user) {
@@ -118,16 +122,55 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               );
               setUser(transformedUser);
               tokenService.setUser(transformedUser);
+
+              // Update verification status
+              const role = response.role as UserRole;
+              if (role === UserRole.Alumni || role === UserRole.Student) {
+                const typedUser = transformedUser as Alumni | Student;
+                tokenService.setVerificationStatus(typedUser.isVerified);
+              } else {
+                tokenService.setVerificationStatus(true);
+              }
             }
           } catch (error) {
-            // Token invalid, clear storage
-            tokenService.clearTokens();
-            setUser(null);
+            // Token invalid or expired, try to refresh
+            console.warn(
+              "Token validation failed, attempting refresh...",
+              error
+            );
+            try {
+              // The ApiClient should handle token refresh automatically
+              // If refresh also fails, clear storage
+              const refreshToken = tokenService.getRefreshToken();
+              if (!refreshToken) {
+                throw new Error("No refresh token available");
+              }
+              // If we get here, token refresh might have worked
+              // Try getting user again
+              const response = await authAPI.getCurrentUser();
+              if (response.user) {
+                const transformedUser = transformUser(
+                  response.user,
+                  response.role as UserRole
+                );
+                setUser(transformedUser);
+                tokenService.setUser(transformedUser);
+              }
+            } catch (refreshError) {
+              // Both validation and refresh failed, clear storage
+              console.error("Token refresh failed, logging out:", refreshError);
+              tokenService.clearTokens();
+              setUser(null);
+            }
           }
+        } else {
+          // No stored user or token, ensure clean state
+          setUser(null);
         }
       } catch (error) {
         console.error("Error loading user:", error);
         tokenService.clearTokens();
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -144,16 +187,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       let response: import("../types/api").LoginResponse;
 
-    switch (role) {
-      case UserRole.Alumni:
+      switch (role) {
+        case UserRole.Alumni:
           response = await authAPI.loginAlumni(email, password);
-        break;
-      case UserRole.Student:
+          break;
+        case UserRole.Student:
           response = await authAPI.loginStudent(email, password);
-        break;
-      case UserRole.College:
+          break;
+        case UserRole.College:
           response = await authAPI.loginCollege(email, password);
-        break;
+          break;
         default:
           throw new Error("Invalid role");
       }
@@ -274,7 +317,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error refreshing user:", error);
       // If refresh fails, logout user
       tokenService.clearTokens();
-    setUser(null);
+      setUser(null);
     }
   };
 

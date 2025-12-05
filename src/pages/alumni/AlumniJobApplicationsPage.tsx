@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { useAuth } from "../../context/AuthContext";
 import type { BackendJob } from "../../types/api";
@@ -23,11 +28,9 @@ const AlumniJobApplicationsPage = () => {
       setError("");
       const data = await jobsAPI.getMyPosted();
       setJobs(data);
-      setSelectedJob((prev) => prev ?? data[0] ?? null);
+      setSelectedJob(prev => prev ?? data[0] ?? null);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load your jobs",
-      );
+      setError(err instanceof Error ? err.message : "Failed to load your jobs");
     } finally {
       setLoading(false);
     }
@@ -40,9 +43,7 @@ const AlumniJobApplicationsPage = () => {
   return (
     <div className="container py-8 min-h-screen space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Job Applications
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Job Applications</h1>
         <p className="text-muted-foreground">
           Review and manage applications for the jobs you have posted.
         </p>
@@ -68,7 +69,7 @@ const AlumniJobApplicationsPage = () => {
                 <CardTitle className="text-sm">Your Jobs</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {jobs.map((job) => (
+                {jobs.map(job => (
                   <Button
                     key={job._id}
                     variant={
@@ -110,5 +111,3 @@ const AlumniJobApplicationsPage = () => {
 };
 
 export default AlumniJobApplicationsPage;
-
-
