@@ -1,5 +1,38 @@
 // API Response Types based on Backend Interfaces
 
+// Backend Enums (matching Backend-Alumni-Connect/src/types/customTypes.ts)
+export const BackendApplicationStatus = {
+  Applied: "applied",
+  UnderReview: "under_review",
+  InterviewScheduled: "interview_scheduled",
+  Offered: "offered",
+  Rejected: "rejected",
+} as const;
+
+export type BackendApplicationStatus = 
+  (typeof BackendApplicationStatus)[keyof typeof BackendApplicationStatus];
+
+export const BackendEventRegistrationStatus = {
+  Registered: "registered",
+  Attended: "attended",
+  Cancelled: "cancelled",
+  Waitlisted: "waitlisted",
+} as const;
+
+export type BackendEventRegistrationStatus = 
+  (typeof BackendEventRegistrationStatus)[keyof typeof BackendEventRegistrationStatus];
+
+export const BackendJobType = {
+  FullTime: "full_time",
+  PartTime: "part_time",
+  Internship: "internship",
+  Contract: "contract",
+  Temporary: "temporary",
+} as const;
+
+export type BackendJobType = 
+  (typeof BackendJobType)[keyof typeof BackendJobType];
+
 export interface BackendAlumni {
   _id: string;
   name: string;
@@ -162,7 +195,7 @@ export interface BackendJob {
     posterId: string | { _id: string; name: string; email: string };
   };
   totalApplications: number;
-  jobType: string;
+  jobType: BackendJobType;
   salaryMin?: number;
   salaryMax?: number;
   salaryCurrency?: string;
@@ -177,7 +210,7 @@ export interface JobCreateRequest {
   description: string;
   requirements: string[];
   location: string;
-  jobType: string;
+  jobType: BackendJobType;
   salaryMin?: number;
   salaryMax?: number;
   salaryCurrency?: string;
@@ -195,7 +228,7 @@ export interface BackendJobApplication {
   jobId: string | BackendJob;
   applicantType: string;
   applicantId: string | BackendStudent | BackendAlumni;
-  status: string;
+  status: BackendApplicationStatus;
   message?: string;
   resumeUrl?: string;
   createdAt: string;
@@ -239,7 +272,7 @@ export interface BackendEventRegistration {
   eventId: string | BackendEvent;
   participantType: string;
   participantId: string | BackendStudent;
-  status: string;
+  status: BackendEventRegistrationStatus;
   createdAt: string;
   updatedAt: string;
 }

@@ -16,7 +16,7 @@ import { type AlumniEvent } from '../types';
 import { campaignsAPI, eventsAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types';
-import type { BackendCampaign, BackendEvent } from '../types/api';
+import type { BackendCampaign, BackendEvent, BackendEventRegistration } from '../types/api';
 import { Plus } from 'lucide-react';
 
 const EventsCampaignsPage = () => {
@@ -97,12 +97,12 @@ const EventsCampaignsPage = () => {
       if (user?.role === 'Student') {
         const registrations = await eventsAPI.getMyRegistrations();
         // Extract event IDs from registrations
-        const eventIds = registrations.map((reg: any) => {
+        const eventIds = registrations.map((reg: BackendEventRegistration) => {
           // Handle both populated and non-populated eventId
-          if (typeof reg.eventId === 'object' && reg.eventId?._id) {
+          if (typeof reg.eventId === 'object' && reg.eventId && '_id' in reg.eventId) {
             return reg.eventId._id;
           }
-          return reg.eventId;
+          return typeof reg.eventId === 'string' ? reg.eventId : String(reg.eventId);
         });
         setMyRegistrations(eventIds);
       }

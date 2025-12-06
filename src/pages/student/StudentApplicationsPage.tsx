@@ -63,7 +63,7 @@ const StudentApplicationsPage = () => {
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100';
       case 'under_review':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100';
-      case 'interviewing':
+      case 'interview_scheduled':
         return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100';
       case 'rejected':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
@@ -127,7 +127,7 @@ const StudentApplicationsPage = () => {
             >
               All
             </Badge>
-            {['applied', 'under_review', 'interviewing', 'offered', 'rejected'].map((status) => (
+            {['applied', 'under_review', 'interview_scheduled', 'offered', 'rejected'].map((status) => (
               <Badge
                 key={status}
                 variant={statusFilter === status ? 'default' : 'outline'}

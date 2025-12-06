@@ -76,7 +76,35 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
     });
   };
 
-  const validateAndParseData = (): { valid: boolean; data: any[]; errors: string[] } => {
+  type StudentRowData = {
+    name: string;
+    email: string;
+    password?: string;
+    rollNumber: string;
+    enrollmentYear: number;
+    department: string;
+    degree: string;
+    graduationYear: number;
+  };
+
+  type AlumniRowData = {
+    name: string;
+    email: string;
+    password?: string;
+    graduationYear: number;
+    degree: string;
+    department: string;
+    currentJobTitle?: string;
+    company?: string;
+    linkedInProfile?: string;
+    skills?: string[];
+  };
+
+  const validateAndParseData = (): { 
+    valid: boolean; 
+    data: StudentRowData[] | AlumniRowData[]; 
+    errors: string[] 
+  } => {
     const errors: string[] = [];
     const lines = parseCSV(csvData);
     
@@ -87,9 +115,9 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
 
     const headers = lines[0].map(h => h.toLowerCase().trim());
     const dataRows = lines.slice(1);
-    const parsedData: any[] = [];
 
     if (importType === 'students') {
+      const parsedData: StudentRowData[] = [];
       const requiredFields = ['name', 'email', 'rollnumber', 'enrollmentyear', 'department', 'degree', 'graduationyear'];
       const missingFields = requiredFields.filter(f => !headers.includes(f));
       if (missingFields.length > 0) {
@@ -99,7 +127,15 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
 
       dataRows.forEach((row, index) => {
         const rowNum = index + 2; // +2 because we start from row 2 (after header)
-        const rowData: any = {};
+        const rowData: StudentRowData = {
+          name: '',
+          email: '',
+          rollNumber: '',
+          enrollmentYear: 0,
+          department: '',
+          degree: '',
+          graduationYear: 0,
+        };
 
         headers.forEach((header, colIndex) => {
           const value = row[colIndex]?.trim() || '';
@@ -144,8 +180,11 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
           parsedData.push(rowData);
         }
       });
+
+      return { valid: errors.length === 0, data: parsedData, errors };
     } else {
       // Alumni
+      const parsedData: AlumniRowData[] = [];
       const requiredFields = ['name', 'email', 'graduationyear', 'degree', 'department'];
       const missingFields = requiredFields.filter(f => !headers.includes(f));
       if (missingFields.length > 0) {
@@ -155,7 +194,13 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
 
       dataRows.forEach((row, index) => {
         const rowNum = index + 2;
-        const rowData: any = {};
+        const rowData: AlumniRowData = {
+          name: '',
+          email: '',
+          graduationYear: 0,
+          degree: '',
+          department: '',
+        };
 
         headers.forEach((header, colIndex) => {
           const value = row[colIndex]?.trim() || '';
@@ -203,9 +248,9 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
           parsedData.push(rowData);
         }
       });
-    }
 
-    return { valid: errors.length === 0, data: parsedData, errors };
+      return { valid: errors.length === 0, data: parsedData, errors };
+    }
   };
 
   const handleImport = async () => {

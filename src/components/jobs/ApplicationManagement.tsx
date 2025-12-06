@@ -26,7 +26,7 @@ interface ApplicationManagementProps {
 const statusOptions = [
   "applied",
   "under_review",
-  "interviewing",
+  "interview_scheduled",
   "offered",
   "rejected",
 ] as const;
@@ -46,7 +46,7 @@ const getStatusVariant = (
       return "secondary";
     case "under_review":
       return "outline";
-    case "interviewing":
+    case "interview_scheduled":
       return "default";
     case "offered":
       return "default";

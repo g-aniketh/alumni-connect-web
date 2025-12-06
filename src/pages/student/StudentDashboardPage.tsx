@@ -72,7 +72,7 @@ const StudentDashboardPage = () => {
 
   const totalApplications = applications.length;
   const activeApplications = applications.filter(
-    app => app.status === 'applied' || app.status === 'under_review' || app.status === 'interviewing'
+    app => app.status === 'applied' || app.status === 'under_review' || app.status === 'interview_scheduled'
   ).length;
 
   const activeMentorships = myMentorships.filter(m => m.status.toLowerCase() === 'active').length;

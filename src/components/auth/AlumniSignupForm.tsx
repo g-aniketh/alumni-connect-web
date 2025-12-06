@@ -1,35 +1,41 @@
-import { useState, useEffect } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { useState, useEffect } from "react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { collegeAPI } from '../../lib/api';
-import { degreeMap, degrees } from './formConstants';
+} from "../ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { collegeAPI } from "../../lib/api";
+import { degreeMap, degrees, departmentMap } from "./formConstants";
 
 export const AlumniSignupForm = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [degree, setDegree] = useState('');
-  const [department, setDepartment] = useState('');
-  const [graduationYear, setGraduationYear] = useState('');
-  const [college, setCollege] = useState('');
-  const [linkedInProfile, setLinkedInProfile] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [degree, setDegree] = useState("");
+  const [department, setDepartment] = useState("");
+  const [graduationYear, setGraduationYear] = useState("");
+  const [college, setCollege] = useState("");
+  const [linkedInProfile, setLinkedInProfile] = useState("");
   const [colleges, setColleges] = useState<string[]>([]);
   const [loadingColleges, setLoadingColleges] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     loadColleges();
@@ -42,7 +48,7 @@ export const AlumniSignupForm = () => {
       const collegeNames = response;
       setColleges(collegeNames);
     } catch (err) {
-      console.error('Failed to load colleges:', err);
+      console.error("Failed to load colleges:", err);
     } finally {
       setLoadingColleges(false);
     }
@@ -50,28 +56,45 @@ export const AlumniSignupForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      if (!name || !email || !password || !degree || !department || !graduationYear || !college) {
-        throw new Error('Please fill all required fields');
+      if (
+        !name ||
+        !email ||
+        !password ||
+        !degree ||
+        !department ||
+        !graduationYear ||
+        !college
+      ) {
+        throw new Error("Please fill all required fields");
       }
-      const signupData = {
+      const graduationYearNum = parseInt(graduationYear, 10);
+      if (isNaN(graduationYearNum)) {
+        throw new Error("Invalid graduation year");
+      }
+
+      const mappedDepartment =
+        departmentMap[department] ||
+        department.toLowerCase().replace(/\s+/g, "_");
+
+      const signupData: import("../../types/api").AlumniSignupRequest = {
         name,
         email,
         password,
-        graduationYear: parseInt(graduationYear),
+        graduationYear: graduationYearNum,
         degree: degreeMap[degree] || degree.toLowerCase(),
         collegeName: college,
-        department: department.toLowerCase().replace(/\s+/g, '_'),
+        department: mappedDepartment,
         linkedInProfile: linkedInProfile.trim() || undefined,
       };
-      await signup('Alumni', signupData);
-      alert('Account created successfully! Please log in.');
-      navigate('/login');
+      await signup("Alumni", signupData);
+      alert("Account created successfully! Please log in.");
+      navigate("/login");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed');
+      setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -142,10 +165,18 @@ export const AlumniSignupForm = () => {
                 <SelectValue placeholder="Select Department" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Computer Science">Computer Science</SelectItem>
-                <SelectItem value="Electrical Engineering">Electrical Engineering</SelectItem>
-                <SelectItem value="Mechanical Engineering">Mechanical Engineering</SelectItem>
-                <SelectItem value="Civil Engineering">Civil Engineering</SelectItem>
+                <SelectItem value="Computer Science">
+                  Computer Science
+                </SelectItem>
+                <SelectItem value="Electrical Engineering">
+                  Electrical Engineering
+                </SelectItem>
+                <SelectItem value="Mechanical Engineering">
+                  Mechanical Engineering
+                </SelectItem>
+                <SelectItem value="Civil Engineering">
+                  Civil Engineering
+                </SelectItem>
                 <SelectItem value="Business">Business</SelectItem>
                 <SelectItem value="Arts">Arts</SelectItem>
                 <SelectItem value="Science">Science</SelectItem>
@@ -172,21 +203,28 @@ export const AlumniSignupForm = () => {
             <Select
               onValueChange={setCollege}
               required
-              disabled={loadingColleges}
+              disabled={loadingColleges || colleges.length === 0}
             >
               <SelectTrigger>
                 <SelectValue
                   placeholder={
                     loadingColleges
                       ? "Loading colleges..."
+                      : colleges.length === 0
+                      ? "No colleges registered yet"
                       : "Select College"
                   }
                 />
               </SelectTrigger>
               <SelectContent>
-                {colleges.length === 0 && !loadingColleges ? (
+                {loadingColleges ? (
+                  <SelectItem value="loading" disabled>
+                    Loading colleges...
+                  </SelectItem>
+                ) : colleges.length === 0 ? (
                   <SelectItem value="no-colleges" disabled>
-                    No colleges found. Use "Others" option below.
+                    No colleges registered yet. Please ask your college to sign
+                    up first.
                   </SelectItem>
                 ) : (
                   colleges.map(c => (
@@ -197,6 +235,13 @@ export const AlumniSignupForm = () => {
                 )}
               </SelectContent>
             </Select>
+            {colleges.length === 0 && !loadingColleges && (
+              <p className="text-xs text-muted-foreground">
+                ⚠️ <strong>Important:</strong> Your college must be registered
+                in the system first. Please ask your college administrator to
+                sign up before you can create your account.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -220,11 +265,10 @@ export const AlumniSignupForm = () => {
           )}
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create Account'}
+            {loading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
       </CardContent>
     </Card>
   );
 };
-

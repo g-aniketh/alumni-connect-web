@@ -1,39 +1,43 @@
-import { useState, useEffect } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { useState, useEffect } from "react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { collegeAPI } from '../../lib/api';
-import { Department } from '../../types';
-import { degreeMap, degrees } from './formConstants';
+} from "../ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { collegeAPI } from "../../lib/api";
+import { Department } from "../../types";
+import { degreeMap, degrees, departmentMap } from "./formConstants";
 
 export const StudentSignupForm = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rollNumber, setRollNumber] = useState('');
-  const [college, setCollege] = useState('');
-  const [collegeOther, setCollegeOther] = useState('');
-  const [showCollegeOther, setShowCollegeOther] = useState(false);
-  const [department, setDepartment] = useState<Department | ''>('');
-  const [degree, setDegree] = useState('');
-  const [enrollmentYear, setEnrollmentYear] = useState('');
-  const [graduationYear, setGraduationYear] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rollNumber, setRollNumber] = useState("");
+  const [college, setCollege] = useState("");
+  const [department, setDepartment] = useState<Department | "">("");
+  const [degree, setDegree] = useState("");
+  const [enrollmentYear, setEnrollmentYear] = useState("");
+  const [graduationYear, setGraduationYear] = useState("");
   const [colleges, setColleges] = useState<string[]>([]);
   const [loadingColleges, setLoadingColleges] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     loadColleges();
@@ -46,7 +50,7 @@ export const StudentSignupForm = () => {
       const collegeNames = response;
       setColleges(collegeNames);
     } catch (err) {
-      console.error('Failed to load colleges:', err);
+      console.error("Failed to load colleges:", err);
     } finally {
       setLoadingColleges(false);
     }
@@ -54,30 +58,57 @@ export const StudentSignupForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const finalCollegeName = showCollegeOther ? collegeOther : college;
-      if (!name || !email || !password || !rollNumber || !finalCollegeName || !department || !degree || !enrollmentYear || !graduationYear) {
-        throw new Error('Please fill all required fields');
+      if (
+        !name ||
+        !email ||
+        !password ||
+        !rollNumber ||
+        !college ||
+        !department ||
+        !degree ||
+        !enrollmentYear ||
+        !graduationYear
+      ) {
+        throw new Error("Please fill all required fields");
       }
-      const signupData = {
+      const enrollmentYearNum = parseInt(enrollmentYear, 10);
+      const graduationYearNum = parseInt(graduationYear, 10);
+
+      if (isNaN(enrollmentYearNum)) {
+        throw new Error("Invalid enrollment year");
+      }
+      if (isNaN(graduationYearNum)) {
+        throw new Error("Invalid graduation year");
+      }
+      if (!department) {
+        throw new Error("Department is required");
+      }
+
+      // Map frontend Department enum (e.g., "Computer Science") to backend format (e.g., "computer_science")
+      const mappedDepartment =
+        departmentMap[department] ||
+        department.toLowerCase().replace(/\s+/g, "_");
+
+      const signupData: import("../../types/api").StudentSignupRequest = {
         name,
         email,
         password,
         rollNumber,
-        collegeName: finalCollegeName,
-        department: department as Department,
+        collegeName: college,
+        department: mappedDepartment,
         degree: degreeMap[degree] || degree.toLowerCase(),
-        enrollmentYear: parseInt(enrollmentYear),
-        graduationYear: parseInt(graduationYear),
+        enrollmentYear: enrollmentYearNum,
+        graduationYear: graduationYearNum,
       };
-      await signup('Student', signupData);
-      alert('Account created successfully! Please log in.');
-      navigate('/login');
+      await signup("Student", signupData);
+      alert("Account created successfully! Please log in.");
+      navigate("/login");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed');
+      setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -139,24 +170,17 @@ export const StudentSignupForm = () => {
           <div className="space-y-2">
             <Label>College</Label>
             <Select
-              onValueChange={value => {
-                if (value === "other") {
-                  setShowCollegeOther(true);
-                  setCollege("");
-                } else {
-                  setShowCollegeOther(false);
-                  setCollege(value);
-                  setCollegeOther("");
-                }
-              }}
+              onValueChange={setCollege}
               required
-              disabled={loadingColleges}
+              disabled={loadingColleges || colleges.length === 0}
             >
               <SelectTrigger>
                 <SelectValue
                   placeholder={
                     loadingColleges
                       ? "Loading colleges..."
+                      : colleges.length === 0
+                      ? "No colleges registered yet"
                       : "Select College"
                   }
                 />
@@ -166,45 +190,27 @@ export const StudentSignupForm = () => {
                   <SelectItem value="loading" disabled>
                     Loading colleges...
                   </SelectItem>
+                ) : colleges.length === 0 ? (
+                  <SelectItem value="no-colleges" disabled>
+                    No colleges registered yet. Please ask your college to sign
+                    up first.
+                  </SelectItem>
                 ) : (
-                  <>
-                    {colleges.length > 0 ? (
-                      colleges.map(c => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="no-colleges" disabled>
-                        No colleges registered yet
-                      </SelectItem>
-                    )}
-                    <SelectItem value="other">
-                      Others (Enter manually)
+                  colleges.map(c => (
+                    <SelectItem key={c} value={c}>
+                      {c}
                     </SelectItem>
-                  </>
+                  ))
                 )}
               </SelectContent>
             </Select>
-            {showCollegeOther && (
-              <div className="space-y-2 mt-2">
-                <Label htmlFor="collegeOther">College Name</Label>
-                <Input
-                  id="collegeOther"
-                  placeholder="Enter your college name"
-                  value={collegeOther}
-                  onChange={e => setCollegeOther(e.target.value)}
-                  required
-                />
-              </div>
+            {colleges.length === 0 && !loadingColleges && (
+              <p className="text-xs text-muted-foreground">
+                ⚠️ <strong>Important:</strong> Your college must be registered
+                in the system first. Please ask your college administrator to
+                sign up before you can create your account.
+              </p>
             )}
-            <p className="text-xs text-muted-foreground">
-              ⚠️ <strong>Important:</strong> Your college must be registered
-              in the system first. If you select "Others" and enter a
-              college name, make sure the college has already signed up with
-              the exact same name. If you get a "College not found" error,
-              ask your college administrator to sign up first.
-            </p>
           </div>
 
           <div className="space-y-2">
@@ -257,9 +263,7 @@ export const StudentSignupForm = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="gradYearStudent">
-              Expected Graduation Year
-            </Label>
+            <Label htmlFor="gradYearStudent">Expected Graduation Year</Label>
             <Input
               id="gradYearStudent"
               type="number"
@@ -279,11 +283,10 @@ export const StudentSignupForm = () => {
           )}
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create Account'}
+            {loading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
       </CardContent>
     </Card>
   );
 };
-

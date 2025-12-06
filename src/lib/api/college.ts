@@ -11,9 +11,7 @@ export const collegeAPI = {
   getProfile: async (): Promise<{
     college: BackendCollege;
   }> => {
-    return api.get<{ college: BackendCollege }>(
-      "/colleges/profile"
-    );
+    return api.get<{ college: BackendCollege }>("/colleges/profile");
   },
 
   updateProfile: async (
@@ -32,7 +30,7 @@ export const collegeAPI = {
     return api.delete<{ message: string }>("/colleges/profile");
   },
 
-  // Public endpoint to get all college names (for signup dropdowns)
+  // Get all college names (for signup dropdowns) - Public endpoint
   getAllCollegeNames: async (): Promise<string[]> => {
     const response = await api.get<{ colleges: string[] }>("/colleges/list");
     return response.colleges;
@@ -127,9 +125,7 @@ export const collegeAPI = {
 
   // Student Management
   getAllStudents: async (): Promise<BackendStudent[]> => {
-    return api.get<BackendStudent[]>(
-      "/colleges/students"
-    );
+    return api.get<BackendStudent[]>("/colleges/students");
   },
 
   addStudent: async (data: {
@@ -231,4 +227,3 @@ export const collegeAPI = {
     };
   },
 };
-
