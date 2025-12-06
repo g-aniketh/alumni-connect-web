@@ -1,32 +1,42 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { EventCard } from '../components/events/EventCard';
-import { CampaignCard } from '../components/events/CampaignCard';
-import { DonationModal } from '../components/events/DonationModal';
-import { Button } from '../components/ui/button';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { EventCard } from "../components/events/EventCard";
+import { CampaignCard } from "../components/events/CampaignCard";
+import { DonationModal } from "../components/events/DonationModal";
+import { Button } from "../components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../components/ui/dialog';
-import { type AlumniEvent } from '../types';
-import { campaignsAPI, eventsAPI } from '../lib/api';
-import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
-import type { BackendCampaign, BackendEvent, BackendEventRegistration } from '../types/api';
-import { Plus } from 'lucide-react';
+} from "../components/ui/dialog";
+import { type AlumniEvent } from "../types";
+import { campaignsAPI, eventsAPI } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
+import { UserRole } from "../types";
+import type {
+  BackendCampaign,
+  BackendEvent,
+  BackendEventRegistration,
+} from "../types/api";
+import { Plus } from "lucide-react";
 
 const EventsCampaignsPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [events, setEvents] = useState<BackendEvent[]>([]);
   const [campaigns, setCampaigns] = useState<BackendCampaign[]>([]);
   const [campaignsLoading, setCampaignsLoading] = useState(true);
-  const [selectedCampaign, setSelectedCampaign] = useState<BackendCampaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] =
+    useState<BackendCampaign | null>(null);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<BackendEvent | null>(null);
   const [isRSVPDialogOpen, setIsRSVPDialogOpen] = useState(false);
@@ -37,23 +47,29 @@ const EventsCampaignsPage = () => {
   useEffect(() => {
     loadEvents();
     loadCampaigns();
-    if (user?.role === 'Student') {
+    if (user?.role === UserRole.Student) {
       loadMyRegistrations();
     }
-    if (user && (user.role === UserRole.Alumni || user.role === UserRole.College)) {
+    if (
+      user &&
+      (user.role === UserRole.Alumni || user.role === UserRole.College)
+    ) {
       loadMyEvents();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const loadEvents = async () => {
     try {
       setLoading(true);
-      setError('');
-      
+      setError("");
+
       // Get filtered events (college context if authenticated, or all if not)
       if (user) {
         const response = await eventsAPI.getFiltered({ upcoming: true });
-        const eventsList = Array.isArray(response) ? response : response.events || [];
+        const eventsList = Array.isArray(response)
+          ? response
+          : response.events || [];
         setEvents(eventsList);
       } else {
         const allEvents = await eventsAPI.getAll();
@@ -63,7 +79,7 @@ const EventsCampaignsPage = () => {
         setEvents(upcoming);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load events');
+      setError(err instanceof Error ? err.message : "Failed to load events");
     } finally {
       setLoading(false);
     }
@@ -75,18 +91,18 @@ const EventsCampaignsPage = () => {
       // Get all campaigns (not just active ones) so newly created campaigns are visible
       // We'll filter them on the frontend to show active and upcoming
       const allCampaigns = await campaignsAPI.getAll();
-      
+
       // Sort by endDate (upcoming/active first)
       const sortedCampaigns = allCampaigns.sort((a, b) => {
         const dateA = new Date(a.endDate).getTime();
         const dateB = new Date(b.endDate).getTime();
         return dateA - dateB;
       });
-      
+
       setCampaigns(sortedCampaigns);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load campaigns');
-      console.error('Failed to load campaigns:', err);
+      setError(err instanceof Error ? err.message : "Failed to load campaigns");
+      console.error("Failed to load campaigns:", err);
     } finally {
       setCampaignsLoading(false);
     }
@@ -94,21 +110,27 @@ const EventsCampaignsPage = () => {
 
   const loadMyRegistrations = async () => {
     try {
-      if (user?.role === 'Student') {
+      if (user?.role === UserRole.Student) {
         const registrations = await eventsAPI.getMyRegistrations();
         // Extract event IDs from registrations
         const eventIds = registrations.map((reg: BackendEventRegistration) => {
           // Handle both populated and non-populated eventId
-          if (typeof reg.eventId === 'object' && reg.eventId && '_id' in reg.eventId) {
+          if (
+            typeof reg.eventId === "object" &&
+            reg.eventId &&
+            "_id" in reg.eventId
+          ) {
             return reg.eventId._id;
           }
-          return typeof reg.eventId === 'string' ? reg.eventId : String(reg.eventId);
+          return typeof reg.eventId === "string"
+            ? reg.eventId
+            : String(reg.eventId);
         });
         setMyRegistrations(eventIds);
       }
     } catch (err) {
       // Silently fail - registrations are optional
-      console.error('Failed to load registrations:', err);
+      console.error("Failed to load registrations:", err);
     }
   };
 
@@ -118,7 +140,7 @@ const EventsCampaignsPage = () => {
       const myOrganizedEvents = await eventsAPI.getMyOrganized();
       setMyEvents(myOrganizedEvents);
     } catch (err) {
-      console.error('Failed to load my events:', err);
+      console.error("Failed to load my events:", err);
     } finally {
       setLoadingMyEvents(false);
     }
@@ -126,10 +148,11 @@ const EventsCampaignsPage = () => {
 
   // Transform BackendEvent to AlumniEvent for components
   const transformEvent = (backendEvent: BackendEvent): AlumniEvent => {
-    const organizerName = typeof backendEvent.organizedBy.organizerId === 'object' 
-      ? backendEvent.organizedBy.organizerId.name 
-      : 'Organizer';
-    
+    const organizerName =
+      typeof backendEvent.organizedBy.organizerId === "object"
+        ? backendEvent.organizedBy.organizerId.name
+        : "Organizer";
+
     return {
       id: backendEvent._id,
       title: backendEvent.title,
@@ -137,8 +160,8 @@ const EventsCampaignsPage = () => {
       date: backendEvent.eventDate,
       location: backendEvent.location,
       organizer: organizerName,
-      status: 'Upcoming',
-      image: backendEvent.eventBannerUrl || '',
+      status: "Upcoming",
+      image: backendEvent.eventBannerUrl || "",
     };
   };
 
@@ -157,21 +180,22 @@ const EventsCampaignsPage = () => {
     const now = new Date();
     const startDate = new Date(backendCampaign.startDate);
     const endDate = new Date(backendCampaign.endDate);
-    
+
     // Determine status: Upcoming (not started), Ongoing (active), or Completed (ended)
-    let status: 'Ongoing' | 'Completed' | 'Upcoming';
+    let status: "Ongoing" | "Completed" | "Upcoming";
     if (now < startDate) {
-      status = 'Upcoming';
+      status = "Upcoming";
     } else if (now >= startDate && now <= endDate) {
-      status = 'Ongoing';
+      status = "Ongoing";
     } else {
-      status = 'Completed';
+      status = "Completed";
     }
-    
-    const organizerName = typeof backendCampaign.createdBy === 'object' 
-      ? backendCampaign.createdBy.name 
-      : 'College';
-    
+
+    const organizerName =
+      typeof backendCampaign.createdBy === "object"
+        ? backendCampaign.createdBy.name
+        : "College";
+
     return {
       id: backendCampaign._id,
       title: backendCampaign.title,
@@ -189,27 +213,31 @@ const EventsCampaignsPage = () => {
     if (!selectedEvent || !user) return;
 
     try {
-      setError('');
+      setError("");
       const eventId = selectedEvent._id;
       await eventsAPI.register({ eventId });
       setIsRSVPDialogOpen(false);
       setSelectedEvent(null);
-      alert('Successfully registered for the event!');
+      alert("Successfully registered for the event!");
       // Reload events and registrations to update registration status
       await loadEvents();
-      if (user?.role === 'Student') {
+      if (user?.role === UserRole.Student) {
         await loadMyRegistrations();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to register for event');
+      setError(
+        err instanceof Error ? err.message : "Failed to register for event"
+      );
     }
   };
 
-  const canCreateEvents = user && (user.role === UserRole.Alumni || user.role === UserRole.College);
+  const canCreateEvents =
+    user && (user.role === UserRole.Alumni || user.role === UserRole.College);
   const canCreateCampaigns = user && user.role === UserRole.College;
-  const createEventPath = user?.role === UserRole.Alumni 
-    ? '/alumni/events/create' 
-    : '/college/events/create';
+  const createEventPath =
+    user?.role === UserRole.Alumni
+      ? "/alumni/events/create"
+      : "/college/events/create";
 
   if (loading) {
     return (
@@ -226,7 +254,9 @@ const EventsCampaignsPage = () => {
       <div className="flex flex-col gap-2 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Events & Campaigns</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Events & Campaigns
+            </h1>
             <p className="text-muted-foreground">
               Stay connected through events and support fundraising initiatives.
             </p>
@@ -259,22 +289,30 @@ const EventsCampaignsPage = () => {
       )}
 
       <Tabs defaultValue="events" className="w-full">
-        <TabsList className={`grid w-full ${canCreateEvents ? 'max-w-2xl grid-cols-3' : 'max-w-md grid-cols-2'}`}>
+        <TabsList
+          className={`grid w-full ${
+            canCreateEvents ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"
+          }`}
+        >
           <TabsTrigger value="events">Upcoming Events</TabsTrigger>
-          {canCreateEvents && <TabsTrigger value="my-events">My Events</TabsTrigger>}
+          {canCreateEvents && (
+            <TabsTrigger value="my-events">My Events</TabsTrigger>
+          )}
           <TabsTrigger value="campaigns">Fundraising Campaigns</TabsTrigger>
         </TabsList>
 
         <TabsContent value="events" className="mt-6">
           {events.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((backendEvent) => {
+              {events.map(backendEvent => {
                 const event = transformEvent(backendEvent);
-                const isRegistered = user?.role === 'Student' && myRegistrations.includes(backendEvent._id);
+                const isRegistered =
+                  user?.role === UserRole.Student &&
+                  myRegistrations.includes(backendEvent._id);
                 return (
-                  <EventCard 
-                    key={backendEvent._id} 
-                    event={event} 
+                  <EventCard
+                    key={backendEvent._id}
+                    event={event}
                     onRSVP={() => handleRSVP(backendEvent)}
                     isRegistered={isRegistered}
                   />
@@ -297,29 +335,38 @@ const EventsCampaignsPage = () => {
               </div>
             ) : myEvents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myEvents.map((backendEvent) => {
+                {myEvents.map(backendEvent => {
                   const event = transformEvent(backendEvent);
                   return (
-                    <div key={backendEvent._id} className="border rounded-lg p-4">
-                      <EventCard 
-                        event={event} 
+                    <div
+                      key={backendEvent._id}
+                      className="border rounded-lg p-4"
+                    >
+                      <EventCard
+                        event={event}
                         onRSVP={() => handleRSVP(backendEvent)}
                         isRegistered={false}
                       />
                       <div className="mt-4 flex gap-2">
                         <Button variant="outline" asChild className="flex-1">
-                          <Link to={user?.role === UserRole.Alumni 
-                            ? `/alumni/events/edit/${backendEvent._id}`
-                            : `/college/events/edit/${backendEvent._id}`
-                          }>
+                          <Link
+                            to={
+                              user?.role === UserRole.Alumni
+                                ? `/alumni/events/edit/${backendEvent._id}`
+                                : `/college/events/edit/${backendEvent._id}`
+                            }
+                          >
                             Edit
                           </Link>
                         </Button>
                         <Button variant="outline" asChild className="flex-1">
-                          <Link to={user?.role === UserRole.Alumni 
-                            ? `/alumni/events/registrations?eventId=${backendEvent._id}`
-                            : `/college/events/registrations?eventId=${backendEvent._id}`
-                          }>
+                          <Link
+                            to={
+                              user?.role === UserRole.Alumni
+                                ? `/alumni/events/registrations?eventId=${backendEvent._id}`
+                                : `/college/events/registrations?eventId=${backendEvent._id}`
+                            }
+                          >
                             View Registrations
                           </Link>
                         </Button>
@@ -330,8 +377,12 @@ const EventsCampaignsPage = () => {
               </div>
             ) : (
               <div className="text-center py-12 text-muted-foreground">
-                <p className="text-lg font-medium mb-2">No events organized yet</p>
-                <p className="text-sm mb-4">Start by creating your first event</p>
+                <p className="text-lg font-medium mb-2">
+                  No events organized yet
+                </p>
+                <p className="text-sm mb-4">
+                  Start by creating your first event
+                </p>
                 <Button asChild>
                   <Link to={createEventPath}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -351,14 +402,14 @@ const EventsCampaignsPage = () => {
           ) : campaigns.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {campaigns.map((backendCampaign) => {
+                {campaigns.map(backendCampaign => {
                   const campaign = transformCampaign(backendCampaign);
                   // Show all campaigns (upcoming, active, and recently completed)
                   return (
-                    <CampaignCard 
-                      key={backendCampaign._id} 
-                      campaign={campaign} 
-                      onDonate={() => handleDonate(backendCampaign)} 
+                    <CampaignCard
+                      key={backendCampaign._id}
+                      campaign={campaign}
+                      onDonate={() => handleDonate(backendCampaign)}
                     />
                   );
                 })}
@@ -367,7 +418,9 @@ const EventsCampaignsPage = () => {
           ) : (
             <div className="text-center py-12 text-muted-foreground">
               <p className="text-lg font-medium mb-2">No campaigns found</p>
-              <p className="text-sm">Check back later for new fundraising initiatives.</p>
+              <p className="text-sm">
+                Check back later for new fundraising initiatives.
+              </p>
             </div>
           )}
         </TabsContent>
@@ -381,7 +434,8 @@ const EventsCampaignsPage = () => {
             <DialogDescription>
               {selectedEvent && (
                 <>
-                  Confirm your attendance for <strong>{selectedEvent.title || 'this event'}</strong>.
+                  Confirm your attendance for{" "}
+                  <strong>{selectedEvent.title || "this event"}</strong>.
                 </>
               )}
             </DialogDescription>
@@ -396,29 +450,30 @@ const EventsCampaignsPage = () => {
               <p className="text-sm text-muted-foreground">
                 Please log in as a student to register for events.
               </p>
-            ) : user.role !== 'Student' ? (
+            ) : user.role !== UserRole.Student ? (
               <p className="text-sm text-muted-foreground">
                 Only students can register for events.
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Your registration will be recorded. You will receive a confirmation email shortly.
+                Your registration will be recorded. You will receive a
+                confirmation email shortly.
               </p>
             )}
           </div>
           <div className="flex justify-end gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setIsRSVPDialogOpen(false);
-                setError('');
+                setError("");
               }}
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleRSVPSubmit}
-              disabled={!user || user.role !== 'Student'}
+              disabled={!user || user.role !== UserRole.Student}
             >
               Confirm Registration
             </Button>
@@ -437,4 +492,3 @@ const EventsCampaignsPage = () => {
 };
 
 export default EventsCampaignsPage;
-

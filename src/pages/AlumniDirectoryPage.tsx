@@ -271,7 +271,7 @@ const AlumniDirectoryPage = () => {
               <p className="text-sm text-muted-foreground">
                 Please log in as a student to request mentorship.
               </p>
-            ) : user.role !== "Student" ? (
+            ) : user.role !== UserRole.Student ? (
               <p className="text-sm text-muted-foreground">
                 Only students can request mentorship.
               </p>
@@ -320,7 +320,7 @@ const AlumniDirectoryPage = () => {
             </Button>
             <Button
               onClick={handleSubmitRequest}
-              disabled={!user || user.role !== "Student" || submitting}
+              disabled={!user || user.role !== UserRole.Student || submitting}
             >
               {submitting ? "Sending..." : "Send Request"}
             </Button>

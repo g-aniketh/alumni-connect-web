@@ -48,32 +48,39 @@ const Navbar = () => {
       const user = tokenService.getUser();
       const token = tokenService.getAccessToken();
       const roleFromToken = token ? tokenService.getRoleFromToken() : null;
-      
+
       // Validate stored user role against token role (source of truth)
       if (user && token && roleFromToken) {
         // If roles don't match, the stored user is stale/wrong - clear it but keep tokens
         if (user.role !== roleFromToken) {
-          console.warn("Stored user role doesn't match token role, clearing stored user");
+          console.warn(
+            "Stored user role doesn't match token role, clearing stored user"
+          );
           tokenService.clearUser();
           return { storedUser: null, tokenRole: roleFromToken };
         }
       }
-      
+
       return { storedUser: user, tokenRole: roleFromToken };
     } catch {
       return { storedUser: null, tokenRole: null };
     }
   }, []); // Only read once on mount
-  
+
   // Use context user if available (most up-to-date), otherwise fall back to validated stored user
   // If no stored user but we have token role, create minimal user object for navbar display
-  const user = contextUser || storedUser || (tokenRole ? {
-    id: "",
-    name: "",
-    email: "",
-    role: tokenRole,
-  } as Alumni | Student | College : null);
-  
+  const user =
+    contextUser ||
+    storedUser ||
+    (tokenRole
+      ? ({
+          id: "",
+          name: "",
+          email: "",
+          role: tokenRole,
+        } as Alumni | Student | College)
+      : null);
+
   const isAuthenticated =
     contextIsAuthenticated ||
     (storedUser !== null && tokenService.getAccessToken() !== null) ||
@@ -330,7 +337,7 @@ const Navbar = () => {
   const navigationItems = getNavigationItems();
 
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
+    <nav className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-50 w-full">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-2">
           <Link
