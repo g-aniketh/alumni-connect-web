@@ -1,6 +1,20 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, GraduationCap, LayoutDashboard, Search, Briefcase, Calendar, ClipboardList, MessageSquare, Network, Users, Heart, UserCheck, FileText } from "lucide-react";
+import {
+  Menu,
+  GraduationCap,
+  LayoutDashboard,
+  Search,
+  Briefcase,
+  Calendar,
+  ClipboardList,
+  MessageSquare,
+  Network,
+  Users,
+  Heart,
+  UserCheck,
+  FileText,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
@@ -13,14 +27,57 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { UserRole } from "../../types";
+import { UserRole, type Alumni, type Student, type College } from "../../types";
 import { NavigationMenu } from "./NavigationMenu";
+import { tokenService } from "../../lib/api";
 
 const Navbar = () => {
-  const { user, logout, isAuthenticated } = useAuth();
+  const {
+    user: contextUser,
+    logout,
+    isAuthenticated: contextIsAuthenticated,
+  } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Get user from localStorage immediately (for instant navbar display on refresh)
+  // Read once on mount - contextUser will take priority once it loads
+  const { storedUser, tokenRole } = useMemo(() => {
+    try {
+      const user = tokenService.getUser();
+      const token = tokenService.getAccessToken();
+      const roleFromToken = token ? tokenService.getRoleFromToken() : null;
+      
+      // Validate stored user role against token role (source of truth)
+      if (user && token && roleFromToken) {
+        // If roles don't match, the stored user is stale/wrong - clear it but keep tokens
+        if (user.role !== roleFromToken) {
+          console.warn("Stored user role doesn't match token role, clearing stored user");
+          tokenService.clearUser();
+          return { storedUser: null, tokenRole: roleFromToken };
+        }
+      }
+      
+      return { storedUser: user, tokenRole: roleFromToken };
+    } catch {
+      return { storedUser: null, tokenRole: null };
+    }
+  }, []); // Only read once on mount
+  
+  // Use context user if available (most up-to-date), otherwise fall back to validated stored user
+  // If no stored user but we have token role, create minimal user object for navbar display
+  const user = contextUser || storedUser || (tokenRole ? {
+    id: "",
+    name: "",
+    email: "",
+    role: tokenRole,
+  } as Alumni | Student | College : null);
+  
+  const isAuthenticated =
+    contextIsAuthenticated ||
+    (storedUser !== null && tokenService.getAccessToken() !== null) ||
+    (tokenRole !== null && tokenService.getAccessToken() !== null);
 
   const getNavigationItems = () => {
     if (!user || !isAuthenticated) {
@@ -115,10 +172,22 @@ const Navbar = () => {
                 description: "Connect with fellow alumni from your institution",
               },
               {
+                name: "Connected Alumni",
+                path: "/alumni/connected-alumni",
+                icon: <Users className="h-5 w-5" />,
+                description: "View alumni you have connected with",
+              },
+              {
                 name: "Students",
                 path: "/alumni/students",
                 icon: <GraduationCap className="h-5 w-5" />,
                 description: "View students from your college",
+              },
+              {
+                name: "Connected Students",
+                path: "/alumni/connected-students",
+                icon: <GraduationCap className="h-5 w-5" />,
+                description: "View students you are mentoring",
               },
             ],
           },
@@ -308,7 +377,19 @@ const Navbar = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/dashboard">Dashboard</Link>
+                  <Link
+                    to={
+                      user.role === UserRole.Student
+                        ? "/student/dashboard"
+                        : user.role === UserRole.Alumni
+                        ? "/alumni/dashboard"
+                        : user.role === UserRole.College
+                        ? "/college/dashboard"
+                        : "/dashboard"
+                    }
+                  >
+                    Dashboard
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/profile">Profile</Link>
@@ -357,17 +438,21 @@ const Navbar = () => {
                   <span>Alumni Connect</span>
                 </Link>
                 <div className="flex flex-col gap-4">
-                  {navigationItems.map((item) => {
+                  {navigationItems.map(item => {
                     if (item.subItems && item.subItems.length > 0) {
                       return (
                         <div key={item.name} className="space-y-2">
-                          <p className="text-sm font-semibold text-muted-foreground">{item.name}</p>
-                          {item.subItems.map((subItem) => (
+                          <p className="text-sm font-semibold text-muted-foreground">
+                            {item.name}
+                          </p>
+                          {item.subItems.map(subItem => (
                             <Link
                               key={subItem.name}
                               to={subItem.path || "#"}
                               className={`block text-base font-medium transition-colors hover:text-primary pl-4 ${
-                                location.pathname === subItem.path ? "text-primary" : ""
+                                location.pathname === subItem.path
+                                  ? "text-primary"
+                                  : ""
                               }`}
                               onClick={() => setIsOpen(false)}
                             >

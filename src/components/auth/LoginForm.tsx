@@ -65,12 +65,12 @@ export const LoginForm = ({ role }: LoginFormProps) => {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <Input
-                id="password"
+            <Input
+              id="password"
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
                 className="pr-10"
               />
               <Button

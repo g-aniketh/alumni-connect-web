@@ -152,12 +152,12 @@ export const StudentSignupForm = () => {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <Input
-                id="password"
+            <Input
+              id="password"
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
                 className="pr-10"
               />
               <Button
@@ -216,20 +216,20 @@ export const StudentSignupForm = () => {
                     up first.
                   </SelectItem>
                 ) : (
-                  colleges.map(c => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))
+                      colleges.map(c => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))
                 )}
               </SelectContent>
             </Select>
             {colleges.length === 0 && !loadingColleges && (
-              <p className="text-xs text-muted-foreground">
-                ⚠️ <strong>Important:</strong> Your college must be registered
+            <p className="text-xs text-muted-foreground">
+              ⚠️ <strong>Important:</strong> Your college must be registered
                 in the system first. Please ask your college administrator to
                 sign up before you can create your account.
-              </p>
+            </p>
             )}
           </div>
 

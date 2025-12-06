@@ -9,7 +9,7 @@ export const BackendApplicationStatus = {
   Rejected: "rejected",
 } as const;
 
-export type BackendApplicationStatus = 
+export type BackendApplicationStatus =
   (typeof BackendApplicationStatus)[keyof typeof BackendApplicationStatus];
 
 export const BackendEventRegistrationStatus = {
@@ -19,7 +19,7 @@ export const BackendEventRegistrationStatus = {
   Waitlisted: "waitlisted",
 } as const;
 
-export type BackendEventRegistrationStatus = 
+export type BackendEventRegistrationStatus =
   (typeof BackendEventRegistrationStatus)[keyof typeof BackendEventRegistrationStatus];
 
 export const BackendJobType = {
@@ -30,7 +30,7 @@ export const BackendJobType = {
   Temporary: "temporary",
 } as const;
 
-export type BackendJobType = 
+export type BackendJobType =
   (typeof BackendJobType)[keyof typeof BackendJobType];
 
 export interface BackendAlumni {

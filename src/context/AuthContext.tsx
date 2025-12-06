@@ -29,19 +29,37 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Helper to map backend role (lowercase) to frontend role (capitalized)
+const mapBackendRoleToFrontend = (backendRole: string): UserRole => {
+  const lowerRole = backendRole.toLowerCase();
+  if (lowerRole === "alumni") {
+    return UserRole.Alumni;
+  } else if (lowerRole === "student") {
+    return UserRole.Student;
+  } else if (lowerRole === "college") {
+    return UserRole.College;
+  }
+  // Default fallback (shouldn't happen, but TypeScript needs it)
+  throw new Error(`Invalid role: ${backendRole}`);
+};
+
 // Helper to transform backend user to frontend user format
 const transformUser = (
   backendUser: BackendAlumni | BackendStudent | BackendCollege,
-  role: UserRole
+  role: string | UserRole // Accept both string (from backend) and UserRole
 ): User => {
+  // Normalize role to frontend UserRole enum
+  const frontendRole =
+    typeof role === "string" ? mapBackendRoleToFrontend(role) : role;
+
   const baseUser = {
     id: backendUser._id || (backendUser as { id?: string }).id || "",
     name: backendUser.name,
     email: backendUser.email,
-    role,
+    role: frontendRole,
   };
 
-  if (role === UserRole.Alumni) {
+  if (frontendRole === UserRole.Alumni) {
     const alumni = backendUser as BackendAlumni;
     return {
       ...baseUser,
@@ -65,7 +83,7 @@ const transformUser = (
       bio: alumni.bio,
       location: alumni.location,
     } as Alumni;
-  } else if (role === UserRole.Student) {
+  } else if (frontendRole === UserRole.Student) {
     const student = backendUser as BackendStudent;
     return {
       ...baseUser,
@@ -125,16 +143,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           try {
             const response = await authAPI.getCurrentUser();
             if (response.user) {
+              // Backend returns role as lowercase string, transformUser will map it correctly
               const transformedUser = transformUser(
                 response.user,
-                response.role as UserRole
+                response.role // Pass as string, transformUser will map it
               );
               setUser(transformedUser);
               tokenService.setUser(transformedUser);
 
-              // Update verification status
-              const role = response.role as UserRole;
-              if (role === UserRole.Alumni || role === UserRole.Student) {
+              // Update verification status - use transformed user's role (already mapped)
+              const frontendRole = transformedUser.role;
+              if (
+                frontendRole === UserRole.Alumni ||
+                frontendRole === UserRole.Student
+              ) {
                 const typedUser = transformedUser as Alumni | Student;
                 tokenService.setVerificationStatus(typedUser.isVerified);
               } else {
@@ -158,9 +180,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               // Try getting user again
               const response = await authAPI.getCurrentUser();
               if (response.user) {
+                // Backend returns role as lowercase string, transformUser will map it correctly
                 const transformedUser = transformUser(
                   response.user,
-                  response.role as UserRole
+                  response.role // Pass as string, transformUser will map it
                 );
                 setUser(transformedUser);
                 tokenService.setUser(transformedUser);
@@ -245,7 +268,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         }
 
-        const transformedUser = transformUser(userResponse.user, role);
+        // role is already UserRole enum from login function parameter
+        // But we should use the role from the response to be safe
+        const transformedUser = transformUser(
+          userResponse.user,
+          userResponse.role // Backend returns lowercase, transformUser will map it
+        );
         setUser(transformedUser);
         tokenService.setUser(transformedUser);
 
@@ -327,15 +355,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await authAPI.getCurrentUser();
       if (response.user) {
+        // Backend returns role as lowercase string, transformUser will map it correctly
         const transformedUser = transformUser(
           response.user,
-          response.role as UserRole
+          response.role // Pass as string, transformUser will map it
         );
         setUser(transformedUser);
         tokenService.setUser(transformedUser);
 
-        const role = response.role as UserRole;
-        if (role === UserRole.Alumni || role === UserRole.Student) {
+        // Use transformed user's role (already mapped to frontend format)
+        const frontendRole = transformedUser.role;
+        if (
+          frontendRole === UserRole.Alumni ||
+          frontendRole === UserRole.Student
+        ) {
           const typedUser = transformedUser as Alumni | Student;
           tokenService.setVerificationStatus(typedUser.isVerified);
         } else {

@@ -187,7 +187,8 @@ const AlumniNetworkPage = () => {
                   <AlumniProfileCard
                     key={backendAlumni._id}
                     alumni={alumni}
-                    onRequestMentorship={handleConnect}
+                    onConnect={handleConnect}
+                    viewerRole={user?.role}
                   />
                 );
               })}

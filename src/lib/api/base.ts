@@ -1,5 +1,6 @@
 import { API_BASE_URL, STORAGE_KEYS } from "../constants";
 import type { Alumni, Student, College } from "../../types";
+import { UserRole } from "../../types";
 
 // Types for API responses
 export interface ApiError {
@@ -15,11 +16,16 @@ export interface ApiResponse<T> {
 
 type User = Alumni | Student | College;
 
+// Helper function to get access token (used internally)
+const getAccessTokenInternal = (): string | null => {
+  return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+};
+
 // Token management
 export const tokenService = {
   // Access/refresh tokens in localStorage
   getAccessToken: (): string | null => {
-    return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    return getAccessTokenInternal();
   },
   getRefreshToken: (): string | null => {
     return localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
@@ -36,6 +42,10 @@ export const tokenService = {
     if (typeof document !== "undefined") {
       document.cookie = "ac_isVerified=; Path=/; Max-Age=0; SameSite=Lax";
     }
+  },
+  clearUser: (): void => {
+    // Clear only the stored user, keep tokens
+    localStorage.removeItem(STORAGE_KEYS.USER);
   },
   setUser: (user: User): void => {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
@@ -62,6 +72,40 @@ export const tokenService = {
       }
     }
     return null;
+  },
+  // Decode JWT token to get role (without verification - just for reading payload)
+  getRoleFromToken: (): UserRole | null => {
+    try {
+      const token = getAccessTokenInternal();
+      if (!token) return null;
+
+      // JWT format: header.payload.signature
+      // We only need the payload (middle part)
+      const parts = token.split(".");
+      if (parts.length !== 3) return null;
+
+      // Decode base64 payload
+      const payload = JSON.parse(atob(parts[1]));
+      const backendRole = payload.role; // Backend uses lowercase: "alumni", "student", "college"
+
+      // Map backend role values (lowercase) to frontend role values (capitalized)
+      // Backend uses: "alumni", "student", "college" (lowercase)
+      // Frontend uses: "Alumni", "Student", "College" (capitalized)
+      if (backendRole && typeof backendRole === "string") {
+        const lowerRole = backendRole.toLowerCase();
+        if (lowerRole === "alumni") {
+          return UserRole.Alumni;
+        } else if (lowerRole === "student") {
+          return UserRole.Student;
+        } else if (lowerRole === "college") {
+          return UserRole.College;
+        }
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
   },
 };
 
@@ -221,4 +265,3 @@ export class ApiClient {
 
 // Create API client instance
 export const api = new ApiClient(API_BASE_URL);
-

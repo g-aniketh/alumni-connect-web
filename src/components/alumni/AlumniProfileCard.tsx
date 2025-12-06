@@ -2,16 +2,25 @@ import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { type Alumni } from '../../types';
+import { type Alumni, UserRole } from '../../types';
 import { UserPlus, CheckCircle2, XCircle } from 'lucide-react';
 
 interface AlumniProfileCardProps {
   alumni: Alumni;
-  onRequestMentorship: (alumni: Alumni) => void;
+  onRequestMentorship?: (alumni: Alumni) => void;
+  onConnect?: (alumni: Alumni) => void;
+  viewerRole?: UserRole;
 }
 
-export const AlumniProfileCard = ({ alumni, onRequestMentorship }: AlumniProfileCardProps) => {
+export const AlumniProfileCard = ({ 
+  alumni, 
+  onRequestMentorship, 
+  onConnect,
+  viewerRole 
+}: AlumniProfileCardProps) => {
   const isAvailable = alumni.mentorshipAvailable === true;
+  const isAlumniViewer = viewerRole === UserRole.Alumni;
+  const isStudentViewer = viewerRole === UserRole.Student;
 
   return (
     <Card className="flex flex-col h-full hover:shadow-lg transition-shadow">
@@ -35,6 +44,7 @@ export const AlumniProfileCard = ({ alumni, onRequestMentorship }: AlumniProfile
         </div>
       </CardHeader>
       <CardContent className="flex-1 space-y-3">
+        {isStudentViewer && (
         <div className="flex justify-center">
           <Badge 
             variant={isAvailable ? "default" : "secondary"}
@@ -56,6 +66,7 @@ export const AlumniProfileCard = ({ alumni, onRequestMentorship }: AlumniProfile
             )}
           </Badge>
         </div>
+        )}
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">Skills</p>
           <div className="flex flex-wrap gap-1">
@@ -73,6 +84,16 @@ export const AlumniProfileCard = ({ alumni, onRequestMentorship }: AlumniProfile
         </div>
       </CardContent>
       <CardFooter>
+        {isAlumniViewer && onConnect ? (
+          <Button 
+            className="w-full" 
+            variant="default"
+            onClick={() => onConnect(alumni)}
+          >
+            <UserPlus className="w-4 h-4 mr-2" />
+            Connect
+          </Button>
+        ) : isStudentViewer && onRequestMentorship ? (
         <Button 
           className="w-full" 
           variant={isAvailable ? "default" : "outline"}
@@ -82,6 +103,7 @@ export const AlumniProfileCard = ({ alumni, onRequestMentorship }: AlumniProfile
           <UserPlus className="w-4 h-4 mr-2" />
           {isAvailable ? 'Request Mentorship' : 'Currently Busy'}
         </Button>
+        ) : null}
       </CardFooter>
     </Card>
   );

@@ -3,14 +3,20 @@ import { UserRole } from '../types';
 import { Navigate } from 'react-router-dom';
 
 const RoleDashboard = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (!user) {
+  // Wait for auth to finish loading before redirecting
+  if (loading) {
     return (
       <div className="container py-8 text-center">
-        <p>Please log in to view your dashboard.</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
   // Redirect to role-specific dashboard
@@ -22,7 +28,7 @@ const RoleDashboard = () => {
     case UserRole.College:
       return <Navigate to="/college/dashboard" replace />;
     default:
-      return null;
+      return <Navigate to="/login" replace />;
   }
 };
 

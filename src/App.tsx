@@ -12,6 +12,8 @@ import AlumniDirectoryPage from './pages/AlumniDirectoryPage';
 import EventsCampaignsPage from './pages/EventsCampaignsPage';
 import AlumniNetworkPage from './pages/alumni/AlumniNetworkPage';
 import AlumniStudentsPage from './pages/alumni/AlumniStudentsPage';
+import ConnectedAlumniPage from './pages/alumni/ConnectedAlumniPage';
+import ConnectedStudentsPage from './pages/alumni/ConnectedStudentsPage';
 import AlumniJobCreationPage from './pages/alumni/AlumniJobCreationPage';
 import AlumniEventCreationPage from './pages/alumni/AlumniEventCreationPage';
 import CollegeAlumniPage from './pages/college/CollegeAlumniPage';
@@ -202,6 +204,22 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniStudentsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alumni/connected-alumni" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <ConnectedAlumniPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alumni/connected-students" 
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <ConnectedStudentsPage />
                 </ProtectedRoute>
               } 
             />

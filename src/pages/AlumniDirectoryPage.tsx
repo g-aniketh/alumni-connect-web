@@ -216,6 +216,7 @@ const AlumniDirectoryPage = () => {
                     key={backendAlumni._id}
                     alumni={alumni}
                     onRequestMentorship={handleRequestMentorship}
+                    viewerRole={user?.role}
                   />
                 );
               })}
