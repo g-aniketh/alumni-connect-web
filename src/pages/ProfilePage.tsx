@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/button";
 import { UserRole, type Alumni, type Student, type College } from "../types";
@@ -24,7 +25,7 @@ const ProfilePage = () => {
       <div className="container py-8 text-center">
         <p>Please log in to view your profile.</p>
         <Button asChild className="mt-4">
-          <a href="/login">Log In</a>
+          <Link to="/login">Log In</Link>
         </Button>
       </div>
     );

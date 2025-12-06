@@ -1,26 +1,34 @@
-import { useState } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Department } from '../../types';
-import { degrees } from './formConstants';
+import { useState } from "react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Department } from "../../types";
+import { degrees } from "./formConstants";
+import { Eye, EyeOff } from "lucide-react";
 
 export const CollegeSignupForm = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [address, setAddress] = useState('');
-  const [establishedYear, setEstablishedYear] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [address, setAddress] = useState("");
+  const [establishedYear, setEstablishedYear] = useState("");
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
-  const [website, setWebsite] = useState('');
+  const [website, setWebsite] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
   const toggleDepartment = (dept: string) => {
     setSelectedDepartments(prev =>
@@ -36,12 +44,20 @@ export const CollegeSignupForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      if (!name || !email || !password || !address || !establishedYear || selectedDepartments.length === 0 || selectedDegrees.length === 0) {
-        throw new Error('Please fill all required fields');
+      if (
+        !name ||
+        !email ||
+        !password ||
+        !address ||
+        !establishedYear ||
+        selectedDepartments.length === 0 ||
+        selectedDegrees.length === 0
+      ) {
+        throw new Error("Please fill all required fields");
       }
       const signupData = {
         name,
@@ -53,11 +69,11 @@ export const CollegeSignupForm = () => {
         degreesOffered: selectedDegrees,
         website: website.trim() || undefined,
       };
-      await signup('College', signupData);
-      alert('Account created successfully! Please log in.');
-      navigate('/login');
+      await signup("College", signupData);
+      alert("Account created successfully! Please log in.");
+      navigate("/login");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed');
+      setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -96,13 +112,29 @@ export const CollegeSignupForm = () => {
 
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                )}
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -204,11 +236,10 @@ export const CollegeSignupForm = () => {
           )}
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create Account'}
+            {loading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
       </CardContent>
     </Card>
   );
 };
-

@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { RoleSwitcher } from "../auth/RoleSwitcher";
 import { UserRole } from "../../types";
 import { NavigationMenu } from "./NavigationMenu";
 
@@ -24,25 +23,13 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const getNavigationItems = () => {
-    if (!user) {
+    if (!user || !isAuthenticated) {
       return [
         {
           name: "Home",
           path: "/",
           icon: <GraduationCap className="h-4 w-4" />,
           description: "Welcome to Alumni Connect",
-        },
-        {
-          name: "Jobs",
-          path: "/jobs",
-          icon: <Briefcase className="h-4 w-4" />,
-          description: "Browse job opportunities",
-        },
-        {
-          name: "Events",
-          path: "/events",
-          icon: <Calendar className="h-4 w-4" />,
-          description: "Discover upcoming events",
         },
       ];
     }
@@ -292,7 +279,6 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          {!isAuthenticated && <RoleSwitcher />}
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -406,11 +392,6 @@ const Navbar = () => {
                   })}
                 </div>
                 <div className="border-t pt-4">
-                  {!isAuthenticated && (
-                    <div className="mb-4">
-                      <RoleSwitcher />
-                    </div>
-                  )}
                   {isAuthenticated && user ? (
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-2">

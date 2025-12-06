@@ -1,21 +1,35 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { collegeAPI } from '../../lib/api';
-import { Upload, CheckCircle2, Download, AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
+import { collegeAPI } from "../../lib/api";
+import { Upload, CheckCircle2, Download, AlertCircle } from "lucide-react";
 
-type ImportType = 'students' | 'alumni';
+type ImportType = "students" | "alumni";
 
 const CollegeBulkImportPage = () => {
-  const [importType, setImportType] = useState<ImportType>('students');
-  const [csvData, setCsvData] = useState('');
+  const [importType, setImportType] = useState<ImportType>("students");
+  const [csvData, setCsvData] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
-  const [success, setSuccess] = useState<{ created: number; message: string } | null>(null);
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<{
+    created: number;
+    message: string;
+  } | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,10 +37,10 @@ const CollegeBulkImportPage = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = event => {
       const text = event.target?.result as string;
       setCsvData(text);
-      setError('');
+      setError("");
       setSuccess(null);
       setValidationErrors([]);
     };
@@ -34,17 +48,18 @@ const CollegeBulkImportPage = () => {
   };
 
   const downloadTemplate = () => {
-    const template = importType === 'students'
-      ? `name,email,password,rollNumber,enrollmentYear,department,degree,graduationYear
+    const template =
+      importType === "students"
+        ? `name,email,password,rollNumber,enrollmentYear,department,degree,graduationYear
 John Doe,john.doe@example.com,password123,CS21B001,2021,Computer Science,B.Tech,2025
 Jane Smith,jane.smith@example.com,password123,EE21B002,2021,Electrical Engineering,B.Tech,2025`
-      : `name,email,password,graduationYear,degree,department,currentJobTitle,company,linkedInProfile
+        : `name,email,password,graduationYear,degree,department,currentJobTitle,company,linkedInProfile
 John Doe,john.doe@example.com,password123,2020,Computer Science,B.Tech,Software Engineer,Google,https://linkedin.com/in/johndoe
 Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech,Senior Engineer,Microsoft,https://linkedin.com/in/janesmith`;
 
-    const blob = new Blob([template], { type: 'text/csv' });
+    const blob = new Blob([template], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `${importType}_bulk_import_template.csv`;
     document.body.appendChild(a);
@@ -54,19 +69,19 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
   };
 
   const parseCSV = (csvText: string): string[][] => {
-    const lines = csvText.trim().split('\n');
+    const lines = csvText.trim().split("\n");
     return lines.map(line => {
       const values: string[] = [];
-      let current = '';
+      let current = "";
       let inQuotes = false;
 
       for (let i = 0; i < line.length; i++) {
         const char = line[i];
         if (char === '"') {
           inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
+        } else if (char === "," && !inQuotes) {
           values.push(current.trim());
-          current = '';
+          current = "";
         } else {
           current += char;
         }
@@ -100,79 +115,92 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
     skills?: string[];
   };
 
-  const validateAndParseData = (): { 
-    valid: boolean; 
-    data: StudentRowData[] | AlumniRowData[]; 
-    errors: string[] 
+  const validateAndParseData = (): {
+    valid: boolean;
+    data: StudentRowData[] | AlumniRowData[];
+    errors: string[];
   } => {
     const errors: string[] = [];
     const lines = parseCSV(csvData);
-    
+
     if (lines.length < 2) {
-      errors.push('CSV must have at least a header row and one data row');
+      errors.push("CSV must have at least a header row and one data row");
       return { valid: false, data: [], errors };
     }
 
     const headers = lines[0].map(h => h.toLowerCase().trim());
     const dataRows = lines.slice(1);
 
-    if (importType === 'students') {
+    if (importType === "students") {
       const parsedData: StudentRowData[] = [];
-      const requiredFields = ['name', 'email', 'rollnumber', 'enrollmentyear', 'department', 'degree', 'graduationyear'];
+      const requiredFields = [
+        "name",
+        "email",
+        "rollnumber",
+        "enrollmentyear",
+        "department",
+        "degree",
+        "graduationyear",
+      ];
       const missingFields = requiredFields.filter(f => !headers.includes(f));
       if (missingFields.length > 0) {
-        errors.push(`Missing required columns: ${missingFields.join(', ')}`);
+        errors.push(`Missing required columns: ${missingFields.join(", ")}`);
         return { valid: false, data: [], errors };
       }
 
       dataRows.forEach((row, index) => {
         const rowNum = index + 2; // +2 because we start from row 2 (after header)
         const rowData: StudentRowData = {
-          name: '',
-          email: '',
-          rollNumber: '',
+          name: "",
+          email: "",
+          rollNumber: "",
           enrollmentYear: 0,
-          department: '',
-          degree: '',
+          department: "",
+          degree: "",
           graduationYear: 0,
         };
 
         headers.forEach((header, colIndex) => {
-          const value = row[colIndex]?.trim() || '';
+          const value = row[colIndex]?.trim() || "";
           switch (header) {
-            case 'name':
+            case "name":
               if (!value) errors.push(`Row ${rowNum}: Name is required`);
               rowData.name = value;
               break;
-            case 'email':
-              if (!value || !value.includes('@')) errors.push(`Row ${rowNum}: Valid email is required`);
+            case "email":
+              if (!value || !value.includes("@"))
+                errors.push(`Row ${rowNum}: Valid email is required`);
               rowData.email = value;
               break;
-            case 'password':
+            case "password":
               rowData.password = value || undefined;
               break;
-            case 'rollnumber':
+            case "rollnumber":
               if (!value) errors.push(`Row ${rowNum}: Roll number is required`);
               rowData.rollNumber = value;
               break;
-            case 'enrollmentyear':
-              const enrollYear = parseInt(value);
-              if (isNaN(enrollYear)) errors.push(`Row ${rowNum}: Valid enrollment year is required`);
+            case "enrollmentyear": {
+              const enrollYear = parseInt(value, 10);
+              if (isNaN(enrollYear))
+                errors.push(`Row ${rowNum}: Valid enrollment year is required`);
               rowData.enrollmentYear = enrollYear;
               break;
-            case 'department':
+            }
+            case "department":
               if (!value) errors.push(`Row ${rowNum}: Department is required`);
               rowData.department = value;
               break;
-            case 'degree':
+            case "degree":
               if (!value) errors.push(`Row ${rowNum}: Degree is required`);
               rowData.degree = value;
               break;
-            case 'graduationyear':
-              const gradYear = parseInt(value);
-              if (isNaN(gradYear)) errors.push(`Row ${rowNum}: Valid graduation year is required`);
+            case "graduationyear": {
+              const gradYear = parseInt(value, 10);
+              if (isNaN(gradYear))
+                errors.push(`Row ${rowNum}: Valid graduation year is required`);
               rowData.graduationYear = gradYear;
               break;
+            }
           }
         });
 
@@ -185,61 +213,75 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
     } else {
       // Alumni
       const parsedData: AlumniRowData[] = [];
-      const requiredFields = ['name', 'email', 'graduationyear', 'degree', 'department'];
+      const requiredFields = [
+        "name",
+        "email",
+        "graduationyear",
+        "degree",
+        "department",
+      ];
       const missingFields = requiredFields.filter(f => !headers.includes(f));
       if (missingFields.length > 0) {
-        errors.push(`Missing required columns: ${missingFields.join(', ')}`);
+        errors.push(`Missing required columns: ${missingFields.join(", ")}`);
         return { valid: false, data: [], errors };
       }
 
       dataRows.forEach((row, index) => {
         const rowNum = index + 2;
         const rowData: AlumniRowData = {
-          name: '',
-          email: '',
+          name: "",
+          email: "",
           graduationYear: 0,
-          degree: '',
-          department: '',
+          degree: "",
+          department: "",
         };
 
         headers.forEach((header, colIndex) => {
-          const value = row[colIndex]?.trim() || '';
+          const value = row[colIndex]?.trim() || "";
           switch (header) {
-            case 'name':
+            case "name":
               if (!value) errors.push(`Row ${rowNum}: Name is required`);
               rowData.name = value;
               break;
-            case 'email':
-              if (!value || !value.includes('@')) errors.push(`Row ${rowNum}: Valid email is required`);
+            case "email":
+              if (!value || !value.includes("@"))
+                errors.push(`Row ${rowNum}: Valid email is required`);
               rowData.email = value;
               break;
-            case 'password':
+            case "password":
               rowData.password = value || undefined;
               break;
-            case 'graduationyear':
-              const gradYear = parseInt(value);
-              if (isNaN(gradYear)) errors.push(`Row ${rowNum}: Valid graduation year is required`);
+            case "graduationyear": {
+              const gradYear = parseInt(value, 10);
+              if (isNaN(gradYear))
+                errors.push(`Row ${rowNum}: Valid graduation year is required`);
               rowData.graduationYear = gradYear;
               break;
-            case 'degree':
+            }
+            case "degree":
               if (!value) errors.push(`Row ${rowNum}: Degree is required`);
               rowData.degree = value;
               break;
-            case 'department':
+            case "department":
               if (!value) errors.push(`Row ${rowNum}: Department is required`);
               rowData.department = value;
               break;
-            case 'currentjobtitle':
+            case "currentjobtitle":
               rowData.currentJobTitle = value || undefined;
               break;
-            case 'company':
+            case "company":
               rowData.company = value || undefined;
               break;
-            case 'linkedinprofile':
+            case "linkedinprofile":
               rowData.linkedInProfile = value || undefined;
               break;
-            case 'skills':
-              rowData.skills = value ? value.split(',').map(s => s.trim()).filter(s => s) : undefined;
+            case "skills":
+              rowData.skills = value
+                ? value
+                    .split(",")
+                    .map(s => s.trim())
+                    .filter(s => s)
+                : undefined;
               break;
           }
         });
@@ -254,36 +296,40 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
   };
 
   const handleImport = async () => {
-    setError('');
+    setError("");
     setSuccess(null);
     setValidationErrors([]);
 
     if (!csvData.trim()) {
-      setError('Please upload a CSV file or paste CSV data');
+      setError("Please upload a CSV file or paste CSV data");
       return;
     }
 
     const validation = validateAndParseData();
     if (!validation.valid) {
       setValidationErrors(validation.errors);
-      setError('Please fix the validation errors before importing');
+      setError("Please fix the validation errors before importing");
       return;
     }
 
     setLoading(true);
 
     try {
-      if (importType === 'students') {
-        const result = await collegeAPI.addStudentsBulk({ students: validation.data });
+      if (importType === "students") {
+        const result = await collegeAPI.addStudentsBulk({
+          students: validation.data as StudentRowData[],
+        });
         setSuccess({ created: result.created, message: result.message });
-        setCsvData('');
+        setCsvData("");
       } else {
-        const result = await collegeAPI.addAlumniBulk({ alumni: validation.data });
+        const result = await collegeAPI.addAlumniBulk({
+          alumni: validation.data as AlumniRowData[],
+        });
         setSuccess({ created: result.created, message: result.message });
-        setCsvData('');
+        setCsvData("");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to import data');
+      setError(err instanceof Error ? err.message : "Failed to import data");
     } finally {
       setLoading(false);
     }
@@ -298,7 +344,10 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
         </p>
       </div>
 
-      <Tabs value={importType} onValueChange={(v) => setImportType(v as ImportType)}>
+      <Tabs
+        value={importType}
+        onValueChange={v => setImportType(v as ImportType)}
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="students">Import Students</TabsTrigger>
           <TabsTrigger value="alumni">Import Alumni</TabsTrigger>
@@ -309,7 +358,8 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
             <CardHeader>
               <CardTitle>Import Students</CardTitle>
               <CardDescription>
-                Upload a CSV file with student data. All imported students will be automatically verified and linked to your college.
+                Upload a CSV file with student data. All imported students will
+                be automatically verified and linked to your college.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -321,7 +371,8 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                     Download Template
                   </Button>
                   <p className="text-sm text-muted-foreground">
-                    Required columns: name, email, rollNumber, enrollmentYear, department, degree, graduationYear
+                    Required columns: name, email, rollNumber, enrollmentYear,
+                    department, degree, graduationYear
                   </p>
                 </div>
               </div>
@@ -342,7 +393,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                   id="csv-data"
                   placeholder="Paste CSV data here..."
                   value={csvData}
-                  onChange={(e) => setCsvData(e.target.value)}
+                  onChange={e => setCsvData(e.target.value)}
                   rows={10}
                   className="font-mono text-sm"
                 />
@@ -352,7 +403,9 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                 <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertCircle className="h-4 w-4 text-red-600" />
-                    <h4 className="font-medium text-red-900 dark:text-red-100">Validation Errors</h4>
+                    <h4 className="font-medium text-red-900 dark:text-red-100">
+                      Validation Errors
+                    </h4>
                   </div>
                   <ul className="list-disc list-inside space-y-1 text-sm text-red-700 dark:text-red-300">
                     {validationErrors.map((err, idx) => (
@@ -372,7 +425,9 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                 <div className="p-4 border border-green-200 bg-green-50 dark:bg-green-950 rounded-md">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    <h4 className="font-medium text-green-900 dark:text-green-100">Import Successful</h4>
+                    <h4 className="font-medium text-green-900 dark:text-green-100">
+                      Import Successful
+                    </h4>
                   </div>
                   <p className="text-sm text-green-700 dark:text-green-300">
                     {success.message}. Created {success.created} {importType}.
@@ -380,9 +435,12 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                 </div>
               )}
 
-              <Button onClick={handleImport} disabled={loading || !csvData.trim()}>
+              <Button
+                onClick={handleImport}
+                disabled={loading || !csvData.trim()}
+              >
                 <Upload className="h-4 w-4 mr-2" />
-                {loading ? 'Importing...' : 'Import Students'}
+                {loading ? "Importing..." : "Import Students"}
               </Button>
             </CardContent>
           </Card>
@@ -393,7 +451,8 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
             <CardHeader>
               <CardTitle>Import Alumni</CardTitle>
               <CardDescription>
-                Upload a CSV file with alumni data. All imported alumni will be automatically verified and linked to your college.
+                Upload a CSV file with alumni data. All imported alumni will be
+                automatically verified and linked to your college.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -405,7 +464,8 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                     Download Template
                   </Button>
                   <p className="text-sm text-muted-foreground">
-                    Required columns: name, email, graduationYear, degree, department
+                    Required columns: name, email, graduationYear, degree,
+                    department
                   </p>
                 </div>
               </div>
@@ -426,7 +486,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                   id="csv-data-alumni"
                   placeholder="Paste CSV data here..."
                   value={csvData}
-                  onChange={(e) => setCsvData(e.target.value)}
+                  onChange={e => setCsvData(e.target.value)}
                   rows={10}
                   className="font-mono text-sm"
                 />
@@ -436,7 +496,9 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                 <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertCircle className="h-4 w-4 text-red-600" />
-                    <h4 className="font-medium text-red-900 dark:text-red-100">Validation Errors</h4>
+                    <h4 className="font-medium text-red-900 dark:text-red-100">
+                      Validation Errors
+                    </h4>
                   </div>
                   <ul className="list-disc list-inside space-y-1 text-sm text-red-700 dark:text-red-300">
                     {validationErrors.map((err, idx) => (
@@ -456,7 +518,9 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                 <div className="p-4 border border-green-200 bg-green-50 dark:bg-green-950 rounded-md">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    <h4 className="font-medium text-green-900 dark:text-green-100">Import Successful</h4>
+                    <h4 className="font-medium text-green-900 dark:text-green-100">
+                      Import Successful
+                    </h4>
                   </div>
                   <p className="text-sm text-green-700 dark:text-green-300">
                     {success.message}. Created {success.created} {importType}.
@@ -464,9 +528,12 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                 </div>
               )}
 
-              <Button onClick={handleImport} disabled={loading || !csvData.trim()}>
+              <Button
+                onClick={handleImport}
+                disabled={loading || !csvData.trim()}
+              >
                 <Upload className="h-4 w-4 mr-2" />
-                {loading ? 'Importing...' : 'Import Alumni'}
+                {loading ? "Importing..." : "Import Alumni"}
               </Button>
             </CardContent>
           </Card>
@@ -477,4 +544,3 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
 };
 
 export default CollegeBulkImportPage;
-

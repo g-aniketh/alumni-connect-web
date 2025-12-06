@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import LandingPage from './pages/LandingPage';
-import AuthPage from './pages/AuthPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import RoleDashboard from './pages/RoleDashboard';
 import StudentDashboardPage from './pages/student/StudentDashboardPage';
 import AlumniDashboardPage from './pages/alumni/AlumniDashboardPage';
@@ -91,8 +92,8 @@ function App() {
           <Route element={<AppShell />}>
             {/* Auth */}
             <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/signup" element={<AuthPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/verify-email" element={<EmailVerificationPage />} />

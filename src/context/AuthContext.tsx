@@ -53,7 +53,10 @@ const transformUser = (
       currentEmployer: alumni.currentEmployer || "",
       designation: alumni.currentDesignation || "",
       skills: alumni.skills || [],
-      avatar: alumni.profilePictureUrlOptimized || alumni.profilePictureUrlHD || alumni.profilePictureUrl,
+      avatar:
+        alumni.profilePictureUrlOptimized ||
+        alumni.profilePictureUrlHD ||
+        alumni.profilePictureUrl,
       mentorshipAvailable: true, // Default, can be updated
       linkedInProfile: alumni.linkedInProfile,
       githubProfile: alumni.githubProfile,
@@ -73,7 +76,10 @@ const transformUser = (
       enrollmentYear: student.enrollmentYear,
       degree: student.degree,
       skills: student.skills || [],
-      avatar: student.profilePictureUrlOptimized || student.profilePictureUrlHD || student.profilePictureUrl,
+      avatar:
+        student.profilePictureUrlOptimized ||
+        student.profilePictureUrlHD ||
+        student.profilePictureUrl,
       linkedInProfile: student.linkedInProfile,
       githubProfile: student.githubProfile,
       personalWebsite: student.personalWebsite,
@@ -92,7 +98,10 @@ const transformUser = (
         alumniCount: college.alumniCount || 0,
         studentCount: college.studentCount || 0,
       },
-      avatar: college.collegeLogoUrlOptimized || college.collegeLogoUrlHD || college.collegeLogoUrl,
+      avatar:
+        college.collegeLogoUrlOptimized ||
+        college.collegeLogoUrlHD ||
+        college.collegeLogoUrl,
     } as College;
   }
 };
@@ -210,9 +219,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         tokenService.setTokens(response.accessToken, response.refreshToken);
       }
 
-      // Fetch full user profile
-      const userResponse = await authAPI.getCurrentUser();
+      // Fetch full user profile to check verification status
+      let userResponse: import("../types/api").CurrentUserResponse;
+      try {
+        userResponse = await authAPI.getCurrentUser();
+      } catch {
+        // If we can't fetch user profile, clear tokens and throw error
+        tokenService.clearTokens();
+        throw new Error("Unable to fetch user profile. Please try again.");
+      }
+
       if (userResponse.user) {
+        // Check email verification status before allowing login (for Alumni and Student)
+        if (role === UserRole.Alumni || role === UserRole.Student) {
+          const backendUser = userResponse.user as
+            | BackendAlumni
+            | BackendStudent;
+          // Check emailVerified field - this is the email verification status
+          if (!backendUser.emailVerified) {
+            // Clear tokens that were stored
+            tokenService.clearTokens();
+            throw new Error(
+              "Please verify your email before logging in. Check your inbox for the verification link."
+            );
+          }
+        }
+
         const transformedUser = transformUser(userResponse.user, role);
         setUser(transformedUser);
         tokenService.setUser(transformedUser);
@@ -225,30 +257,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           tokenService.setVerificationStatus(true);
         }
       } else {
-        // Fallback to basic user info from login response
-        const userData =
-          response.alumni || response.student || response.college;
-        if (userData) {
-          // Create a minimal user object for transformation
-          const minimalUser = {
-            _id: userData.id,
-            name: userData.name,
-            email: userData.email,
-          };
-          const transformedUser = transformUser(
-            minimalUser as BackendAlumni | BackendStudent | BackendCollege,
-            role
-          );
-          setUser(transformedUser);
-          tokenService.setUser(transformedUser);
-
-          if (role === UserRole.Alumni || role === UserRole.Student) {
-            const typedUser = transformedUser as Alumni | Student;
-            tokenService.setVerificationStatus(typedUser.isVerified);
-          } else {
-            tokenService.setVerificationStatus(true);
-          }
-        }
+        // If we can't get user profile, we can't verify email status
+        // Clear tokens and throw error
+        tokenService.clearTokens();
+        throw new Error("Unable to fetch user profile. Please try again.");
       }
     } catch (error: unknown) {
       const errorMessage =
