@@ -13,6 +13,7 @@ import {
 } from '../../components/ui/select';
 import { Checkbox } from '../../components/ui/checkbox';
 import { Department, JobType } from '../../types';
+import { BackendJobType } from '../../types/api';
 import { useNavigate } from 'react-router-dom';
 import { jobsAPI } from '../../lib/api';
 
@@ -50,11 +51,11 @@ const CollegeJobCreationPage = () => {
       setLoading(true);
 
       // Map frontend JobType to backend format
-      const jobTypeMap: Record<JobType, string> = {
-        [JobType.FullTime]: 'full_time',
-        [JobType.PartTime]: 'part_time',
-        [JobType.Contract]: 'contract',
-        [JobType.Internship]: 'internship',
+      const jobTypeMap: Record<JobType, BackendJobType> = {
+        [JobType.FullTime]: BackendJobType.FullTime,
+        [JobType.PartTime]: BackendJobType.PartTime,
+        [JobType.Contract]: BackendJobType.Contract,
+        [JobType.Internship]: BackendJobType.Internship,
       };
 
       const jobData = {
@@ -89,7 +90,7 @@ const CollegeJobCreationPage = () => {
   };
 
   return (
-    <div className="container py-8 max-w-3xl">
+    <div className="container py-8 max-w-3xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Post a Job Opportunity</h1>
         <p className="text-muted-foreground">

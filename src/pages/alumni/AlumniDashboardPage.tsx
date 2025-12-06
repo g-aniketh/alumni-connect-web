@@ -495,7 +495,7 @@ const AlumniDashboardPage = () => {
                       <span>{event.location}</span>
                     </div>
                     <Button asChild variant="outline" className="w-full mt-4">
-                      <Link to={`/events/${event._id}`}>View Event</Link>
+                      <Link to="/events">View Event</Link>
                     </Button>
                   </CardContent>
                 </Card>

@@ -16,6 +16,7 @@ import { Checkbox } from '../../components/ui/checkbox';
 import { JobType } from '../../types';
 import { jobsAPI } from '../../lib/api';
 import type { BackendJob } from '../../types/api';
+import { BackendJobType } from '../../types/api';
 
 const AlumniJobEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -91,11 +92,11 @@ const AlumniJobEditPage = () => {
 
     try {
       // Convert frontend JobType to backend format
-      const jobTypeMap: Record<JobType, string> = {
-        [JobType.FullTime]: 'full_time',
-        [JobType.PartTime]: 'part_time',
-        [JobType.Contract]: 'contract',
-        [JobType.Internship]: 'internship',
+      const jobTypeMap: Record<JobType, BackendJobType> = {
+        [JobType.FullTime]: BackendJobType.FullTime,
+        [JobType.PartTime]: BackendJobType.PartTime,
+        [JobType.Contract]: BackendJobType.Contract,
+        [JobType.Internship]: BackendJobType.Internship,
       };
 
       const requirements = formData.requirements
@@ -107,7 +108,7 @@ const AlumniJobEditPage = () => {
         description: formData.description,
         requirements,
         location: formData.location,
-        jobType: jobTypeMap[formData.type] || formData.type.toLowerCase().replace(' ', '_'),
+        jobType: jobTypeMap[formData.type],
         salaryMin: formData.salaryMin ? parseFloat(formData.salaryMin) : undefined,
         salaryMax: formData.salaryMax ? parseFloat(formData.salaryMax) : undefined,
         salaryCurrency: 'USD',
@@ -148,7 +149,7 @@ const AlumniJobEditPage = () => {
   }
 
   return (
-    <div className="container py-8 max-w-3xl">
+    <div className="container py-8 max-w-3xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Edit Job Posting</h1>
         <p className="text-muted-foreground">
