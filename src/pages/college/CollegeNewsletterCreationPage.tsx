@@ -1,12 +1,18 @@
-import { Card, CardContent, CardDescription, CardTitle } from '../../components/ui/card';
-import { FileText } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "../../components/ui/card";
+import { FileText } from "lucide-react";
 
 const CollegeNewsletterCreationPage = () => {
-
   return (
     <div className="container py-8 max-w-3xl">
       <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Create Newsletter/Blog Post</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Create Newsletter/Blog Post
+        </h1>
         <p className="text-muted-foreground">
           Newsletter feature is not yet implemented in the backend.
         </p>
@@ -28,4 +34,3 @@ const CollegeNewsletterCreationPage = () => {
 };
 
 export default CollegeNewsletterCreationPage;
-

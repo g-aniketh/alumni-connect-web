@@ -14,7 +14,12 @@ const SignupPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const roleParam = searchParams.get("role");
-  const defaultTab = roleParam === "alumni" ? "alumni" : roleParam === "college" ? "college" : "student";
+  const defaultTab =
+    roleParam === "alumni"
+      ? "alumni"
+      : roleParam === "college"
+        ? "college"
+        : "student";
 
   const handleTabChange = (value: string) => {
     navigate(`/signup?role=${value}`, { replace: true });
@@ -30,7 +35,11 @@ const SignupPage = () => {
           </p>
         </div>
 
-        <Tabs value={defaultTab} onValueChange={handleTabChange} className="w-full">
+        <Tabs
+          value={defaultTab}
+          onValueChange={handleTabChange}
+          className="w-full"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="student">Student</TabsTrigger>
             <TabsTrigger value="alumni">Alumni</TabsTrigger>
@@ -40,7 +49,9 @@ const SignupPage = () => {
           <TabsContent value="student">
             <StudentSignupForm />
             <div className="mt-4 text-center text-sm">
-              <span className="text-muted-foreground">Already have an account? </span>
+              <span className="text-muted-foreground">
+                Already have an account?{" "}
+              </span>
               <Link
                 to="/login?role=student"
                 className="underline hover:text-primary font-medium"
@@ -53,7 +64,9 @@ const SignupPage = () => {
           <TabsContent value="alumni">
             <AlumniSignupForm />
             <div className="mt-4 text-center text-sm">
-              <span className="text-muted-foreground">Already have an account? </span>
+              <span className="text-muted-foreground">
+                Already have an account?{" "}
+              </span>
               <Link
                 to="/login?role=alumni"
                 className="underline hover:text-primary font-medium"
@@ -66,7 +79,9 @@ const SignupPage = () => {
           <TabsContent value="college">
             <CollegeSignupForm />
             <div className="mt-4 text-center text-sm">
-              <span className="text-muted-foreground">Already have an account? </span>
+              <span className="text-muted-foreground">
+                Already have an account?{" "}
+              </span>
               <Link
                 to="/login?role=college"
                 className="underline hover:text-primary font-medium"
@@ -82,4 +97,3 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
-

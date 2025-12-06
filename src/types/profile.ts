@@ -44,18 +44,28 @@ export interface CollegeFormData {
 }
 
 // Union type for all form data
-export type ProfileFormData = AlumniFormData | StudentFormData | CollegeFormData;
+export type ProfileFormData =
+  | AlumniFormData
+  | StudentFormData
+  | CollegeFormData;
 
 // Type guard functions
-export function isAlumniFormData(data: ProfileFormData): data is AlumniFormData {
-  return 'currentEmployer' in data && 'designation' in data;
+export function isAlumniFormData(
+  data: ProfileFormData
+): data is AlumniFormData {
+  return "currentEmployer" in data && "designation" in data;
 }
 
-export function isStudentFormData(data: ProfileFormData): data is StudentFormData {
-  return 'rollNumber' in data && 'enrollmentYear' in data;
+export function isStudentFormData(
+  data: ProfileFormData
+): data is StudentFormData {
+  return "rollNumber" in data && "enrollmentYear" in data;
 }
 
-export function isCollegeFormData(data: ProfileFormData): data is CollegeFormData {
-  return 'website' in data && 'establishedYear' in data && !('rollNumber' in data);
+export function isCollegeFormData(
+  data: ProfileFormData
+): data is CollegeFormData {
+  return (
+    "website" in data && "establishedYear" in data && !("rollNumber" in data)
+  );
 }
-

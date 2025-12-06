@@ -35,7 +35,7 @@ const formatStatus = (status: string) =>
   status
     .toLowerCase()
     .split("_")
-    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
     .join(" ");
 
 const getStatusVariant = (
@@ -156,7 +156,7 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {applications.map(app => {
+              {applications.map((app) => {
                 const applicant = getApplicant(app);
                 return (
                   <TableRow key={app._id}>
@@ -171,7 +171,7 @@ export const ApplicationManagement = ({ job }: ApplicationManagementProps) => {
                       {new Date(app.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="space-x-2 text-right">
-                      {statusOptions.map(status => (
+                      {statusOptions.map((status) => (
                         <Button
                           key={status}
                           size="sm"

@@ -1,24 +1,30 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
+import { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
-import { Label } from '../components/ui/label';
-import { authAPI } from '../lib/api';
-import { Mail, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
+} from "../components/ui/select";
+import { Label } from "../components/ui/label";
+import { authAPI } from "../lib/api";
+import { Mail, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
 
 const EmailVerificationPage = () => {
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
-  const [userType, setUserType] = useState<string>('alumni');
+  const token = searchParams.get("token");
+  const [userType, setUserType] = useState<string>("alumni");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
@@ -29,18 +35,18 @@ const EmailVerificationPage = () => {
 
   const handleVerify = async () => {
     if (!token) {
-      setError('Invalid or missing verification token');
+      setError("Invalid or missing verification token");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       await authAPI.verifyEmail(token, userType);
       setVerified(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to verify email');
+      setError(err instanceof Error ? err.message : "Failed to verify email");
     } finally {
       setLoading(false);
     }
@@ -79,8 +85,8 @@ const EmailVerificationPage = () => {
           <CardTitle>Verify Email Address</CardTitle>
           <CardDescription>
             {token
-              ? 'Verifying your email address...'
-              : 'Enter your verification token to verify your email address.'}
+              ? "Verifying your email address..."
+              : "Enter your verification token to verify your email address."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -111,7 +117,11 @@ const EmailVerificationPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button onClick={handleVerify} className="w-full" disabled={loading}>
+                  <Button
+                    onClick={handleVerify}
+                    className="w-full"
+                    disabled={loading}
+                  >
                     Retry Verification
                   </Button>
                 </div>
@@ -123,8 +133,9 @@ const EmailVerificationPage = () => {
                 <Mail className="h-12 w-12 text-blue-600" />
               </div>
               <p className="text-sm text-muted-foreground text-center">
-                Please check your email for the verification link. If you didn't receive it,
-                you can request a new one from your profile settings.
+                Please check your email for the verification link. If you didn't
+                receive it, you can request a new one from your profile
+                settings.
               </p>
               <Button asChild variant="outline" className="w-full">
                 <Link to="/login">

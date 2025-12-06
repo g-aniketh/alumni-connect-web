@@ -1,5 +1,5 @@
-import { Users, BadgeCheck, Handshake, DollarSign } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Users, BadgeCheck, Handshake, DollarSign } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface StatsCardProps {
   title: string;
@@ -8,7 +8,12 @@ interface StatsCardProps {
   description?: string;
 }
 
-const StatsCard = ({ title, value, icon: Icon, description }: StatsCardProps) => {
+const StatsCard = ({
+  title,
+  value,
+  icon: Icon,
+  description,
+}: StatsCardProps) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -55,4 +60,3 @@ export const DashboardStats = () => {
     </div>
   );
 };
-

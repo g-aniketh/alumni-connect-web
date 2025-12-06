@@ -57,7 +57,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setApplicationData(prev => ({
+      setApplicationData((prev) => ({
         ...prev,
         resumeFile: file,
         resumeFileName: file.name,
@@ -77,7 +77,9 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
       // Upload resume file if provided
       if (applicationData.resumeFile) {
         try {
-          const uploadResult = await uploadAPI.uploadResume(applicationData.resumeFile);
+          const uploadResult = await uploadAPI.uploadResume(
+            applicationData.resumeFile
+          );
           resumeUrl = uploadResult.url;
         } catch (uploadErr) {
           setError(
@@ -117,7 +119,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
   return (
     <Dialog
       open={open}
-      onOpenChange={isOpen => {
+      onOpenChange={(isOpen) => {
         onOpenChange(isOpen);
         if (!isOpen) {
           setShowApplicationForm(false);
@@ -185,7 +187,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
               <div className="space-y-3">
                 <h3 className="font-semibold text-lg">Target Departments</h3>
                 <div className="flex flex-wrap gap-2">
-                  {job.department.map(dept => (
+                  {job.department.map((dept) => (
                     <Badge key={dept} variant="outline">
                       {dept}
                     </Badge>
@@ -267,8 +269,8 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                   id="message"
                   placeholder="Tell us why you're interested in this position and what makes you a great fit..."
                   value={applicationData.message}
-                  onChange={e =>
-                    setApplicationData(prev => ({
+                  onChange={(e) =>
+                    setApplicationData((prev) => ({
                       ...prev,
                       message: e.target.value,
                     }))

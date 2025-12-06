@@ -28,7 +28,7 @@ const AlumniEventRegistrationsPage = () => {
       setError("");
       const data = await eventsAPI.getMyOrganized();
       setEvents(data);
-      setSelectedEvent(prev => prev ?? data[0] ?? null);
+      setSelectedEvent((prev) => prev ?? data[0] ?? null);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load your events"
@@ -73,7 +73,7 @@ const AlumniEventRegistrationsPage = () => {
                 <CardTitle className="text-sm">Your Events</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {events.map(event => (
+                {events.map((event) => (
                   <Button
                     key={event._id}
                     variant={

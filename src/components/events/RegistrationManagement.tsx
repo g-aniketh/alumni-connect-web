@@ -34,7 +34,9 @@ const formatStatus = (status: string) =>
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
     .join(" ");
 
-const getStatusVariant = (status: string): "default" | "secondary" | "outline" => {
+const getStatusVariant = (
+  status: string
+): "default" | "secondary" | "outline" => {
   switch (status.toLowerCase()) {
     case "registered":
       return "secondary";
@@ -49,8 +51,12 @@ const getStatusVariant = (status: string): "default" | "secondary" | "outline" =
   }
 };
 
-export const RegistrationManagement = ({ event }: RegistrationManagementProps) => {
-  const [registrations, setRegistrations] = useState<BackendEventRegistration[]>([]);
+export const RegistrationManagement = ({
+  event,
+}: RegistrationManagementProps) => {
+  const [registrations, setRegistrations] = useState<
+    BackendEventRegistration[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
@@ -70,7 +76,7 @@ export const RegistrationManagement = ({ event }: RegistrationManagementProps) =
       setRegistrations(data);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to load registrations",
+        err instanceof Error ? err.message : "Failed to load registrations"
       );
     } finally {
       setLoading(false);
@@ -79,7 +85,7 @@ export const RegistrationManagement = ({ event }: RegistrationManagementProps) =
 
   const handleStatusChange = async (
     registrationId: string,
-    status: (typeof registrationStatuses)[number],
+    status: (typeof registrationStatuses)[number]
   ) => {
     try {
       setError("");
@@ -88,14 +94,12 @@ export const RegistrationManagement = ({ event }: RegistrationManagementProps) =
         await loadRegistrations(event._id);
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update status",
-      );
+      setError(err instanceof Error ? err.message : "Failed to update status");
     }
   };
 
   const getParticipant = (
-    registration: BackendEventRegistration,
+    registration: BackendEventRegistration
   ): BackendStudent | null => {
     if (typeof registration.participantId === "object") {
       return registration.participantId as BackendStudent;
@@ -112,7 +116,9 @@ export const RegistrationManagement = ({ event }: RegistrationManagementProps) =
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading registrations...</p>;
+    return (
+      <p className="text-sm text-muted-foreground">Loading registrations...</p>
+    );
   }
 
   return (
@@ -182,5 +188,3 @@ export const RegistrationManagement = ({ event }: RegistrationManagementProps) =
     </div>
   );
 };
-
-

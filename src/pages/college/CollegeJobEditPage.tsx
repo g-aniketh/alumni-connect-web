@@ -106,7 +106,7 @@ const CollegeJobEditPage = () => {
       };
 
       const requirements = formData.requirements
-        ? formData.requirements.split("\n").filter(r => r.trim())
+        ? formData.requirements.split("\n").filter((r) => r.trim())
         : [];
 
       const jobData = {
@@ -188,8 +188,8 @@ const CollegeJobEditPage = () => {
                 id="title"
                 placeholder="e.g., Software Engineer Intern"
                 value={formData.title}
-                onChange={e =>
-                  setFormData(prev => ({ ...prev, title: e.target.value }))
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
                 }
                 required
               />
@@ -202,8 +202,11 @@ const CollegeJobEditPage = () => {
                   id="location"
                   placeholder="e.g., Remote, On Campus"
                   value={formData.location}
-                  onChange={e =>
-                    setFormData(prev => ({ ...prev, location: e.target.value }))
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
                   }
                   required
                 />
@@ -213,15 +216,15 @@ const CollegeJobEditPage = () => {
                 <Label htmlFor="type">Job Type *</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={value =>
-                    setFormData(prev => ({ ...prev, type: value as JobType }))
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, type: value as JobType }))
                   }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.values(JobType).map(type => (
+                    {Object.values(JobType).map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
                       </SelectItem>
@@ -237,8 +240,8 @@ const CollegeJobEditPage = () => {
                 id="description"
                 placeholder="Describe the role, requirements, and responsibilities..."
                 value={formData.description}
-                onChange={e =>
-                  setFormData(prev => ({
+                onChange={(e) =>
+                  setFormData((prev) => ({
                     ...prev,
                     description: e.target.value,
                   }))
@@ -256,8 +259,8 @@ const CollegeJobEditPage = () => {
                 id="requirements"
                 placeholder="e.g., Bachelor's degree in Computer Science&#10;3+ years of experience&#10;Proficiency in React and Node.js"
                 value={formData.requirements}
-                onChange={e =>
-                  setFormData(prev => ({
+                onChange={(e) =>
+                  setFormData((prev) => ({
                     ...prev,
                     requirements: e.target.value,
                   }))
@@ -275,8 +278,8 @@ const CollegeJobEditPage = () => {
                   type="number"
                   placeholder="30000"
                   value={formData.salaryMin}
-                  onChange={e =>
-                    setFormData(prev => ({
+                  onChange={(e) =>
+                    setFormData((prev) => ({
                       ...prev,
                       salaryMin: e.target.value,
                     }))
@@ -291,8 +294,8 @@ const CollegeJobEditPage = () => {
                   type="number"
                   placeholder="50000"
                   value={formData.salaryMax}
-                  onChange={e =>
-                    setFormData(prev => ({
+                  onChange={(e) =>
+                    setFormData((prev) => ({
                       ...prev,
                       salaryMax: e.target.value,
                     }))
@@ -305,8 +308,8 @@ const CollegeJobEditPage = () => {
               <Checkbox
                 id="referral"
                 checked={formData.referralAvailable}
-                onCheckedChange={checked =>
-                  setFormData(prev => ({
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({
                     ...prev,
                     referralAvailable: checked === true,
                   }))

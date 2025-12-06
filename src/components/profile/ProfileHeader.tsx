@@ -86,7 +86,7 @@ export const ProfileHeader = ({
             <AvatarFallback className="text-2xl">
               {user.name
                 .split(" ")
-                .map(n => n[0])
+                .map((n) => n[0])
                 .join("")}
             </AvatarFallback>
           </Avatar>
@@ -94,7 +94,7 @@ export const ProfileHeader = ({
             {isEditing ? (
               <Input
                 value={"name" in formData ? formData.name : ""}
-                onChange={e =>
+                onChange={(e) =>
                   onFormDataChange({
                     ...formData,
                     name: e.target.value,

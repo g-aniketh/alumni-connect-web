@@ -389,10 +389,10 @@ const Navbar = () => {
                       user.role === UserRole.Student
                         ? "/student/dashboard"
                         : user.role === UserRole.Alumni
-                        ? "/alumni/dashboard"
-                        : user.role === UserRole.College
-                        ? "/college/dashboard"
-                        : "/dashboard"
+                          ? "/alumni/dashboard"
+                          : user.role === UserRole.College
+                            ? "/college/dashboard"
+                            : "/dashboard"
                     }
                   >
                     Dashboard
@@ -445,14 +445,14 @@ const Navbar = () => {
                   <span>Alumni Connect</span>
                 </Link>
                 <div className="flex flex-col gap-4">
-                  {navigationItems.map(item => {
+                  {navigationItems.map((item) => {
                     if (item.subItems && item.subItems.length > 0) {
                       return (
                         <div key={item.name} className="space-y-2">
                           <p className="text-sm font-semibold text-muted-foreground">
                             {item.name}
                           </p>
-                          {item.subItems.map(subItem => (
+                          {item.subItems.map((subItem) => (
                             <Link
                               key={subItem.name}
                               to={subItem.path || "#"}

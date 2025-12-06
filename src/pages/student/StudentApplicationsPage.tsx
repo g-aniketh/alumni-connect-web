@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -6,21 +6,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
-import { Badge } from '../../components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { jobsAPI } from '../../lib/api';
-import { useAuth } from '../../context/AuthContext';
-import type { BackendJobApplication, BackendJob } from '../../types/api';
-import { Calendar, Building2, MapPin, X } from 'lucide-react';
+} from "../../components/ui/table";
+import { Badge } from "../../components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { jobsAPI } from "../../lib/api";
+import { useAuth } from "../../context/AuthContext";
+import type { BackendJobApplication, BackendJob } from "../../types/api";
+import { Calendar, Building2, MapPin, X } from "lucide-react";
 
 const StudentApplicationsPage = () => {
   useAuth(); // For future use
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [applications, setApplications] = useState<BackendJobApplication[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     loadApplications();
@@ -29,53 +35,61 @@ const StudentApplicationsPage = () => {
   const loadApplications = async () => {
     try {
       setLoading(true);
-      setError('');
+      setError("");
       const myApplications = await jobsAPI.getMyApplications();
       setApplications(myApplications);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load applications');
+      setError(
+        err instanceof Error ? err.message : "Failed to load applications"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleWithdraw = async (applicationId: string) => {
-    if (!confirm('Are you sure you want to withdraw this application?')) return;
-    
+    if (!confirm("Are you sure you want to withdraw this application?")) return;
+
     try {
       await jobsAPI.withdrawApplication(applicationId);
       await loadApplications();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to withdraw application');
+      setError(
+        err instanceof Error ? err.message : "Failed to withdraw application"
+      );
     }
   };
 
   // Filter applications by status
   const studentApplications = applications.filter((app) => {
-    if (statusFilter === 'all') return true;
-    return app.status.toLowerCase() === statusFilter.toLowerCase().replace(' ', '_');
+    if (statusFilter === "all") return true;
+    return (
+      app.status.toLowerCase() === statusFilter.toLowerCase().replace(" ", "_")
+    );
   });
-
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'applied':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100';
-      case 'under_review':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100';
-      case 'interview_scheduled':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100';
-      case 'rejected':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
-      case 'offered':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
+      case "applied":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100";
+      case "under_review":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100";
+      case "interview_scheduled":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100";
+      case "rejected":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100";
+      case "offered":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100";
       default:
-        return '';
+        return "";
     }
   };
 
   const formatStatus = (status: string) => {
-    return status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    return status
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   if (loading) {
@@ -108,7 +122,8 @@ const StudentApplicationsPage = () => {
           <CardHeader>
             <CardTitle>No Applications Yet</CardTitle>
             <CardDescription>
-              You haven't applied to any jobs yet. Start browsing available positions!
+              You haven't applied to any jobs yet. Start browsing available
+              positions!
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -121,16 +136,22 @@ const StudentApplicationsPage = () => {
         <div className="space-y-4">
           <div className="flex gap-2 flex-wrap">
             <Badge
-              variant={statusFilter === 'all' ? 'default' : 'outline'}
+              variant={statusFilter === "all" ? "default" : "outline"}
               className="cursor-pointer"
-              onClick={() => setStatusFilter('all')}
+              onClick={() => setStatusFilter("all")}
             >
               All
             </Badge>
-            {['applied', 'under_review', 'interview_scheduled', 'offered', 'rejected'].map((status) => (
+            {[
+              "applied",
+              "under_review",
+              "interview_scheduled",
+              "offered",
+              "rejected",
+            ].map((status) => (
               <Badge
                 key={status}
-                variant={statusFilter === status ? 'default' : 'outline'}
+                variant={statusFilter === status ? "default" : "outline"}
                 className="cursor-pointer"
                 onClick={() => setStatusFilter(status)}
               >
@@ -153,16 +174,22 @@ const StudentApplicationsPage = () => {
               </TableHeader>
               <TableBody>
                 {studentApplications.map((app) => {
-                  const job = typeof app.jobId === 'object' ? app.jobId as BackendJob : null;
-                  const posterName = job && typeof job.postedBy.posterId === 'object' 
-                    ? job.postedBy.posterId.name 
-                    : job ? 'Company' : 'N/A';
-                  
+                  const job =
+                    typeof app.jobId === "object"
+                      ? (app.jobId as BackendJob)
+                      : null;
+                  const posterName =
+                    job && typeof job.postedBy.posterId === "object"
+                      ? job.postedBy.posterId.name
+                      : job
+                        ? "Company"
+                        : "N/A";
+
                   return (
                     <TableRow key={app._id}>
                       <TableCell>
                         <div className="font-medium">
-                          {job?.title || 'Job Not Found'}
+                          {job?.title || "Job Not Found"}
                         </div>
                         {job?.referral && (
                           <Badge variant="outline" className="mt-1 text-xs">
@@ -179,7 +206,7 @@ const StudentApplicationsPage = () => {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-muted-foreground" />
-                          {job?.location || 'N/A'}
+                          {job?.location || "N/A"}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -197,7 +224,8 @@ const StudentApplicationsPage = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {(app.status === 'applied' || app.status === 'under_review') && (
+                        {(app.status === "applied" ||
+                          app.status === "under_review") && (
                           <Button
                             variant="ghost"
                             size="sm"
@@ -222,4 +250,3 @@ const StudentApplicationsPage = () => {
 };
 
 export default StudentApplicationsPage;
-

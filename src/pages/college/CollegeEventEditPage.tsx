@@ -1,19 +1,25 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { eventsAPI } from '../../lib/api';
-import type { BackendEvent } from '../../types/api';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import { eventsAPI } from "../../lib/api";
+import type { BackendEvent } from "../../types/api";
 
 const CollegeEventEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [event, setEvent] = useState<BackendEvent | null>(null);
   const [formData, setFormData] = useState<{
     title: string;
@@ -24,13 +30,13 @@ const CollegeEventEditPage = () => {
     location: string;
     eventBannerUrl: string;
   }>({
-    title: '',
-    description: '',
-    date: '',
-    startTime: '',
-    endTime: '',
-    location: '',
-    eventBannerUrl: '',
+    title: "",
+    description: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+    location: "",
+    eventBannerUrl: "",
   });
 
   useEffect(() => {
@@ -42,25 +48,25 @@ const CollegeEventEditPage = () => {
   const loadEvent = async () => {
     try {
       setLoading(true);
-      setError('');
+      setError("");
       const eventData = await eventsAPI.getById(id!);
       setEvent(eventData);
 
       // Format date for input (YYYY-MM-DD)
       const eventDate = new Date(eventData.eventDate);
-      const formattedDate = eventDate.toISOString().split('T')[0];
+      const formattedDate = eventDate.toISOString().split("T")[0];
 
       setFormData({
         title: eventData.title,
         description: eventData.description,
         date: formattedDate,
-        startTime: eventData.startTime || '',
-        endTime: eventData.endTime || '',
+        startTime: eventData.startTime || "",
+        endTime: eventData.endTime || "",
         location: eventData.location,
-        eventBannerUrl: eventData.eventBannerUrl || '',
+        eventBannerUrl: eventData.eventBannerUrl || "",
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load event');
+      setError(err instanceof Error ? err.message : "Failed to load event");
     } finally {
       setLoading(false);
     }
@@ -70,7 +76,7 @@ const CollegeEventEditPage = () => {
     e.preventDefault();
     if (!id) return;
 
-    setError('');
+    setError("");
     setSaving(true);
 
     try {
@@ -78,17 +84,17 @@ const CollegeEventEditPage = () => {
         title: formData.title,
         description: formData.description,
         eventDate: formData.date,
-        startTime: formData.startTime || '00:00',
-        endTime: formData.endTime || '23:59',
+        startTime: formData.startTime || "00:00",
+        endTime: formData.endTime || "23:59",
         location: formData.location,
         eventBannerUrl: formData.eventBannerUrl || undefined,
       };
 
       await eventsAPI.update(id, eventData);
-      alert('Event updated successfully!');
-      navigate('/college/events');
+      alert("Event updated successfully!");
+      navigate("/college/events");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update event');
+      setError(err instanceof Error ? err.message : "Failed to update event");
     } finally {
       setSaving(false);
     }
@@ -109,7 +115,7 @@ const CollegeEventEditPage = () => {
       <div className="container py-8 min-h-screen">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Event not found</p>
-          <Button onClick={() => navigate('/college/events')} className="mt-4">
+          <Button onClick={() => navigate("/college/events")} className="mt-4">
             Back to Events
           </Button>
         </div>
@@ -129,7 +135,9 @@ const CollegeEventEditPage = () => {
       <Card>
         <CardHeader>
           <CardTitle>Event Details</CardTitle>
-          <CardDescription>Update the information about your event.</CardDescription>
+          <CardDescription>
+            Update the information about your event.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -145,7 +153,9 @@ const CollegeEventEditPage = () => {
                 id="title"
                 placeholder="e.g., Career Development Workshop"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
                 required
               />
             </div>
@@ -156,7 +166,12 @@ const CollegeEventEditPage = () => {
                 id="description"
                 placeholder="Describe the event, agenda, and what attendees can expect..."
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 rows={6}
                 required
               />
@@ -168,7 +183,9 @@ const CollegeEventEditPage = () => {
                 id="date"
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, date: e.target.value }))
+                }
                 required
               />
             </div>
@@ -180,7 +197,12 @@ const CollegeEventEditPage = () => {
                   id="startTime"
                   type="time"
                   value={formData.startTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startTime: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -191,7 +213,12 @@ const CollegeEventEditPage = () => {
                   id="endTime"
                   type="time"
                   value={formData.endTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      endTime: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -203,28 +230,42 @@ const CollegeEventEditPage = () => {
                 id="location"
                 placeholder="e.g., Main Auditorium, Online (Zoom)"
                 value={formData.location}
-                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, location: e.target.value }))
+                }
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="eventBannerUrl">Event Banner Image URL (Optional)</Label>
+              <Label htmlFor="eventBannerUrl">
+                Event Banner Image URL (Optional)
+              </Label>
               <Input
                 id="eventBannerUrl"
                 type="url"
                 placeholder="https://example.com/event-image.jpg"
                 value={formData.eventBannerUrl}
-                onChange={(e) => setFormData(prev => ({ ...prev, eventBannerUrl: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    eventBannerUrl: e.target.value,
+                  }))
+                }
               />
             </div>
 
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => navigate('/college/events')} disabled={saving}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/college/events")}
+                disabled={saving}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </form>

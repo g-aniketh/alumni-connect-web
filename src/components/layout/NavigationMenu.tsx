@@ -30,7 +30,7 @@ export const NavigationMenu = ({ items }: NavigationMenuProps) => {
 
   const hasActiveSubItem = (item: NavItem) => {
     if (!item.subItems) return false;
-    return item.subItems.some(subItem => isActive(subItem.path));
+    return item.subItems.some((subItem) => isActive(subItem.path));
   };
 
   const handleMouseEnter = (itemName: string) => {
@@ -60,7 +60,7 @@ export const NavigationMenu = ({ items }: NavigationMenuProps) => {
 
   return (
     <nav className="flex items-center gap-1">
-      {items.map(item => {
+      {items.map((item) => {
         const hasSubItems = item.subItems && item.subItems.length > 0;
         const isItemActive = isActive(item.path) || hasActiveSubItem(item);
         const isOpen = openMenu === item.name;
@@ -102,7 +102,7 @@ export const NavigationMenu = ({ items }: NavigationMenuProps) => {
                   onMouseLeave={handleMouseLeave}
                 >
                   <div className="grid grid-cols-2 gap-4">
-                    {item.subItems?.map(subItem => {
+                    {item.subItems?.map((subItem) => {
                       const isSubItemActive = isActive(subItem.path);
                       return (
                         <Link

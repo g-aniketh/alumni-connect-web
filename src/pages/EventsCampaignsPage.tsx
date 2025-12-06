@@ -75,7 +75,7 @@ const EventsCampaignsPage = () => {
         const allEvents = await eventsAPI.getAll();
         // Filter for upcoming events
         const now = new Date();
-        const upcoming = allEvents.filter(e => new Date(e.eventDate) >= now);
+        const upcoming = allEvents.filter((e) => new Date(e.eventDate) >= now);
         setEvents(upcoming);
       }
     } catch (err) {
@@ -304,7 +304,7 @@ const EventsCampaignsPage = () => {
         <TabsContent value="events" className="mt-6">
           {events.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map(backendEvent => {
+              {events.map((backendEvent) => {
                 const event = transformEvent(backendEvent);
                 const isRegistered =
                   user?.role === UserRole.Student &&
@@ -335,7 +335,7 @@ const EventsCampaignsPage = () => {
               </div>
             ) : myEvents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myEvents.map(backendEvent => {
+                {myEvents.map((backendEvent) => {
                   const event = transformEvent(backendEvent);
                   return (
                     <div
@@ -402,7 +402,7 @@ const EventsCampaignsPage = () => {
           ) : campaigns.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {campaigns.map(backendCampaign => {
+                {campaigns.map((backendCampaign) => {
                   const campaign = transformCampaign(backendCampaign);
                   // Show all campaigns (upcoming, active, and recently completed)
                   return (

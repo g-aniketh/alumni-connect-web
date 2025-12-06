@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { useAuth } from "../../context/AuthContext";
 import { GraduationCap } from "lucide-react";
 import type { BackendStudent } from "../../types/api";
@@ -8,7 +14,9 @@ import { studentAPI } from "../../lib/api";
 const ConnectedStudentsPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [connectedStudents, setConnectedStudents] = useState<BackendStudent[]>([]);
+  const [connectedStudents, setConnectedStudents] = useState<BackendStudent[]>(
+    []
+  );
 
   useEffect(() => {
     loadConnectedStudents();
@@ -20,17 +28,17 @@ const ConnectedStudentsPage = () => {
       // Get students from active mentorships
       const { mentorshipsAPI } = await import("../../lib/api");
       const mentorships = await mentorshipsAPI.getMy("active");
-      
+
       // Extract students from active mentorships
       const students: BackendStudent[] = mentorships.mentorships
-        .map(m => {
-          if (typeof m.menteeId === 'object' && m.menteeId !== null) {
+        .map((m) => {
+          if (typeof m.menteeId === "object" && m.menteeId !== null) {
             return m.menteeId as BackendStudent;
           }
           return null;
         })
         .filter((student): student is BackendStudent => student !== null);
-      
+
       setConnectedStudents(students);
     } catch (err) {
       console.error("Error loading connected students:", err);
@@ -53,7 +61,9 @@ const ConnectedStudentsPage = () => {
   return (
     <div className="container py-8 min-h-screen">
       <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Connected Students</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Connected Students
+        </h1>
         <p className="text-muted-foreground">
           View students you are mentoring or have mentored.
         </p>
@@ -61,8 +71,11 @@ const ConnectedStudentsPage = () => {
 
       {connectedStudents.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {connectedStudents.map(student => (
-            <Card key={student._id || student.id || Math.random()} className="flex flex-col h-full">
+          {connectedStudents.map((student) => (
+            <Card
+              key={student._id || student.id || Math.random()}
+              className="flex flex-col h-full"
+            >
               <CardHeader className="text-center pb-3">
                 <div className="flex flex-col items-center gap-3">
                   <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
@@ -81,15 +94,22 @@ const ConnectedStudentsPage = () => {
               </CardHeader>
               <CardContent className="flex-1 space-y-3">
                 <div className="space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground">Department</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Department
+                  </p>
                   <p className="text-sm">{student.department}</p>
                 </div>
                 {student.skills && student.skills.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-medium text-muted-foreground">Skills</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Skills
+                    </p>
                     <div className="flex flex-wrap gap-1">
                       {student.skills.slice(0, 4).map((skill) => (
-                        <span key={skill} className="text-xs px-2 py-1 bg-muted rounded">
+                        <span
+                          key={skill}
+                          className="text-xs px-2 py-1 bg-muted rounded"
+                        >
                           {skill}
                         </span>
                       ))}
@@ -107,9 +127,11 @@ const ConnectedStudentsPage = () => {
               <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <CardTitle className="mb-2">No Connected Students</CardTitle>
               <CardDescription>
-                You don't have any active mentorship connections with students yet.
+                You don't have any active mentorship connections with students
+                yet.
                 <br />
-                Students can request mentorship from you through the Alumni Directory.
+                Students can request mentorship from you through the Alumni
+                Directory.
               </CardDescription>
             </div>
           </CardContent>
@@ -120,4 +142,3 @@ const ConnectedStudentsPage = () => {
 };
 
 export default ConnectedStudentsPage;
-

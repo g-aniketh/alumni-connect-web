@@ -14,15 +14,11 @@ export const campaignsAPI = {
 
   // Get active campaigns (public)
   getActive: async (): Promise<BackendCampaign[]> => {
-    return api.get<BackendCampaign[]>(
-      "/campaigns/active"
-    );
+    return api.get<BackendCampaign[]>("/campaigns/active");
   },
 
   // Get campaign by ID (public)
-  getById: async (
-    id: string
-  ): Promise<BackendCampaign> => {
+  getById: async (id: string): Promise<BackendCampaign> => {
     return api.get<BackendCampaign>(`/campaigns/${id}`);
   },
 
@@ -146,4 +142,3 @@ export const campaignsAPI = {
     }>("/campaigns/my/contributions");
   },
 };
-

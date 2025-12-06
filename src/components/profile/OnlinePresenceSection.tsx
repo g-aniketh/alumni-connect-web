@@ -81,7 +81,7 @@ export const OnlinePresenceSection = ({
                 id="linkedIn"
                 type="url"
                 value={formData.linkedInProfile || ""}
-                onChange={e =>
+                onChange={(e) =>
                   onFormDataChange({
                     ...formData,
                     linkedInProfile: e.target.value,
@@ -114,7 +114,7 @@ export const OnlinePresenceSection = ({
                 id="github"
                 type="url"
                 value={formData.githubProfile || ""}
-                onChange={e =>
+                onChange={(e) =>
                   onFormDataChange({
                     ...formData,
                     githubProfile: e.target.value,
@@ -149,7 +149,7 @@ export const OnlinePresenceSection = ({
                 id="website"
                 type="url"
                 value={formData.personalWebsite || ""}
-                onChange={e =>
+                onChange={(e) =>
                   onFormDataChange({
                     ...formData,
                     personalWebsite: e.target.value,

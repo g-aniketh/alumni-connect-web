@@ -1,18 +1,24 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { useNavigate } from 'react-router-dom';
-import { eventsAPI } from '../../lib/api';
-import { useAuth } from '../../context/AuthContext';
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import { useNavigate } from "react-router-dom";
+import { eventsAPI } from "../../lib/api";
+import { useAuth } from "../../context/AuthContext";
 
 const AlumniEventCreationPage = () => {
   const navigate = useNavigate();
   useAuth(); // For future use
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
@@ -22,18 +28,18 @@ const AlumniEventCreationPage = () => {
     location: string;
     eventBannerUrl: string;
   }>({
-    title: '',
-    description: '',
-    date: '',
-    startTime: '',
-    endTime: '',
-    location: '',
-    eventBannerUrl: '',
+    title: "",
+    description: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+    location: "",
+    eventBannerUrl: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
@@ -42,16 +48,16 @@ const AlumniEventCreationPage = () => {
         title: formData.title,
         description: formData.description,
         eventDate: formData.date,
-        startTime: formData.startTime || '00:00',
-        endTime: formData.endTime || '23:59',
+        startTime: formData.startTime || "00:00",
+        endTime: formData.endTime || "23:59",
         location: formData.location,
         eventBannerUrl: formData.eventBannerUrl || undefined,
       };
 
       await eventsAPI.create(eventData);
-      navigate('/events');
+      navigate("/events");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create event');
+      setError(err instanceof Error ? err.message : "Failed to create event");
     } finally {
       setLoading(false);
     }
@@ -69,7 +75,9 @@ const AlumniEventCreationPage = () => {
       <Card>
         <CardHeader>
           <CardTitle>Event Details</CardTitle>
-          <CardDescription>Fill in the information about your event.</CardDescription>
+          <CardDescription>
+            Fill in the information about your event.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -84,7 +92,9 @@ const AlumniEventCreationPage = () => {
                 id="title"
                 placeholder="e.g., Annual Alumni Meet 2024"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
                 required
               />
             </div>
@@ -95,7 +105,12 @@ const AlumniEventCreationPage = () => {
                 id="description"
                 placeholder="Describe the event, agenda, and what attendees can expect..."
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 rows={6}
                 required
               />
@@ -107,7 +122,9 @@ const AlumniEventCreationPage = () => {
                 id="date"
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, date: e.target.value }))
+                }
                 required
               />
             </div>
@@ -119,7 +136,12 @@ const AlumniEventCreationPage = () => {
                   id="startTime"
                   type="time"
                   value={formData.startTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startTime: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -130,7 +152,12 @@ const AlumniEventCreationPage = () => {
                   id="endTime"
                   type="time"
                   value={formData.endTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      endTime: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -142,28 +169,42 @@ const AlumniEventCreationPage = () => {
                 id="location"
                 placeholder="e.g., University Auditorium, Online (Zoom)"
                 value={formData.location}
-                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, location: e.target.value }))
+                }
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="eventBannerUrl">Event Banner Image URL (Optional)</Label>
+              <Label htmlFor="eventBannerUrl">
+                Event Banner Image URL (Optional)
+              </Label>
               <Input
                 id="eventBannerUrl"
                 type="url"
                 placeholder="https://example.com/event-image.jpg"
                 value={formData.eventBannerUrl}
-                onChange={(e) => setFormData(prev => ({ ...prev, eventBannerUrl: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    eventBannerUrl: e.target.value,
+                  }))
+                }
               />
             </div>
 
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => navigate('/events')} disabled={loading}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/events")}
+                disabled={loading}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? 'Creating...' : 'Create Event'}
+                {loading ? "Creating..." : "Create Event"}
               </Button>
             </div>
           </form>
@@ -174,4 +215,3 @@ const AlumniEventCreationPage = () => {
 };
 
 export default AlumniEventCreationPage;
-

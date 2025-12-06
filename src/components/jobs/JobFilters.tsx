@@ -1,10 +1,10 @@
-import { JobType } from '../../types';
-import { Label } from '../ui/label';
-import { Checkbox } from '../ui/checkbox';
-import { Slider } from '../ui/slider';
-import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Input } from '../ui/input';
+import { JobType } from "../../types";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
+import { Slider } from "../ui/slider";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
 
 interface JobFiltersProps {
   selectedTypes: JobType[];
@@ -52,7 +52,10 @@ export const JobFilters = ({
                   checked={selectedTypes.includes(type)}
                   onCheckedChange={() => onTypeChange(type)}
                 />
-                <Label htmlFor={type} className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <Label
+                  htmlFor={type}
+                  className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
                   {type}
                 </Label>
               </div>
@@ -63,10 +66,12 @@ export const JobFilters = ({
         {/* Salary Range Filter */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-             <Label>Min Salary (Annual)</Label>
-             <span className="text-xs text-muted-foreground">${salaryRange[0].toLocaleString()}</span>
+            <Label>Min Salary (Annual)</Label>
+            <span className="text-xs text-muted-foreground">
+              ${salaryRange[0].toLocaleString()}
+            </span>
           </div>
-          
+
           <Slider
             defaultValue={[0]}
             max={200000}
@@ -83,4 +88,3 @@ export const JobFilters = ({
     </Card>
   );
 };
-

@@ -1,9 +1,9 @@
 // This page redirects to role-specific dashboards
 // Keeping for backward compatibility
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { UserRole } from "../types";
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -13,19 +13,19 @@ const DashboardPage = () => {
     if (user) {
       switch (user.role) {
         case UserRole.College:
-          navigate('/college/dashboard');
+          navigate("/college/dashboard");
           break;
         case UserRole.Alumni:
-          navigate('/alumni/dashboard');
+          navigate("/alumni/dashboard");
           break;
         case UserRole.Student:
-          navigate('/student/dashboard');
+          navigate("/student/dashboard");
           break;
         default:
-          navigate('/auth');
+          navigate("/auth");
       }
     } else {
-      navigate('/auth');
+      navigate("/auth");
     }
   }, [user, navigate]);
 
@@ -37,4 +37,3 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
-

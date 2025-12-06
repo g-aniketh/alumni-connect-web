@@ -1,6 +1,6 @@
-import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
-import { Navigate } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext";
+import { UserRole } from "../types";
+import { Navigate } from "react-router-dom";
 
 const RoleDashboard = () => {
   const { user, loading } = useAuth();

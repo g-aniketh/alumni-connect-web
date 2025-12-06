@@ -16,8 +16,8 @@ const LoginPage = () => {
     roleParam === "alumni"
       ? "alumni"
       : roleParam === "college"
-      ? "college"
-      : "student";
+        ? "college"
+        : "student";
 
   const handleTabChange = (value: string) => {
     navigate(`/login?role=${value}`, { replace: true });

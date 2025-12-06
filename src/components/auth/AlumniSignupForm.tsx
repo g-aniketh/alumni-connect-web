@@ -118,7 +118,7 @@ export const AlumniSignupForm = () => {
               id="name"
               placeholder="John Doe"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
@@ -130,7 +130,7 @@ export const AlumniSignupForm = () => {
               type="email"
               placeholder="m@example.com"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -138,12 +138,12 @@ export const AlumniSignupForm = () => {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-            <Input
-              id="password"
+              <Input
+                id="password"
                 type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 className="pr-10"
               />
               <Button
@@ -169,7 +169,7 @@ export const AlumniSignupForm = () => {
                 <SelectValue placeholder="Select Degree" />
               </SelectTrigger>
               <SelectContent>
-                {degrees.map(d => (
+                {degrees.map((d) => (
                   <SelectItem key={d} value={d}>
                     {d}
                   </SelectItem>
@@ -213,7 +213,7 @@ export const AlumniSignupForm = () => {
               min="1950"
               max="2100"
               value={graduationYear}
-              onChange={e => setGraduationYear(e.target.value)}
+              onChange={(e) => setGraduationYear(e.target.value)}
               required
             />
           </div>
@@ -231,8 +231,8 @@ export const AlumniSignupForm = () => {
                     loadingColleges
                       ? "Loading colleges..."
                       : colleges.length === 0
-                      ? "No colleges registered yet"
-                      : "Select College"
+                        ? "No colleges registered yet"
+                        : "Select College"
                   }
                 />
               </SelectTrigger>
@@ -247,7 +247,7 @@ export const AlumniSignupForm = () => {
                     up first.
                   </SelectItem>
                 ) : (
-                  colleges.map(c => (
+                  colleges.map((c) => (
                     <SelectItem key={c} value={c}>
                       {c}
                     </SelectItem>
@@ -271,7 +271,7 @@ export const AlumniSignupForm = () => {
               type="url"
               placeholder="https://linkedin.com/in/yourprofile"
               value={linkedInProfile}
-              onChange={e => setLinkedInProfile(e.target.value)}
+              onChange={(e) => setLinkedInProfile(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
               Add your LinkedIn profile to help others connect with you.

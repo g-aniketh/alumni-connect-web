@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { useAuth } from "../../context/AuthContext";
 import { Users } from "lucide-react";
@@ -35,14 +41,19 @@ const ConnectedAlumniPage = () => {
       id: backendAlumni._id,
       name: backendAlumni.name,
       email: backendAlumni.email,
-      avatar: backendAlumni.profilePictureUrlOptimized || backendAlumni.profilePictureUrlHD || backendAlumni.profilePictureUrl || "",
+      avatar:
+        backendAlumni.profilePictureUrlOptimized ||
+        backendAlumni.profilePictureUrlHD ||
+        backendAlumni.profilePictureUrl ||
+        "",
       role: UserRole.Alumni,
       isVerified: backendAlumni.isVerified,
       designation: backendAlumni.currentDesignation || "",
       currentEmployer: backendAlumni.currentEmployer || "",
       graduationYear: backendAlumni.graduationYear,
       degree: backendAlumni.degree,
-      department: backendAlumni.department as unknown as import("../../types").Department,
+      department:
+        backendAlumni.department as unknown as import("../../types").Department,
       skills: backendAlumni.skills || [],
       mentorshipAvailable: true,
     };
@@ -74,7 +85,7 @@ const ConnectedAlumniPage = () => {
 
       {connectedAlumni.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {connectedAlumni.map(backendAlumni => {
+          {connectedAlumni.map((backendAlumni) => {
             const alumni = transformAlumni(backendAlumni);
             return (
               <AlumniProfileCard
@@ -93,11 +104,13 @@ const ConnectedAlumniPage = () => {
               <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <CardTitle className="mb-2">No Connected Alumni</CardTitle>
               <CardDescription>
-                You haven't connected with any alumni yet. 
+                You haven't connected with any alumni yet.
                 <br />
-                Visit the <Button variant="link" className="p-0 h-auto" asChild>
+                Visit the{" "}
+                <Button variant="link" className="p-0 h-auto" asChild>
                   <a href="/alumni/network">Alumni Network</a>
-                </Button> to start connecting.
+                </Button>{" "}
+                to start connecting.
               </CardDescription>
             </div>
           </CardContent>
@@ -108,4 +121,3 @@ const ConnectedAlumniPage = () => {
 };
 
 export default ConnectedAlumniPage;
-

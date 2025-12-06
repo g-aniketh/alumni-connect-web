@@ -28,7 +28,7 @@ const AlumniJobApplicationsPage = () => {
       setError("");
       const data = await jobsAPI.getMyPosted();
       setJobs(data);
-      setSelectedJob(prev => prev ?? data[0] ?? null);
+      setSelectedJob((prev) => prev ?? data[0] ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load your jobs");
     } finally {
@@ -69,7 +69,7 @@ const AlumniJobApplicationsPage = () => {
                 <CardTitle className="text-sm">Your Jobs</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {jobs.map(job => (
+                {jobs.map((job) => (
                   <Button
                     key={job._id}
                     variant={

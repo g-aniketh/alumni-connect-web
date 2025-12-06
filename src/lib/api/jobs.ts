@@ -30,18 +30,14 @@ export const jobsAPI = {
   getFiltered: async (params?: {
     by?: string;
     available?: boolean;
-  }): Promise<
-    | BackendJob[]
-    | { total: number; jobs: BackendJob[] }
-  > => {
+  }): Promise<BackendJob[] | { total: number; jobs: BackendJob[] }> => {
     const queryParams = new URLSearchParams();
     if (params?.by) queryParams.append("by", params.by);
     if (params?.available !== undefined)
       queryParams.append("available", params.available.toString());
-    return api.get<
-      | BackendJob[]
-      | { total: number; jobs: BackendJob[] }
-    >(`/jobs/filter?${queryParams.toString()}`);
+    return api.get<BackendJob[] | { total: number; jobs: BackendJob[] }>(
+      `/jobs/filter?${queryParams.toString()}`
+    );
   },
 
   // Get job by ID (public)
@@ -64,10 +60,7 @@ export const jobsAPI = {
     id: string,
     data: Partial<JobCreateRequest>
   ): Promise<{ message: string; job: BackendJob }> => {
-    return api.put<{ message: string; job: BackendJob }>(
-      `/jobs/${id}`,
-      data
-    );
+    return api.put<{ message: string; job: BackendJob }>(`/jobs/${id}`, data);
   },
 
   // Delete job (authenticated - owner only)
@@ -96,18 +89,14 @@ export const jobsAPI = {
 
   // Get my applications (authenticated)
   getMyApplications: async (): Promise<BackendJobApplication[]> => {
-    return api.get<BackendJobApplication[]>(
-      "/jobs/my/applications"
-    );
+    return api.get<BackendJobApplication[]>("/jobs/my/applications");
   },
 
   // Get applications for a job (authenticated - owner only)
   getJobApplications: async (
     jobId: string
   ): Promise<BackendJobApplication[]> => {
-    return api.get<BackendJobApplication[]>(
-      `/jobs/${jobId}/applications`
-    );
+    return api.get<BackendJobApplication[]>(`/jobs/${jobId}/applications`);
   },
 
   // Update application status (authenticated - job owner only)
@@ -133,4 +122,3 @@ export const jobsAPI = {
     );
   },
 };
-

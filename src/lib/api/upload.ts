@@ -182,12 +182,8 @@ export const uploadAPI = {
   },
 
   // Delete event banner (authenticated - organizer only)
-  deleteEventBanner: async (
-    eventId: string
-  ): Promise<{ message: string }> => {
-    return api.delete<{ message: string }>(
-      `/upload/event-banner/${eventId}`
-    );
+  deleteEventBanner: async (eventId: string): Promise<{ message: string }> => {
+    return api.delete<{ message: string }>(`/upload/event-banner/${eventId}`);
   },
 
   // Get event banner (public)
@@ -213,4 +209,3 @@ export const uploadAPI = {
     }>(`/upload/event-banner/${eventId}`);
   },
 };
-

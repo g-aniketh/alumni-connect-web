@@ -67,8 +67,8 @@ const AlumniJobCreationPage = () => {
 
       // Convert departments to requirements format
       const requirements = formData.requirements
-        ? formData.requirements.split("\n").filter(r => r.trim())
-        : formData.department.map(d => `${d} background preferred`);
+        ? formData.requirements.split("\n").filter((r) => r.trim())
+        : formData.department.map((d) => `${d} background preferred`);
 
       const jobData = {
         title: formData.title,
@@ -96,10 +96,10 @@ const AlumniJobCreationPage = () => {
   };
 
   const toggleDepartment = (dept: Department) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       department: prev.department.includes(dept)
-        ? prev.department.filter(d => d !== dept)
+        ? prev.department.filter((d) => d !== dept)
         : [...prev.department, dept],
     }));
   };
@@ -130,8 +130,8 @@ const AlumniJobCreationPage = () => {
                 id="title"
                 placeholder="e.g., Senior Software Engineer"
                 value={formData.title}
-                onChange={e =>
-                  setFormData(prev => ({ ...prev, title: e.target.value }))
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
                 }
                 required
               />
@@ -150,8 +150,11 @@ const AlumniJobCreationPage = () => {
                   id="location"
                   placeholder="e.g., Remote, San Francisco, CA"
                   value={formData.location}
-                  onChange={e =>
-                    setFormData(prev => ({ ...prev, location: e.target.value }))
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
                   }
                   required
                 />
@@ -161,15 +164,15 @@ const AlumniJobCreationPage = () => {
                 <Label htmlFor="type">Job Type *</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={value =>
-                    setFormData(prev => ({ ...prev, type: value as JobType }))
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, type: value as JobType }))
                   }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.values(JobType).map(type => (
+                    {Object.values(JobType).map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
                       </SelectItem>
@@ -185,8 +188,8 @@ const AlumniJobCreationPage = () => {
                 id="description"
                 placeholder="Describe the role, requirements, and responsibilities..."
                 value={formData.description}
-                onChange={e =>
-                  setFormData(prev => ({
+                onChange={(e) =>
+                  setFormData((prev) => ({
                     ...prev,
                     description: e.target.value,
                   }))
@@ -204,8 +207,8 @@ const AlumniJobCreationPage = () => {
                 id="requirements"
                 placeholder="e.g., Bachelor's degree in Computer Science&#10;3+ years of experience&#10;Proficiency in React and Node.js"
                 value={formData.requirements}
-                onChange={e =>
-                  setFormData(prev => ({
+                onChange={(e) =>
+                  setFormData((prev) => ({
                     ...prev,
                     requirements: e.target.value,
                   }))
@@ -222,7 +225,7 @@ const AlumniJobCreationPage = () => {
             <div className="space-y-2">
               <Label>Target Departments (Optional)</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border rounded-md">
-                {Object.values(Department).map(dept => (
+                {Object.values(Department).map((dept) => (
                   <div key={dept} className="flex items-center space-x-2">
                     <Checkbox
                       id={dept}
@@ -248,8 +251,8 @@ const AlumniJobCreationPage = () => {
                   type="number"
                   placeholder="80000"
                   value={formData.salaryMin}
-                  onChange={e =>
-                    setFormData(prev => ({
+                  onChange={(e) =>
+                    setFormData((prev) => ({
                       ...prev,
                       salaryMin: e.target.value,
                     }))
@@ -264,8 +267,8 @@ const AlumniJobCreationPage = () => {
                   type="number"
                   placeholder="120000"
                   value={formData.salaryMax}
-                  onChange={e =>
-                    setFormData(prev => ({
+                  onChange={(e) =>
+                    setFormData((prev) => ({
                       ...prev,
                       salaryMax: e.target.value,
                     }))
@@ -278,8 +281,8 @@ const AlumniJobCreationPage = () => {
               <Checkbox
                 id="referral"
                 checked={formData.referralAvailable}
-                onCheckedChange={checked =>
-                  setFormData(prev => ({
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({
                     ...prev,
                     referralAvailable: checked === true,
                   }))

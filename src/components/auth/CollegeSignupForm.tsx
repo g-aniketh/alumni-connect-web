@@ -31,14 +31,14 @@ export const CollegeSignupForm = () => {
   const [error, setError] = useState<string>("");
 
   const toggleDepartment = (dept: string) => {
-    setSelectedDepartments(prev =>
-      prev.includes(dept) ? prev.filter(d => d !== dept) : [...prev, dept]
+    setSelectedDepartments((prev) =>
+      prev.includes(dept) ? prev.filter((d) => d !== dept) : [...prev, dept]
     );
   };
 
   const toggleDegree = (deg: string) => {
-    setSelectedDegrees(prev =>
-      prev.includes(deg) ? prev.filter(d => d !== deg) : [...prev, deg]
+    setSelectedDegrees((prev) =>
+      prev.includes(deg) ? prev.filter((d) => d !== deg) : [...prev, deg]
     );
   };
 
@@ -93,7 +93,7 @@ export const CollegeSignupForm = () => {
               id="name"
               placeholder="Tech Institute"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
@@ -105,7 +105,7 @@ export const CollegeSignupForm = () => {
               type="email"
               placeholder="m@example.com"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -117,7 +117,7 @@ export const CollegeSignupForm = () => {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 className="pr-10"
               />
@@ -143,7 +143,7 @@ export const CollegeSignupForm = () => {
               id="address"
               placeholder="123 University Ave, City, State 12345"
               value={address}
-              onChange={e => setAddress(e.target.value)}
+              onChange={(e) => setAddress(e.target.value)}
               required
             />
           </div>
@@ -157,7 +157,7 @@ export const CollegeSignupForm = () => {
               min="1800"
               max="2100"
               value={establishedYear}
-              onChange={e => setEstablishedYear(e.target.value)}
+              onChange={(e) => setEstablishedYear(e.target.value)}
               required
             />
           </div>
@@ -165,7 +165,7 @@ export const CollegeSignupForm = () => {
           <div className="space-y-2">
             <Label>Departments Offered</Label>
             <div className="space-y-2 border rounded-md p-3">
-              {Object.values(Department).map(dept => (
+              {Object.values(Department).map((dept) => (
                 <div key={dept} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -193,7 +193,7 @@ export const CollegeSignupForm = () => {
           <div className="space-y-2">
             <Label>Degrees Offered</Label>
             <div className="space-y-2 border rounded-md p-3">
-              {degrees.map(deg => (
+              {degrees.map((deg) => (
                 <div key={deg} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -225,7 +225,7 @@ export const CollegeSignupForm = () => {
               type="url"
               placeholder="https://college.edu"
               value={website}
-              onChange={e => setWebsite(e.target.value)}
+              onChange={(e) => setWebsite(e.target.value)}
             />
           </div>
 

@@ -132,4 +132,3 @@ export const mentorshipsAPI = {
     }>(`/mentorships/${id}/feedback`, data);
   },
 };
-

@@ -132,7 +132,7 @@ export const StudentSignupForm = () => {
               id="name"
               placeholder="John Doe"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
@@ -144,7 +144,7 @@ export const StudentSignupForm = () => {
               type="email"
               placeholder="m@example.com"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -152,12 +152,12 @@ export const StudentSignupForm = () => {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-            <Input
-              id="password"
+              <Input
+                id="password"
                 type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 className="pr-10"
               />
               <Button
@@ -182,7 +182,7 @@ export const StudentSignupForm = () => {
               id="rollNumber"
               placeholder="CS21B001"
               value={rollNumber}
-              onChange={e => setRollNumber(e.target.value)}
+              onChange={(e) => setRollNumber(e.target.value)}
               required
             />
           </div>
@@ -200,8 +200,8 @@ export const StudentSignupForm = () => {
                     loadingColleges
                       ? "Loading colleges..."
                       : colleges.length === 0
-                      ? "No colleges registered yet"
-                      : "Select College"
+                        ? "No colleges registered yet"
+                        : "Select College"
                   }
                 />
               </SelectTrigger>
@@ -216,34 +216,34 @@ export const StudentSignupForm = () => {
                     up first.
                   </SelectItem>
                 ) : (
-                      colleges.map(c => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))
+                  colleges.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))
                 )}
               </SelectContent>
             </Select>
             {colleges.length === 0 && !loadingColleges && (
-            <p className="text-xs text-muted-foreground">
-              ⚠️ <strong>Important:</strong> Your college must be registered
+              <p className="text-xs text-muted-foreground">
+                ⚠️ <strong>Important:</strong> Your college must be registered
                 in the system first. Please ask your college administrator to
                 sign up before you can create your account.
-            </p>
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
             <Label>Department</Label>
             <Select
-              onValueChange={v => setDepartment(v as Department)}
+              onValueChange={(v) => setDepartment(v as Department)}
               required
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select Department" />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(Department).map(d => (
+                {Object.values(Department).map((d) => (
                   <SelectItem key={d} value={d}>
                     {d}
                   </SelectItem>
@@ -259,7 +259,7 @@ export const StudentSignupForm = () => {
                 <SelectValue placeholder="Select Degree" />
               </SelectTrigger>
               <SelectContent>
-                {degrees.map(d => (
+                {degrees.map((d) => (
                   <SelectItem key={d} value={d}>
                     {d}
                   </SelectItem>
@@ -277,7 +277,7 @@ export const StudentSignupForm = () => {
               min="1950"
               max="2100"
               value={enrollmentYear}
-              onChange={e => setEnrollmentYear(e.target.value)}
+              onChange={(e) => setEnrollmentYear(e.target.value)}
               required
             />
           </div>
@@ -291,7 +291,7 @@ export const StudentSignupForm = () => {
               min="1950"
               max="2100"
               value={graduationYear}
-              onChange={e => setGraduationYear(e.target.value)}
+              onChange={(e) => setGraduationYear(e.target.value)}
               required
             />
           </div>

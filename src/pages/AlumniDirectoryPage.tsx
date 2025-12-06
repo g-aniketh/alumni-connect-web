@@ -42,24 +42,26 @@ const AlumniDirectoryPage = () => {
       setError("");
       // Clear any existing data first - ensure no stale data
       setAlumni([]);
-      
+
       // Fetch real data from API - no mock data, no fallback
       const mentors = await mentorshipsAPI.getMentors();
-      
+
       // Validate response is an array
       if (!Array.isArray(mentors)) {
         console.error("Invalid API response:", mentors);
         throw new Error("Invalid response from server: expected array");
       }
-      
+
       // Ensure we only use real data - filter out any invalid entries
       const validMentors = mentors.filter((a: BackendAlumni) => {
-        return a && a._id && typeof a._id === 'string' && a.name;
+        return a && a._id && typeof a._id === "string" && a.name;
       });
-      
+
       // Filter out current user if they're an alumni
-      const filtered = validMentors.filter((a: BackendAlumni) => a._id !== user?.id);
-      
+      const filtered = validMentors.filter(
+        (a: BackendAlumni) => a._id !== user?.id
+      );
+
       // Only set data if we have valid results
       setAlumni(filtered);
     } catch (err) {
@@ -72,7 +74,7 @@ const AlumniDirectoryPage = () => {
     }
   };
 
-  const filteredAlumni = alumni.filter(alumni => {
+  const filteredAlumni = alumni.filter((alumni) => {
     // Name search (case-insensitive)
     const matchesName =
       nameSearch === "" ||
@@ -83,7 +85,7 @@ const AlumniDirectoryPage = () => {
     const matchesSkill =
       skillSearch === "" ||
       (alumni.skills &&
-        alumni.skills.some(skill =>
+        alumni.skills.some((skill) =>
           skill.toLowerCase().includes(skillSearch.toLowerCase())
         ));
 
@@ -120,7 +122,7 @@ const AlumniDirectoryPage = () => {
 
   const handleRequestMentorship = (alumni: Alumni) => {
     // Find the backend alumni by matching id
-    const backendAlumni = filteredAlumni.find(a => a._id === alumni.id);
+    const backendAlumni = filteredAlumni.find((a) => a._id === alumni.id);
     if (backendAlumni) {
       setSelectedAlumni(backendAlumni);
       setIsRequestDialogOpen(true);
@@ -138,7 +140,7 @@ const AlumniDirectoryPage = () => {
         mentorId: selectedAlumni._id,
         message: requestMessage.trim() || undefined,
         areasOfInterest: areasOfInterest.trim()
-          ? areasOfInterest.split(",").map(a => a.trim())
+          ? areasOfInterest.split(",").map((a) => a.trim())
           : undefined,
       };
 
@@ -209,7 +211,7 @@ const AlumniDirectoryPage = () => {
         <div className="lg:col-span-3">
           {filteredAlumni.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredAlumni.map(backendAlumni => {
+              {filteredAlumni.map((backendAlumni) => {
                 const alumni = transformAlumni(backendAlumni);
                 return (
                   <AlumniProfileCard
@@ -235,7 +237,7 @@ const AlumniDirectoryPage = () => {
       {/* Mentorship Request Dialog */}
       <Dialog
         open={isRequestDialogOpen}
-        onOpenChange={open => {
+        onOpenChange={(open) => {
           setIsRequestDialogOpen(open);
           if (!open) {
             setRequestMessage("");
@@ -283,7 +285,7 @@ const AlumniDirectoryPage = () => {
                     id="message"
                     placeholder="Tell the mentor why you're interested in their guidance..."
                     value={requestMessage}
-                    onChange={e => setRequestMessage(e.target.value)}
+                    onChange={(e) => setRequestMessage(e.target.value)}
                     rows={4}
                   />
                 </div>
@@ -295,7 +297,7 @@ const AlumniDirectoryPage = () => {
                     id="areasOfInterest"
                     placeholder="e.g., Career guidance, Technical skills, Industry insights (comma-separated)"
                     value={areasOfInterest}
-                    onChange={e => setAreasOfInterest(e.target.value)}
+                    onChange={(e) => setAreasOfInterest(e.target.value)}
                     rows={2}
                   />
                   <p className="text-xs text-muted-foreground">

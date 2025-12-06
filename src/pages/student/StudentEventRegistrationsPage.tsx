@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import {
   Table,
@@ -14,7 +19,9 @@ import { eventsAPI } from "../../lib/api";
 import type { BackendEventRegistration, BackendEvent } from "../../types/api";
 
 const StudentEventRegistrationsPage = () => {
-  const [registrations, setRegistrations] = useState<BackendEventRegistration[]>([]);
+  const [registrations, setRegistrations] = useState<
+    BackendEventRegistration[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
 
@@ -30,7 +37,7 @@ const StudentEventRegistrationsPage = () => {
       setRegistrations(data);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to load registrations",
+        err instanceof Error ? err.message : "Failed to load registrations"
       );
     } finally {
       setLoading(false);
@@ -47,13 +54,13 @@ const StudentEventRegistrationsPage = () => {
       await loadRegistrations();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to cancel registration",
+        err instanceof Error ? err.message : "Failed to cancel registration"
       );
     }
   };
 
   const getEvent = (
-    registration: BackendEventRegistration,
+    registration: BackendEventRegistration
   ): BackendEvent | null => {
     if (typeof registration.eventId === "object") {
       return registration.eventId as BackendEvent;
@@ -149,5 +156,3 @@ const StudentEventRegistrationsPage = () => {
 };
 
 export default StudentEventRegistrationsPage;
-
-

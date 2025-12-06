@@ -99,7 +99,7 @@ export const CollegeProfileSection = ({
                 id="website"
                 type="url"
                 value={formData.website || ""}
-                onChange={e =>
+                onChange={(e) =>
                   onFormDataChange({ ...formData, website: e.target.value })
                 }
               />
@@ -116,7 +116,7 @@ export const CollegeProfileSection = ({
               <Input
                 id="location"
                 value={formData.location || ""}
-                onChange={e =>
+                onChange={(e) =>
                   onFormDataChange({ ...formData, location: e.target.value })
                 }
               />
@@ -135,7 +135,7 @@ export const CollegeProfileSection = ({
               id="establishedYear"
               type="number"
               value={formData.establishedYear || ""}
-              onChange={e =>
+              onChange={(e) =>
                 onFormDataChange({
                   ...formData,
                   establishedYear: e.target.value,

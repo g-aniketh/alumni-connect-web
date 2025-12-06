@@ -1,37 +1,45 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { JobCard } from '../components/jobs/JobCard';
-import { JobFilters } from '../components/jobs/JobFilters';
-import { JobDetails } from '../components/jobs/JobDetails';
-import { ApplicationManagement } from '../components/jobs/ApplicationManagement';
-import { Button } from '../components/ui/button';
-import { jobsAPI } from '../lib/api';
-import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
-import type { BackendJob } from '../types/api';
-import { JobType } from '../types';
-import { Plus } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { JobCard } from "../components/jobs/JobCard";
+import { JobFilters } from "../components/jobs/JobFilters";
+import { JobDetails } from "../components/jobs/JobDetails";
+import { ApplicationManagement } from "../components/jobs/ApplicationManagement";
+import { Button } from "../components/ui/button";
+import { jobsAPI } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
+import { UserRole } from "../types";
+import type { BackendJob } from "../types/api";
+import { JobType } from "../types";
+import { Plus } from "lucide-react";
 
 const JobsPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [jobs, setJobs] = useState<BackendJob[]>([]);
   const [myJobs, setMyJobs] = useState<BackendJob[]>([]);
   const [selectedJob, setSelectedJob] = useState<BackendJob | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<string>("all");
   const [loadingMyJobs, setLoadingMyJobs] = useState(false);
-  
+
   // Filter States
   const [selectedTypes, setSelectedTypes] = useState<JobType[]>([]);
   const [salaryMin, setSalaryMin] = useState<number>(0);
-  const [locationSearch, setLocationSearch] = useState('');
+  const [locationSearch, setLocationSearch] = useState("");
 
   useEffect(() => {
     loadJobs();
-    if (user && (user.role === UserRole.Alumni || user.role === UserRole.College)) {
+    if (
+      user &&
+      (user.role === UserRole.Alumni || user.role === UserRole.College)
+    ) {
       loadMyJobs();
     }
   }, [user]);
@@ -39,22 +47,22 @@ const JobsPage = () => {
   const loadJobs = async () => {
     try {
       setLoading(true);
-      setError('');
-      
+      setError("");
+
       // If user is authenticated, get filtered jobs (college context)
       // Otherwise, get all public jobs
       if (user) {
         const response = await jobsAPI.getFiltered({ available: true });
         const jobsList = Array.isArray(response)
           ? response
-          : (response as { jobs?: typeof jobs }).jobs ?? [];
+          : ((response as { jobs?: typeof jobs }).jobs ?? []);
         setJobs(jobsList);
       } else {
         const allJobs = await jobsAPI.getAll();
         setJobs(allJobs);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load jobs');
+      setError(err instanceof Error ? err.message : "Failed to load jobs");
     } finally {
       setLoading(false);
     }
@@ -66,36 +74,36 @@ const JobsPage = () => {
       const myPostedJobs = await jobsAPI.getMyPosted();
       setMyJobs(myPostedJobs);
     } catch (err) {
-      console.error('Failed to load my jobs:', err);
+      console.error("Failed to load my jobs:", err);
     } finally {
       setLoadingMyJobs(false);
     }
   };
 
   const handleTypeChange = (type: JobType) => {
-    setSelectedTypes(prev => 
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
   };
 
   const handleClearFilters = () => {
     setSelectedTypes([]);
     setSalaryMin(0);
-    setLocationSearch('');
+    setLocationSearch("");
   };
 
   // Map backend jobType to frontend JobType for filtering
   const mapBackendJobType = (backendType: string): JobType => {
     const typeMap: Record<string, JobType> = {
-      'full_time': JobType.FullTime,
-      'part_time': JobType.PartTime,
-      'contract': JobType.Contract,
-      'internship': JobType.Internship,
+      full_time: JobType.FullTime,
+      part_time: JobType.PartTime,
+      contract: JobType.Contract,
+      internship: JobType.Internship,
     };
     return typeMap[backendType] || JobType.FullTime;
   };
 
-  const filteredJobs = jobs.filter(job => {
+  const filteredJobs = jobs.filter((job) => {
     // Type Filter
     if (selectedTypes.length > 0) {
       const jobType = mapBackendJobType(job.jobType);
@@ -106,11 +114,14 @@ const JobsPage = () => {
 
     // Salary Filter (Simple min check)
     if (job.salaryMin && job.salaryMin < salaryMin) {
-        return false;
+      return false;
     }
 
     // Location Filter
-    if (locationSearch && !job.location.toLowerCase().includes(locationSearch.toLowerCase())) {
+    if (
+      locationSearch &&
+      !job.location.toLowerCase().includes(locationSearch.toLowerCase())
+    ) {
       return false;
     }
 
@@ -124,10 +135,11 @@ const JobsPage = () => {
 
   // Transform BackendJob to Job for components
   const transformJob = (backendJob: BackendJob) => {
-    const posterName = typeof backendJob.postedBy.posterId === 'object' 
-      ? backendJob.postedBy.posterId.name 
-      : 'Company';
-    
+    const posterName =
+      typeof backendJob.postedBy.posterId === "object"
+        ? backendJob.postedBy.posterId.name
+        : "Company";
+
     return {
       id: backendJob._id,
       title: backendJob.title,
@@ -155,19 +167,24 @@ const JobsPage = () => {
     );
   }
 
-  const canCreateJobs = user && (user.role === UserRole.Alumni || user.role === UserRole.College);
-  const createJobPath = user?.role === UserRole.Alumni 
-    ? '/alumni/jobs/create' 
-    : '/college/jobs/create';
+  const canCreateJobs =
+    user && (user.role === UserRole.Alumni || user.role === UserRole.College);
+  const createJobPath =
+    user?.role === UserRole.Alumni
+      ? "/alumni/jobs/create"
+      : "/college/jobs/create";
 
   return (
     <div className="container py-8 min-h-screen">
       <div className="flex flex-col gap-2 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Jobs & Internships</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Jobs & Internships
+            </h1>
             <p className="text-muted-foreground">
-              Find your next career opportunity or internship within the alumni network.
+              Find your next career opportunity or internship within the alumni
+              network.
             </p>
           </div>
           {canCreateJobs && (
@@ -212,13 +229,13 @@ const JobsPage = () => {
               {/* Job Grid */}
               <div className="lg:col-span-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredJobs.map(backendJob => {
+                  {filteredJobs.map((backendJob) => {
                     const job = transformJob(backendJob);
                     return (
-                      <JobCard 
-                        key={backendJob._id} 
-                        job={job} 
-                        onViewDetails={() => handleViewDetails(backendJob)} 
+                      <JobCard
+                        key={backendJob._id}
+                        job={job}
+                        onViewDetails={() => handleViewDetails(backendJob)}
                       />
                     );
                   })}
@@ -240,29 +257,37 @@ const JobsPage = () => {
               </div>
             ) : myJobs.length > 0 ? (
               <div className="space-y-6">
-                {myJobs.map(backendJob => {
+                {myJobs.map((backendJob) => {
                   const job = transformJob(backendJob);
                   return (
                     <div key={backendJob._id} className="border rounded-lg p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div>
                           <h3 className="text-xl font-semibold">{job.title}</h3>
-                          <p className="text-sm text-muted-foreground">{job.company} • {job.location}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {job.company} • {job.location}
+                          </p>
                         </div>
                         <div className="flex gap-2">
                           <Button variant="outline" asChild>
-                            <Link to={user?.role === UserRole.Alumni 
-                              ? `/alumni/jobs/edit/${backendJob._id}`
-                              : `/college/jobs/edit/${backendJob._id}`
-                            }>
+                            <Link
+                              to={
+                                user?.role === UserRole.Alumni
+                                  ? `/alumni/jobs/edit/${backendJob._id}`
+                                  : `/college/jobs/edit/${backendJob._id}`
+                              }
+                            >
                               Edit
                             </Link>
                           </Button>
                           <Button variant="outline" asChild>
-                            <Link to={user?.role === UserRole.Alumni 
-                              ? `/alumni/jobs/applications?jobId=${backendJob._id}`
-                              : `/college/jobs/applications?jobId=${backendJob._id}`
-                            }>
+                            <Link
+                              to={
+                                user?.role === UserRole.Alumni
+                                  ? `/alumni/jobs/applications?jobId=${backendJob._id}`
+                                  : `/college/jobs/applications?jobId=${backendJob._id}`
+                              }
+                            >
                               View Applications
                             </Link>
                           </Button>
@@ -276,7 +301,9 @@ const JobsPage = () => {
             ) : (
               <div className="text-center py-12 text-muted-foreground">
                 <p className="text-lg font-medium mb-2">No jobs posted yet</p>
-                <p className="text-sm mb-4">Start by creating your first job posting</p>
+                <p className="text-sm mb-4">
+                  Start by creating your first job posting
+                </p>
                 <Button asChild>
                   <Link to={createJobPath}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -305,13 +332,13 @@ const JobsPage = () => {
           {/* Job Grid */}
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredJobs.map(backendJob => {
+              {filteredJobs.map((backendJob) => {
                 const job = transformJob(backendJob);
                 return (
-                  <JobCard 
-                    key={backendJob._id} 
-                    job={job} 
-                    onViewDetails={() => handleViewDetails(backendJob)} 
+                  <JobCard
+                    key={backendJob._id}
+                    job={job}
+                    onViewDetails={() => handleViewDetails(backendJob)}
                   />
                 );
               })}
@@ -326,14 +353,13 @@ const JobsPage = () => {
         </div>
       )}
 
-      <JobDetails 
-        job={selectedJob ? transformJob(selectedJob) : null} 
-        open={isDetailsOpen} 
-        onOpenChange={setIsDetailsOpen} 
+      <JobDetails
+        job={selectedJob ? transformJob(selectedJob) : null}
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
       />
     </div>
   );
 };
 
 export default JobsPage;
-

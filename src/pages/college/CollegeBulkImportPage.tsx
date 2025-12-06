@@ -37,7 +37,7 @@ const CollegeBulkImportPage = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = event => {
+    reader.onload = (event) => {
       const text = event.target?.result as string;
       setCsvData(text);
       setError("");
@@ -70,7 +70,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
 
   const parseCSV = (csvText: string): string[][] => {
     const lines = csvText.trim().split("\n");
-    return lines.map(line => {
+    return lines.map((line) => {
       const values: string[] = [];
       let current = "";
       let inQuotes = false;
@@ -128,7 +128,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
       return { valid: false, data: [], errors };
     }
 
-    const headers = lines[0].map(h => h.toLowerCase().trim());
+    const headers = lines[0].map((h) => h.toLowerCase().trim());
     const dataRows = lines.slice(1);
 
     if (importType === "students") {
@@ -142,7 +142,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
         "degree",
         "graduationyear",
       ];
-      const missingFields = requiredFields.filter(f => !headers.includes(f));
+      const missingFields = requiredFields.filter((f) => !headers.includes(f));
       if (missingFields.length > 0) {
         errors.push(`Missing required columns: ${missingFields.join(", ")}`);
         return { valid: false, data: [], errors };
@@ -220,7 +220,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
         "degree",
         "department",
       ];
-      const missingFields = requiredFields.filter(f => !headers.includes(f));
+      const missingFields = requiredFields.filter((f) => !headers.includes(f));
       if (missingFields.length > 0) {
         errors.push(`Missing required columns: ${missingFields.join(", ")}`);
         return { valid: false, data: [], errors };
@@ -279,8 +279,8 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
               rowData.skills = value
                 ? value
                     .split(",")
-                    .map(s => s.trim())
-                    .filter(s => s)
+                    .map((s) => s.trim())
+                    .filter((s) => s)
                 : undefined;
               break;
           }
@@ -346,7 +346,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
 
       <Tabs
         value={importType}
-        onValueChange={v => setImportType(v as ImportType)}
+        onValueChange={(v) => setImportType(v as ImportType)}
       >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="students">Import Students</TabsTrigger>
@@ -393,7 +393,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                   id="csv-data"
                   placeholder="Paste CSV data here..."
                   value={csvData}
-                  onChange={e => setCsvData(e.target.value)}
+                  onChange={(e) => setCsvData(e.target.value)}
                   rows={10}
                   className="font-mono text-sm"
                 />
@@ -486,7 +486,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
                   id="csv-data-alumni"
                   placeholder="Paste CSV data here..."
                   value={csvData}
-                  onChange={e => setCsvData(e.target.value)}
+                  onChange={(e) => setCsvData(e.target.value)}
                   rows={10}
                   className="font-mono text-sm"
                 />

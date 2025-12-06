@@ -1,29 +1,35 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select';
-import { Checkbox } from '../../components/ui/checkbox';
-import { JobType } from '../../types';
-import { jobsAPI } from '../../lib/api';
-import type { BackendJob } from '../../types/api';
-import { BackendJobType } from '../../types/api';
+} from "../../components/ui/select";
+import { Checkbox } from "../../components/ui/checkbox";
+import { JobType } from "../../types";
+import { jobsAPI } from "../../lib/api";
+import type { BackendJob } from "../../types/api";
+import { BackendJobType } from "../../types/api";
 
 const AlumniJobEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [job, setJob] = useState<BackendJob | null>(null);
   const [formData, setFormData] = useState<{
     title: string;
@@ -35,14 +41,14 @@ const AlumniJobEditPage = () => {
     referralAvailable: boolean;
     requirements: string;
   }>({
-    title: '',
-    description: '',
-    location: '',
+    title: "",
+    description: "",
+    location: "",
     type: JobType.FullTime,
-    salaryMin: '',
-    salaryMax: '',
+    salaryMin: "",
+    salaryMax: "",
     referralAvailable: false,
-    requirements: '',
+    requirements: "",
   });
 
   useEffect(() => {
@@ -54,16 +60,16 @@ const AlumniJobEditPage = () => {
   const loadJob = async () => {
     try {
       setLoading(true);
-      setError('');
+      setError("");
       const jobData = await jobsAPI.getById(id!);
       setJob(jobData);
 
       // Map backend jobType to frontend JobType
       const typeMap: Record<string, JobType> = {
-        'full_time': JobType.FullTime,
-        'part_time': JobType.PartTime,
-        'contract': JobType.Contract,
-        'internship': JobType.Internship,
+        full_time: JobType.FullTime,
+        part_time: JobType.PartTime,
+        contract: JobType.Contract,
+        internship: JobType.Internship,
       };
 
       setFormData({
@@ -71,13 +77,13 @@ const AlumniJobEditPage = () => {
         description: jobData.description,
         location: jobData.location,
         type: typeMap[jobData.jobType] || JobType.FullTime,
-        salaryMin: jobData.salaryMin?.toString() || '',
-        salaryMax: jobData.salaryMax?.toString() || '',
+        salaryMin: jobData.salaryMin?.toString() || "",
+        salaryMax: jobData.salaryMax?.toString() || "",
         referralAvailable: jobData.referral || false,
-        requirements: jobData.requirements?.join('\n') || '',
+        requirements: jobData.requirements?.join("\n") || "",
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load job');
+      setError(err instanceof Error ? err.message : "Failed to load job");
     } finally {
       setLoading(false);
     }
@@ -87,7 +93,7 @@ const AlumniJobEditPage = () => {
     e.preventDefault();
     if (!id) return;
 
-    setError('');
+    setError("");
     setSaving(true);
 
     try {
@@ -100,7 +106,7 @@ const AlumniJobEditPage = () => {
       };
 
       const requirements = formData.requirements
-        ? formData.requirements.split('\n').filter(r => r.trim())
+        ? formData.requirements.split("\n").filter((r) => r.trim())
         : [];
 
       const jobData = {
@@ -109,17 +115,21 @@ const AlumniJobEditPage = () => {
         requirements,
         location: formData.location,
         jobType: jobTypeMap[formData.type],
-        salaryMin: formData.salaryMin ? parseFloat(formData.salaryMin) : undefined,
-        salaryMax: formData.salaryMax ? parseFloat(formData.salaryMax) : undefined,
-        salaryCurrency: 'USD',
+        salaryMin: formData.salaryMin
+          ? parseFloat(formData.salaryMin)
+          : undefined,
+        salaryMax: formData.salaryMax
+          ? parseFloat(formData.salaryMax)
+          : undefined,
+        salaryCurrency: "USD",
         referral: formData.referralAvailable,
       };
 
       await jobsAPI.update(id, jobData);
-      alert('Job updated successfully!');
-      navigate('/alumni/jobs');
+      alert("Job updated successfully!");
+      navigate("/alumni/jobs");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update job');
+      setError(err instanceof Error ? err.message : "Failed to update job");
     } finally {
       setSaving(false);
     }
@@ -140,7 +150,7 @@ const AlumniJobEditPage = () => {
       <div className="container py-8 min-h-screen">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Job not found</p>
-          <Button onClick={() => navigate('/alumni/jobs')} className="mt-4">
+          <Button onClick={() => navigate("/alumni/jobs")} className="mt-4">
             Back to Jobs
           </Button>
         </div>
@@ -160,7 +170,9 @@ const AlumniJobEditPage = () => {
       <Card>
         <CardHeader>
           <CardTitle>Job Details</CardTitle>
-          <CardDescription>Update the information about the job position.</CardDescription>
+          <CardDescription>
+            Update the information about the job position.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -176,7 +188,9 @@ const AlumniJobEditPage = () => {
                 id="title"
                 placeholder="e.g., Senior Software Engineer"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
                 required
               />
             </div>
@@ -188,7 +202,12 @@ const AlumniJobEditPage = () => {
                   id="location"
                   placeholder="e.g., Remote, San Francisco, CA"
                   value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -197,14 +216,18 @@ const AlumniJobEditPage = () => {
                 <Label htmlFor="type">Job Type *</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, type: value as JobType }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, type: value as JobType }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.values(JobType).map((type) => (
-                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -217,19 +240,31 @@ const AlumniJobEditPage = () => {
                 id="description"
                 placeholder="Describe the role, requirements, and responsibilities..."
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 rows={6}
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="requirements">Requirements (one per line) *</Label>
+              <Label htmlFor="requirements">
+                Requirements (one per line) *
+              </Label>
               <Textarea
                 id="requirements"
                 placeholder="e.g., Bachelor's degree in Computer Science&#10;3+ years of experience&#10;Proficiency in React and Node.js"
                 value={formData.requirements}
-                onChange={(e) => setFormData(prev => ({ ...prev, requirements: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    requirements: e.target.value,
+                  }))
+                }
                 rows={4}
                 required
               />
@@ -243,7 +278,12 @@ const AlumniJobEditPage = () => {
                   type="number"
                   placeholder="80000"
                   value={formData.salaryMin}
-                  onChange={(e) => setFormData(prev => ({ ...prev, salaryMin: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      salaryMin: e.target.value,
+                    }))
+                  }
                 />
               </div>
 
@@ -254,7 +294,12 @@ const AlumniJobEditPage = () => {
                   type="number"
                   placeholder="120000"
                   value={formData.salaryMax}
-                  onChange={(e) => setFormData(prev => ({ ...prev, salaryMax: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      salaryMax: e.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -263,21 +308,33 @@ const AlumniJobEditPage = () => {
               <Checkbox
                 id="referral"
                 checked={formData.referralAvailable}
-                onCheckedChange={(checked) => 
-                  setFormData(prev => ({ ...prev, referralAvailable: checked === true }))
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    referralAvailable: checked === true,
+                  }))
                 }
               />
-              <Label htmlFor="referral" className="text-sm font-normal cursor-pointer">
-                This job is a referral from my company (will be highlighted to students)
+              <Label
+                htmlFor="referral"
+                className="text-sm font-normal cursor-pointer"
+              >
+                This job is a referral from my company (will be highlighted to
+                students)
               </Label>
             </div>
 
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => navigate('/alumni/jobs')} disabled={saving}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/alumni/jobs")}
+                disabled={saving}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </form>

@@ -7,9 +7,7 @@ export const studentAPI = {
   getProfile: async (): Promise<{
     student: BackendStudent;
   }> => {
-    return api.get<{ student: BackendStudent }>(
-      "/students/profile"
-    );
+    return api.get<{ student: BackendStudent }>("/students/profile");
   },
 
   updateProfile: async (
@@ -29,4 +27,3 @@ export const studentAPI = {
     return api.delete<{ message: string }>(`/students/profile/${id}`);
   },
 };
-

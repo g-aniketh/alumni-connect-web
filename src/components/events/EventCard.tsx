@@ -1,8 +1,14 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { type AlumniEvent } from '../../types';
-import { Calendar, MapPin, Clock, User } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { type AlumniEvent } from "../../types";
+import { Calendar, MapPin, Clock, User } from "lucide-react";
 
 interface EventCardProps {
   event: AlumniEvent;
@@ -12,24 +18,36 @@ interface EventCardProps {
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 };
 
 const formatTime = (dateString: string) => {
   const date = new Date(dateString);
-  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 };
 
-export const EventCard = ({ event, onRSVP, isRegistered = false }: EventCardProps) => {
+export const EventCard = ({
+  event,
+  onRSVP,
+  isRegistered = false,
+}: EventCardProps) => {
   // Organizer is now a string (name) from backend, not an ID
-  const organizerName = typeof event.organizer === 'string' ? event.organizer : 'Organizer';
+  const organizerName =
+    typeof event.organizer === "string" ? event.organizer : "Organizer";
 
   return (
     <Card className="flex flex-col h-full hover:shadow-lg transition-shadow">
       {event.image && (
         <div className="h-48 w-full overflow-hidden rounded-t-lg">
-          <img 
-            src={event.image} 
+          <img
+            src={event.image}
             alt={event.title}
             className="w-full h-full object-cover"
           />
@@ -38,8 +56,8 @@ export const EventCard = ({ event, onRSVP, isRegistered = false }: EventCardProp
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-xl">{event.title}</CardTitle>
-          <Badge 
-            variant={event.status === 'Upcoming' ? 'default' : 'secondary'}
+          <Badge
+            variant={event.status === "Upcoming" ? "default" : "secondary"}
           >
             {event.status}
           </Badge>
@@ -81,16 +99,15 @@ export const EventCard = ({ event, onRSVP, isRegistered = false }: EventCardProp
             </p>
           </div>
         ) : (
-          <Button 
-            className="w-full" 
+          <Button
+            className="w-full"
             onClick={() => onRSVP(event)}
-            disabled={event.status !== 'Upcoming'}
+            disabled={event.status !== "Upcoming"}
           >
-            {event.status === 'Upcoming' ? 'RSVP' : 'Event Ended'}
+            {event.status === "Upcoming" ? "RSVP" : "Event Ended"}
           </Button>
         )}
       </CardFooter>
     </Card>
   );
 };
-

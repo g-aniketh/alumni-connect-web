@@ -27,4 +27,3 @@ export const alumniAPI = {
     return api.delete<{ message: string }>(`/alumni/profile/${id}`);
   },
 };
-

@@ -1,36 +1,63 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Button } from '../../components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { Calendar, CheckCircle2, XCircle, Clock, User } from 'lucide-react';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../components/ui/avatar";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
+import { Calendar, CheckCircle2, XCircle, Clock, User } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
-import { Textarea } from '../../components/ui/textarea';
-import { Label } from '../../components/ui/label';
-import { mentorshipsAPI } from '../../lib/api';
-import { useAuth } from '../../context/AuthContext';
-import type { BackendMentorship, BackendStudent, BackendAlumni } from '../../types/api';
+} from "../../components/ui/dialog";
+import { Textarea } from "../../components/ui/textarea";
+import { Label } from "../../components/ui/label";
+import { mentorshipsAPI } from "../../lib/api";
+import { useAuth } from "../../context/AuthContext";
+import type {
+  BackendMentorship,
+  BackendStudent,
+  BackendAlumni,
+} from "../../types/api";
 
 const AlumniMentorshipsPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
-  const [actionType, setActionType] = useState<'accept' | 'reject' | 'end' | null>(null);
+  const [actionType, setActionType] = useState<
+    "accept" | "reject" | "end" | null
+  >(null);
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
-  const [feedback, setFeedback] = useState('');
+  const [feedback, setFeedback] = useState("");
   const [rating, setRating] = useState<number>(5);
   const [, setMyMentorships] = useState<BackendMentorship[]>([]);
-  const [pendingRequests, setPendingRequests] = useState<BackendMentorship[]>([]);
-  const [activeMentorships, setActiveMentorships] = useState<BackendMentorship[]>([]);
-  const [completedMentorships, setCompletedMentorships] = useState<BackendMentorship[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<BackendMentorship[]>(
+    []
+  );
+  const [activeMentorships, setActiveMentorships] = useState<
+    BackendMentorship[]
+  >([]);
+  const [completedMentorships, setCompletedMentorships] = useState<
+    BackendMentorship[]
+  >([]);
 
   useEffect(() => {
     loadMentorships();
@@ -39,21 +66,34 @@ const AlumniMentorshipsPage = () => {
   const loadMentorships = async () => {
     try {
       setLoading(true);
-      setError('');
-      
+      setError("");
+
       // Get all mentorships where current user is the mentor (alumni)
       const response = await mentorshipsAPI.getMy();
-      const allMentorships = response.mentorships.filter((m: BackendMentorship) => {
-        const mentorId = typeof m.mentorId === 'object' ? (m.mentorId as BackendAlumni)._id : m.mentorId;
-        return mentorId === user?.id;
-      });
-      
+      const allMentorships = response.mentorships.filter(
+        (m: BackendMentorship) => {
+          const mentorId =
+            typeof m.mentorId === "object"
+              ? (m.mentorId as BackendAlumni)._id
+              : m.mentorId;
+          return mentorId === user?.id;
+        }
+      );
+
       setMyMentorships(allMentorships);
-      setPendingRequests(allMentorships.filter(m => m.status.toLowerCase() === 'pending'));
-      setActiveMentorships(allMentorships.filter(m => m.status.toLowerCase() === 'active'));
-      setCompletedMentorships(allMentorships.filter(m => m.status.toLowerCase() === 'completed'));
+      setPendingRequests(
+        allMentorships.filter((m) => m.status.toLowerCase() === "pending")
+      );
+      setActiveMentorships(
+        allMentorships.filter((m) => m.status.toLowerCase() === "active")
+      );
+      setCompletedMentorships(
+        allMentorships.filter((m) => m.status.toLowerCase() === "completed")
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load mentorships');
+      setError(
+        err instanceof Error ? err.message : "Failed to load mentorships"
+      );
     } finally {
       setLoading(false);
     }
@@ -61,27 +101,64 @@ const AlumniMentorshipsPage = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'pending':
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
-      case 'active':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle2 className="h-3 w-3 mr-1" />Active</Badge>;
-      case 'completed':
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200"><CheckCircle2 className="h-3 w-3 mr-1" />Completed</Badge>;
-      case 'declined':
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200"><XCircle className="h-3 w-3 mr-1" />Declined</Badge>;
+      case "pending":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-yellow-50 text-yellow-700 border-yellow-200"
+          >
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
+      case "active":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-50 text-green-700 border-green-200"
+          >
+            <CheckCircle2 className="h-3 w-3 mr-1" />
+            Active
+          </Badge>
+        );
+      case "completed":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-blue-50 text-blue-700 border-blue-200"
+          >
+            <CheckCircle2 className="h-3 w-3 mr-1" />
+            Completed
+          </Badge>
+        );
+      case "declined":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-red-50 text-red-700 border-red-200"
+          >
+            <XCircle className="h-3 w-3 mr-1" />
+            Declined
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
-  const getStudentInfo = (mentorship: BackendMentorship): BackendStudent | null => {
-    if (typeof mentorship.menteeId === 'object') {
+  const getStudentInfo = (
+    mentorship: BackendMentorship
+  ): BackendStudent | null => {
+    if (typeof mentorship.menteeId === "object") {
       return mentorship.menteeId as BackendStudent;
     }
     return null;
   };
 
-  const handleAction = (requestId: string, type: 'accept' | 'reject' | 'end') => {
+  const handleAction = (
+    requestId: string,
+    type: "accept" | "reject" | "end"
+  ) => {
     setSelectedRequest(requestId);
     setActionType(type);
     setIsActionDialogOpen(true);
@@ -91,18 +168,18 @@ const AlumniMentorshipsPage = () => {
     if (!selectedRequest || !actionType) return;
 
     try {
-      setError('');
-      
-      if (actionType === 'accept') {
+      setError("");
+
+      if (actionType === "accept") {
         await mentorshipsAPI.updateStatus(selectedRequest, {
-          status: 'active',
+          status: "active",
           startDate: new Date().toISOString(),
         });
-      } else if (actionType === 'reject') {
+      } else if (actionType === "reject") {
         await mentorshipsAPI.updateStatus(selectedRequest, {
-          status: 'declined',
+          status: "declined",
         });
-      } else if (actionType === 'end') {
+      } else if (actionType === "end") {
         await mentorshipsAPI.end(selectedRequest);
         // If feedback provided, add it
         if (feedback.trim() || rating) {
@@ -112,15 +189,15 @@ const AlumniMentorshipsPage = () => {
           });
         }
       }
-      
+
       await loadMentorships();
       setIsActionDialogOpen(false);
       setSelectedRequest(null);
       setActionType(null);
-      setFeedback('');
+      setFeedback("");
       setRating(5);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to perform action');
+      setError(err instanceof Error ? err.message : "Failed to perform action");
     }
   };
 
@@ -134,7 +211,10 @@ const AlumniMentorshipsPage = () => {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={student.profilePictureUrl} alt={student.name} />
+                <AvatarImage
+                  src={student.profilePictureUrl}
+                  alt={student.name}
+                />
                 <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
@@ -152,34 +232,44 @@ const AlumniMentorshipsPage = () => {
         <CardContent className="space-y-4">
           {request.message && (
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Student's Message:</p>
+              <p className="text-sm text-muted-foreground mb-1">
+                Student's Message:
+              </p>
               <p className="text-sm">{request.message}</p>
             </div>
           )}
           {request.areasOfInterest && (
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Areas of Interest:</p>
-              <p className="text-sm">{Array.isArray(request.areasOfInterest) ? request.areasOfInterest.join(', ') : request.areasOfInterest}</p>
+              <p className="text-sm text-muted-foreground mb-1">
+                Areas of Interest:
+              </p>
+              <p className="text-sm">
+                {Array.isArray(request.areasOfInterest)
+                  ? request.areasOfInterest.join(", ")
+                  : request.areasOfInterest}
+              </p>
             </div>
           )}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            <span>Requested on {new Date(request.createdAt).toLocaleDateString()}</span>
+            <span>
+              Requested on {new Date(request.createdAt).toLocaleDateString()}
+            </span>
           </div>
           <div className="flex gap-2 pt-2">
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="flex-1"
-              onClick={() => handleAction(request._id, 'accept')}
+              onClick={() => handleAction(request._id, "accept")}
             >
               <CheckCircle2 className="h-4 w-4 mr-2" />
               Accept
             </Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
               className="flex-1"
-              onClick={() => handleAction(request._id, 'reject')}
+              onClick={() => handleAction(request._id, "reject")}
             >
               <XCircle className="h-4 w-4 mr-2" />
               Decline
@@ -190,7 +280,11 @@ const AlumniMentorshipsPage = () => {
     );
   };
 
-  const ActiveMentorshipCard = ({ request }: { request: BackendMentorship }) => {
+  const ActiveMentorshipCard = ({
+    request,
+  }: {
+    request: BackendMentorship;
+  }) => {
     const student = getStudentInfo(request);
     if (!student) return null;
 
@@ -200,7 +294,10 @@ const AlumniMentorshipsPage = () => {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={student.profilePictureUrl} alt={student.name} />
+                <AvatarImage
+                  src={student.profilePictureUrl}
+                  alt={student.name}
+                />
                 <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
@@ -219,14 +316,16 @@ const AlumniMentorshipsPage = () => {
           {request.startDate && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Started on {new Date(request.startDate).toLocaleDateString()}</span>
+              <span>
+                Started on {new Date(request.startDate).toLocaleDateString()}
+              </span>
             </div>
           )}
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="w-full"
-            onClick={() => handleAction(request._id, 'end')}
+            onClick={() => handleAction(request._id, "end")}
           >
             <XCircle className="h-4 w-4 mr-2" />
             End Mentorship
@@ -236,7 +335,11 @@ const AlumniMentorshipsPage = () => {
     );
   };
 
-  const CompletedMentorshipCard = ({ request }: { request: BackendMentorship }) => {
+  const CompletedMentorshipCard = ({
+    request,
+  }: {
+    request: BackendMentorship;
+  }) => {
     const student = getStudentInfo(request);
     if (!student) return null;
 
@@ -246,7 +349,10 @@ const AlumniMentorshipsPage = () => {
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={student.profilePictureUrl} alt={student.name} />
+                <AvatarImage
+                  src={student.profilePictureUrl}
+                  alt={student.name}
+                />
                 <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
@@ -265,7 +371,9 @@ const AlumniMentorshipsPage = () => {
           {request.endDate && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Completed on {new Date(request.endDate).toLocaleDateString()}</span>
+              <span>
+                Completed on {new Date(request.endDate).toLocaleDateString()}
+              </span>
             </div>
           )}
         </CardContent>
@@ -286,9 +394,12 @@ const AlumniMentorshipsPage = () => {
   return (
     <div className="container py-8 min-h-screen">
       <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Mentorship Requests</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Mentorship Requests
+        </h1>
         <p className="text-muted-foreground">
-          Manage mentorship requests from students and track your active mentorship relationships.
+          Manage mentorship requests from students and track your active
+          mentorship relationships.
         </p>
       </div>
 
@@ -342,9 +453,12 @@ const AlumniMentorshipsPage = () => {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <User className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">No active mentorships</p>
+                <p className="text-lg font-medium mb-2">
+                  No active mentorships
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  You don't have any active mentorship relationships at the moment.
+                  You don't have any active mentorship relationships at the
+                  moment.
                 </p>
               </CardContent>
             </Card>
@@ -362,7 +476,9 @@ const AlumniMentorshipsPage = () => {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <CheckCircle2 className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">No completed mentorships</p>
+                <p className="text-lg font-medium mb-2">
+                  No completed mentorships
+                </p>
                 <p className="text-sm text-muted-foreground">
                   Completed mentorship relationships will appear here.
                 </p>
@@ -376,18 +492,21 @@ const AlumniMentorshipsPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {actionType === 'accept' && 'Accept Mentorship Request'}
-              {actionType === 'reject' && 'Decline Mentorship Request'}
-              {actionType === 'end' && 'End Mentorship'}
+              {actionType === "accept" && "Accept Mentorship Request"}
+              {actionType === "reject" && "Decline Mentorship Request"}
+              {actionType === "end" && "End Mentorship"}
             </DialogTitle>
             <DialogDescription>
-              {actionType === 'accept' && 'Accept this mentorship request and start guiding the student.'}
-              {actionType === 'reject' && 'Decline this mentorship request. The student will be notified.'}
-              {actionType === 'end' && 'End this mentorship relationship. You can provide feedback.'}
+              {actionType === "accept" &&
+                "Accept this mentorship request and start guiding the student."}
+              {actionType === "reject" &&
+                "Decline this mentorship request. The student will be notified."}
+              {actionType === "end" &&
+                "End this mentorship relationship. You can provide feedback."}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
-            {actionType === 'end' && (
+            {actionType === "end" && (
               <>
                 <div className="space-y-2">
                   <Label htmlFor="rating">Rating (1-5)</Label>
@@ -397,8 +516,10 @@ const AlumniMentorshipsPage = () => {
                     onChange={(e) => setRating(parseInt(e.target.value))}
                     className="w-full p-2 border rounded-md"
                   >
-                    {[1, 2, 3, 4, 5].map(r => (
-                      <option key={r} value={r}>{r} {r === 5 ? '⭐' : ''}</option>
+                    {[1, 2, 3, 4, 5].map((r) => (
+                      <option key={r} value={r}>
+                        {r} {r === 5 ? "⭐" : ""}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -408,44 +529,49 @@ const AlumniMentorshipsPage = () => {
                     id="feedback"
                     placeholder="Add any feedback or notes..."
                     value={feedback}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFeedback(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      setFeedback(e.target.value)
+                    }
                     rows={4}
                   />
                 </div>
               </>
             )}
-            {actionType === 'reject' && (
+            {actionType === "reject" && (
               <div className="space-y-2">
                 <Label htmlFor="feedback">Reason for Decline (Optional)</Label>
                 <Textarea
                   id="feedback"
                   placeholder="Add any feedback or notes..."
                   value={feedback}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFeedback(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setFeedback(e.target.value)
+                  }
                   rows={4}
                 />
               </div>
             )}
-            {actionType === 'accept' && (
+            {actionType === "accept" && (
               <p className="text-sm text-muted-foreground">
-                By accepting, you agree to mentor this student. The mentorship will become active.
+                By accepting, you agree to mentor this student. The mentorship
+                will become active.
               </p>
             )}
           </div>
           <div className="flex justify-end gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setIsActionDialogOpen(false);
-                setFeedback('');
+                setFeedback("");
               }}
             >
               Cancel
             </Button>
             <Button onClick={handleSubmitAction}>
-              {actionType === 'accept' && 'Accept Request'}
-              {actionType === 'reject' && 'Decline Request'}
-              {actionType === 'end' && 'End Mentorship'}
+              {actionType === "accept" && "Accept Request"}
+              {actionType === "reject" && "Decline Request"}
+              {actionType === "end" && "End Mentorship"}
             </Button>
           </div>
         </DialogContent>
@@ -455,4 +581,3 @@ const AlumniMentorshipsPage = () => {
 };
 
 export default AlumniMentorshipsPage;
-

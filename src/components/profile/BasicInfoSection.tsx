@@ -1,8 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { User, Mail } from 'lucide-react';
-import type { ProfileFormData } from '../../types/profile';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { User, Mail } from "lucide-react";
+import type { ProfileFormData } from "../../types/profile";
 
 interface BasicInfoSectionProps {
   user: { name: string; email: string };
@@ -11,7 +17,12 @@ interface BasicInfoSectionProps {
   onFormDataChange: (data: ProfileFormData) => void;
 }
 
-export const BasicInfoSection = ({ user, isEditing, formData, onFormDataChange }: BasicInfoSectionProps) => {
+export const BasicInfoSection = ({
+  user,
+  isEditing,
+  formData,
+  onFormDataChange,
+}: BasicInfoSectionProps) => {
   return (
     <Card>
       <CardHeader>
@@ -25,8 +36,13 @@ export const BasicInfoSection = ({ user, isEditing, formData, onFormDataChange }
             {isEditing ? (
               <Input
                 id="name"
-                value={'name' in formData ? formData.name : ''}
-                onChange={(e) => onFormDataChange({ ...formData, name: e.target.value } as ProfileFormData)}
+                value={"name" in formData ? formData.name : ""}
+                onChange={(e) =>
+                  onFormDataChange({
+                    ...formData,
+                    name: e.target.value,
+                  } as ProfileFormData)
+                }
               />
             ) : (
               <div className="flex items-center gap-2 text-sm">
@@ -41,8 +57,13 @@ export const BasicInfoSection = ({ user, isEditing, formData, onFormDataChange }
               <Input
                 id="email"
                 type="email"
-                value={'email' in formData ? formData.email : ''}
-                onChange={(e) => onFormDataChange({ ...formData, email: e.target.value } as ProfileFormData)}
+                value={"email" in formData ? formData.email : ""}
+                onChange={(e) =>
+                  onFormDataChange({
+                    ...formData,
+                    email: e.target.value,
+                  } as ProfileFormData)
+                }
               />
             ) : (
               <div className="flex items-center gap-2 text-sm">
@@ -56,4 +77,3 @@ export const BasicInfoSection = ({ user, isEditing, formData, onFormDataChange }
     </Card>
   );
 };
-

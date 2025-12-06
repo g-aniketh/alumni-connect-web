@@ -128,7 +128,7 @@ const ResetPasswordPage = () => {
                   type={showNewPassword ? "text" : "password"}
                   placeholder="Enter new password"
                   value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   required
                   minLength={8}
                   className="pr-10"
@@ -160,7 +160,7 @@ const ResetPasswordPage = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm new password"
                   value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   minLength={8}
                   className="pr-10"

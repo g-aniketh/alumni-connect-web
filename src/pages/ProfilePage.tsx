@@ -12,7 +12,12 @@ import { StudentProfileSection } from "../components/profile/StudentProfileSecti
 import { CollegeProfileSection } from "../components/profile/CollegeProfileSection";
 import { useProfileForm } from "../hooks/useProfileForm";
 import { useProfileSave } from "../hooks/useProfileSave";
-import type { ProfileFormData, AlumniFormData, StudentFormData, CollegeFormData } from "../types/profile";
+import type {
+  ProfileFormData,
+  AlumniFormData,
+  StudentFormData,
+  CollegeFormData,
+} from "../types/profile";
 
 const ProfilePage = () => {
   const { user, refreshUser } = useAuth();

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Card, CardContent } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Badge } from "../../components/ui/badge";
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
+} from "../../components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -18,16 +18,24 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
-import { eventsAPI } from '../../lib/api';
-import type { BackendEvent } from '../../types/api';
-import { Edit2, Trash2, Calendar, MapPin, Eye, Plus, Users } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+} from "../../components/ui/dialog";
+import { eventsAPI } from "../../lib/api";
+import type { BackendEvent } from "../../types/api";
+import {
+  Edit2,
+  Trash2,
+  Calendar,
+  MapPin,
+  Eye,
+  Plus,
+  Users,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CollegeEventManagementPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [events, setEvents] = useState<BackendEvent[]>([]);
   const [eventToDelete, setEventToDelete] = useState<BackendEvent | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -40,14 +48,14 @@ const CollegeEventManagementPage = () => {
   const loadEvents = async () => {
     try {
       setLoading(true);
-      setError('');
-      const response = await eventsAPI.getFiltered({ by: 'college' });
+      setError("");
+      const response = await eventsAPI.getFiltered({ by: "college" });
       const eventsList = Array.isArray(response)
         ? response
-        : (response as { events?: BackendEvent[] }).events ?? [];
+        : ((response as { events?: BackendEvent[] }).events ?? []);
       setEvents(eventsList);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load events');
+      setError(err instanceof Error ? err.message : "Failed to load events");
     } finally {
       setLoading(false);
     }
@@ -62,9 +70,9 @@ const CollegeEventManagementPage = () => {
       await loadEvents();
       setIsDeleteDialogOpen(false);
       setEventToDelete(null);
-      alert('Event deleted successfully!');
+      alert("Event deleted successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete event');
+      setError(err instanceof Error ? err.message : "Failed to delete event");
     } finally {
       setDeleting(false);
     }
@@ -73,9 +81,9 @@ const CollegeEventManagementPage = () => {
   const getEventStatus = (eventDate: string): string => {
     const now = new Date();
     const date = new Date(eventDate);
-    if (date < now) return 'Completed';
-    if (date.toDateString() === now.toDateString()) return 'Today';
-    return 'Upcoming';
+    if (date < now) return "Completed";
+    if (date.toDateString() === now.toDateString()) return "Today";
+    return "Upcoming";
   };
 
   if (loading) {
@@ -94,7 +102,8 @@ const CollegeEventManagementPage = () => {
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight">Events</h1>
           <p className="text-muted-foreground">
-            Manage your college's events, view registrations, and update event details.
+            Manage your college's events, view registrations, and update event
+            details.
           </p>
         </div>
         <div className="flex gap-2">
@@ -121,8 +130,12 @@ const CollegeEventManagementPage = () => {
           <CardContent className="py-12">
             <div className="text-center text-muted-foreground">
               <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium mb-2">No events organized yet</p>
-              <p className="text-sm mb-4">Start by creating your first event.</p>
+              <p className="text-lg font-medium mb-2">
+                No events organized yet
+              </p>
+              <p className="text-sm mb-4">
+                Start by creating your first event.
+              </p>
               <Button asChild>
                 <Link to="/college/events/create">Create Your First Event</Link>
               </Button>
@@ -143,17 +156,20 @@ const CollegeEventManagementPage = () => {
             </TableHeader>
             <TableBody>
               {events.map((event) => {
-                const organizerName = typeof event.organizedBy.organizerId === 'object' 
-                  ? event.organizedBy.organizerId.name 
-                  : 'Organizer';
+                const organizerName =
+                  typeof event.organizedBy.organizerId === "object"
+                    ? event.organizedBy.organizerId.name
+                    : "Organizer";
                 const status = getEventStatus(event.eventDate);
-                
+
                 return (
                   <TableRow key={event._id}>
                     <TableCell>
                       <div>
                         <div className="font-medium">{event.title}</div>
-                        <div className="text-sm text-muted-foreground">{organizerName}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {organizerName}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -162,7 +178,8 @@ const CollegeEventManagementPage = () => {
                         {new Date(event.eventDate).toLocaleDateString()}
                         {event.startTime && (
                           <span className="text-muted-foreground">
-                            {' '}at {event.startTime}
+                            {" "}
+                            at {event.startTime}
                           </span>
                         )}
                       </div>
@@ -174,7 +191,11 @@ const CollegeEventManagementPage = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={status === 'Completed' ? 'secondary' : 'default'}>
+                      <Badge
+                        variant={
+                          status === "Completed" ? "secondary" : "default"
+                        }
+                      >
                         {status}
                       </Badge>
                     </TableCell>
@@ -183,7 +204,9 @@ const CollegeEventManagementPage = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/college/events/edit/${event._id}`)}
+                          onClick={() =>
+                            navigate(`/college/events/edit/${event._id}`)
+                          }
                         >
                           <Edit2 className="h-4 w-4" />
                         </Button>
@@ -200,15 +223,15 @@ const CollegeEventManagementPage = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/college/events/registrations?eventId=${event._id}`)}
+                          onClick={() =>
+                            navigate(
+                              `/college/events/registrations?eventId=${event._id}`
+                            )
+                          }
                         >
                           <Users className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                        >
+                        <Button variant="ghost" size="sm" asChild>
                           <Link to={`/events?eventId=${event._id}`}>
                             <Eye className="h-4 w-4" />
                           </Link>
@@ -229,8 +252,9 @@ const CollegeEventManagementPage = () => {
           <DialogHeader>
             <DialogTitle>Delete Event</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{eventToDelete?.title}"? This action cannot be undone
-              and will also delete all associated registrations.
+              Are you sure you want to delete "{eventToDelete?.title}"? This
+              action cannot be undone and will also delete all associated
+              registrations.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -244,8 +268,12 @@ const CollegeEventManagementPage = () => {
             >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-              {deleting ? 'Deleting...' : 'Delete'}
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              {deleting ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>

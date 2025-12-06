@@ -1,5 +1,5 @@
-import { Plus } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Plus } from "lucide-react";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,10 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { useState } from 'react';
+} from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { useState } from "react";
 
 export const ActionArea = () => {
   const [isCampaignOpen, setIsCampaignOpen] = useState(false);
@@ -18,13 +18,13 @@ export const ActionArea = () => {
 
   const handleCampaignSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Creating Campaign...');
+    console.log("Creating Campaign...");
     setIsCampaignOpen(false);
   };
 
   const handleJobSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Posting Job...');
+    console.log("Posting Job...");
     setIsJobOpen(false);
   };
 
@@ -75,7 +75,7 @@ export const ActionArea = () => {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleJobSubmit} className="grid gap-4 py-4">
-             <div className="grid gap-2">
+            <div className="grid gap-2">
               <Label htmlFor="jobTitle">Job Title</Label>
               <Input id="jobTitle" placeholder="Senior Engineer" required />
             </div>
@@ -83,7 +83,7 @@ export const ActionArea = () => {
               <Label htmlFor="company">Company</Label>
               <Input id="company" placeholder="Tech Corp" required />
             </div>
-             <div className="grid gap-2">
+            <div className="grid gap-2">
               <Label htmlFor="location">Location</Label>
               <Input id="location" placeholder="Remote / City" required />
             </div>
@@ -94,4 +94,3 @@ export const ActionArea = () => {
     </div>
   );
 };
-

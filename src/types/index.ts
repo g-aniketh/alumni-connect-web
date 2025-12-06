@@ -3,10 +3,10 @@ export const ContributionType = {
   Volunteer: "Volunteer Time",
 } as const;
 
-export type ContributionType = (typeof ContributionType)[keyof typeof ContributionType];
+export type ContributionType =
+  (typeof ContributionType)[keyof typeof ContributionType];
 
 export const Department = {
-
   CS: "Computer Science",
   EE: "Electrical Engineering",
   Mech: "Mechanical Engineering",

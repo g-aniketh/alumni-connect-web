@@ -25,27 +25,21 @@ export const eventsAPI = {
     if (params.location) queryParams.append("location", params.location);
     if (params.startDate) queryParams.append("startDate", params.startDate);
     if (params.endDate) queryParams.append("endDate", params.endDate);
-    return api.get<BackendEvent[]>(
-      `/events/search?${queryParams.toString()}`
-    );
+    return api.get<BackendEvent[]>(`/events/search?${queryParams.toString()}`);
   },
 
   // Get filtered events (authenticated - college context)
   getFiltered: async (params?: {
     by?: string;
     upcoming?: boolean;
-  }): Promise<
-    | BackendEvent[]
-    | { total: number; events: BackendEvent[] }
-  > => {
+  }): Promise<BackendEvent[] | { total: number; events: BackendEvent[] }> => {
     const queryParams = new URLSearchParams();
     if (params?.by) queryParams.append("by", params.by);
     if (params?.upcoming !== undefined)
       queryParams.append("upcoming", params.upcoming.toString());
-    return api.get<
-      | BackendEvent[]
-      | { total: number; events: BackendEvent[] }
-    >(`/events/filter?${queryParams.toString()}`);
+    return api.get<BackendEvent[] | { total: number; events: BackendEvent[] }>(
+      `/events/filter?${queryParams.toString()}`
+    );
   },
 
   // Get event by ID (public)
@@ -54,9 +48,7 @@ export const eventsAPI = {
   },
 
   // Create event (authenticated - verified alumni/college)
-  create: async (
-    data: EventCreateRequest
-  ): Promise<BackendEvent> => {
+  create: async (data: EventCreateRequest): Promise<BackendEvent> => {
     return api.post<BackendEvent>("/events", data);
   },
 
@@ -81,9 +73,7 @@ export const eventsAPI = {
 
   // Get my organized events (authenticated)
   getMyOrganized: async (): Promise<BackendEvent[]> => {
-    return api.get<BackendEvent[]>(
-      "/events/my/organized"
-    );
+    return api.get<BackendEvent[]>("/events/my/organized");
   },
 
   // Register for event (authenticated - verified student only)
@@ -100,12 +90,8 @@ export const eventsAPI = {
   },
 
   // Get my registrations (authenticated - student only)
-  getMyRegistrations: async (): Promise<
-    BackendEventRegistration[]
-  > => {
-    return api.get<BackendEventRegistration[]>(
-      "/events/my/registrations"
-    );
+  getMyRegistrations: async (): Promise<BackendEventRegistration[]> => {
+    return api.get<BackendEventRegistration[]>("/events/my/registrations");
   },
 
   // Get event registrations (authenticated - organizer only)
@@ -140,4 +126,3 @@ export const eventsAPI = {
     );
   },
 };
-

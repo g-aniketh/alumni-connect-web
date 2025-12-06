@@ -99,7 +99,7 @@ export const ChangePasswordForm = ({ onSuccess }: ChangePasswordFormProps) => {
                 type={showCurrentPassword ? "text" : "password"}
                 placeholder="Enter current password"
                 value={currentPassword}
-                onChange={e => setCurrentPassword(e.target.value)}
+                onChange={(e) => setCurrentPassword(e.target.value)}
                 required
                 className="pr-10"
               />
@@ -127,7 +127,7 @@ export const ChangePasswordForm = ({ onSuccess }: ChangePasswordFormProps) => {
                 type={showNewPassword ? "text" : "password"}
                 placeholder="Enter new password"
                 value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
+                onChange={(e) => setNewPassword(e.target.value)}
                 required
                 minLength={6}
                 className="pr-10"
@@ -159,7 +159,7 @@ export const ChangePasswordForm = ({ onSuccess }: ChangePasswordFormProps) => {
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm new password"
                 value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
                 className="pr-10"

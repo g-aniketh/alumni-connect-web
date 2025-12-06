@@ -65,7 +65,7 @@ const AlumniDashboardPage = () => {
         (m: BackendMentorship) => {
           const mentorId =
             typeof m.mentorId === "object"
-              ? (m.mentorId as BackendAlumni)._id ?? ""
+              ? ((m.mentorId as BackendAlumni)._id ?? "")
               : m.mentorId;
           return mentorId === user?.id;
         }
@@ -181,7 +181,7 @@ const AlumniDashboardPage = () => {
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map(stat => {
+        {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card
@@ -292,7 +292,7 @@ const AlumniDashboardPage = () => {
           <CardContent>
             {pendingMentorshipRequests.length > 0 ? (
               <div className="space-y-4">
-                {pendingMentorshipRequests.map(request => {
+                {pendingMentorshipRequests.map((request) => {
                   const student = getStudentInfo(request);
                   if (!student) return null;
 
@@ -411,7 +411,7 @@ const AlumniDashboardPage = () => {
         <CardContent>
           {myJobs.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-3">
-              {myJobs.map(job => (
+              {myJobs.map((job) => (
                 <Card
                   key={job._id}
                   className="hover:shadow-md transition-shadow"
@@ -471,7 +471,7 @@ const AlumniDashboardPage = () => {
         <CardContent>
           {upcomingEvents.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-3">
-              {upcomingEvents.map(event => (
+              {upcomingEvents.map((event) => (
                 <Card
                   key={event._id}
                   className="hover:shadow-md transition-shadow"

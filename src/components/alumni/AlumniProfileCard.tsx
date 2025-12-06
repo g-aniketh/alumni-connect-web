@@ -1,9 +1,9 @@
-import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { type Alumni, UserRole } from '../../types';
-import { UserPlus, CheckCircle2, XCircle } from 'lucide-react';
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { type Alumni, UserRole } from "../../types";
+import { UserPlus, CheckCircle2, XCircle } from "lucide-react";
 
 interface AlumniProfileCardProps {
   alumni: Alumni;
@@ -12,11 +12,11 @@ interface AlumniProfileCardProps {
   viewerRole?: UserRole;
 }
 
-export const AlumniProfileCard = ({ 
-  alumni, 
-  onRequestMentorship, 
+export const AlumniProfileCard = ({
+  alumni,
+  onRequestMentorship,
   onConnect,
-  viewerRole 
+  viewerRole,
 }: AlumniProfileCardProps) => {
   const isAvailable = alumni.mentorshipAvailable === true;
   const isAlumniViewer = viewerRole === UserRole.Alumni;
@@ -29,7 +29,10 @@ export const AlumniProfileCard = ({
           <Avatar className="h-20 w-20">
             <AvatarImage src={alumni.avatar} alt={alumni.name} />
             <AvatarFallback className="text-lg">
-              {alumni.name.split(' ').map(n => n[0]).join('')}
+              {alumni.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
             </AvatarFallback>
           </Avatar>
           <div className="space-y-1">
@@ -45,33 +48,38 @@ export const AlumniProfileCard = ({
       </CardHeader>
       <CardContent className="flex-1 space-y-3">
         {isStudentViewer && (
-        <div className="flex justify-center">
-          <Badge 
-            variant={isAvailable ? "default" : "secondary"}
-            className={isAvailable 
-              ? "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100" 
-              : "bg-gray-100 text-gray-800 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200"
-            }
-          >
-            {isAvailable ? (
-              <>
-                <CheckCircle2 className="w-3 h-3 mr-1" />
-                Open for Mentorship
-              </>
-            ) : (
-              <>
-                <XCircle className="w-3 h-3 mr-1" />
-                Busy
-              </>
-            )}
-          </Badge>
-        </div>
+          <div className="flex justify-center">
+            <Badge
+              variant={isAvailable ? "default" : "secondary"}
+              className={
+                isAvailable
+                  ? "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100"
+                  : "bg-gray-100 text-gray-800 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200"
+              }
+            >
+              {isAvailable ? (
+                <>
+                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                  Open for Mentorship
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-3 h-3 mr-1" />
+                  Busy
+                </>
+              )}
+            </Badge>
+          </div>
         )}
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">Skills</p>
           <div className="flex flex-wrap gap-1">
             {alumni.skills.slice(0, 4).map((skill) => (
-              <Badge key={skill} variant="outline" className="text-xs font-normal">
+              <Badge
+                key={skill}
+                variant="outline"
+                className="text-xs font-normal"
+              >
                 {skill}
               </Badge>
             ))}
@@ -85,8 +93,8 @@ export const AlumniProfileCard = ({
       </CardContent>
       <CardFooter>
         {isAlumniViewer && onConnect ? (
-          <Button 
-            className="w-full" 
+          <Button
+            className="w-full"
             variant="default"
             onClick={() => onConnect(alumni)}
           >
@@ -94,18 +102,17 @@ export const AlumniProfileCard = ({
             Connect
           </Button>
         ) : isStudentViewer && onRequestMentorship ? (
-        <Button 
-          className="w-full" 
-          variant={isAvailable ? "default" : "outline"}
-          disabled={!isAvailable}
-          onClick={() => onRequestMentorship(alumni)}
-        >
-          <UserPlus className="w-4 h-4 mr-2" />
-          {isAvailable ? 'Request Mentorship' : 'Currently Busy'}
-        </Button>
+          <Button
+            className="w-full"
+            variant={isAvailable ? "default" : "outline"}
+            disabled={!isAvailable}
+            onClick={() => onRequestMentorship(alumni)}
+          >
+            <UserPlus className="w-4 h-4 mr-2" />
+            {isAvailable ? "Request Mentorship" : "Currently Busy"}
+          </Button>
         ) : null}
       </CardFooter>
     </Card>
   );
 };
-

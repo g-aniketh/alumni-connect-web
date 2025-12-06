@@ -86,8 +86,8 @@ const CollegeCampaignCreationPage = () => {
                 id="title"
                 placeholder="e.g., New Library Wing Fund"
                 value={formData.title}
-                onChange={e =>
-                  setFormData(prev => ({ ...prev, title: e.target.value }))
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
                 }
                 required
               />
@@ -99,8 +99,8 @@ const CollegeCampaignCreationPage = () => {
                 id="description"
                 placeholder="Describe the purpose of the campaign, how funds will be used, and the impact..."
                 value={formData.description}
-                onChange={e =>
-                  setFormData(prev => ({
+                onChange={(e) =>
+                  setFormData((prev) => ({
                     ...prev,
                     description: e.target.value,
                   }))
@@ -119,8 +119,8 @@ const CollegeCampaignCreationPage = () => {
                   min="1"
                   placeholder="500000"
                   value={formData.targetAmount}
-                  onChange={e =>
-                    setFormData(prev => ({
+                  onChange={(e) =>
+                    setFormData((prev) => ({
                       ...prev,
                       targetAmount: e.target.value,
                     }))
@@ -136,8 +136,8 @@ const CollegeCampaignCreationPage = () => {
                   id="startDate"
                   type="date"
                   value={formData.startDate}
-                  onChange={e =>
-                    setFormData(prev => ({
+                  onChange={(e) =>
+                    setFormData((prev) => ({
                       ...prev,
                       startDate: e.target.value,
                     }))
@@ -152,8 +152,11 @@ const CollegeCampaignCreationPage = () => {
                   id="endDate"
                   type="date"
                   value={formData.endDate}
-                  onChange={e =>
-                    setFormData(prev => ({ ...prev, endDate: e.target.value }))
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      endDate: e.target.value,
+                    }))
                   }
                   required
                 />

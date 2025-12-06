@@ -20,4 +20,3 @@ export const departmentMap: Record<string, string> = {
   Arts: "arts",
   Science: "science",
 };
-

@@ -1,18 +1,24 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
-import { Badge } from '../ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Badge } from "../ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
-import { Department, type Student } from '../../types';
-import { OnlinePresenceSection } from './OnlinePresenceSection';
-import type { StudentFormData } from '../../types/profile';
+} from "../ui/select";
+import { Department, type Student } from "../../types";
+import { OnlinePresenceSection } from "./OnlinePresenceSection";
+import type { StudentFormData } from "../../types/profile";
 
 interface StudentProfileSectionProps {
   user: Student;
@@ -21,13 +27,20 @@ interface StudentProfileSectionProps {
   onFormDataChange: (data: StudentFormData) => void;
 }
 
-export const StudentProfileSection = ({ user, isEditing, formData, onFormDataChange }: StudentProfileSectionProps) => {
+export const StudentProfileSection = ({
+  user,
+  isEditing,
+  formData,
+  onFormDataChange,
+}: StudentProfileSectionProps) => {
   return (
     <>
       <Card>
         <CardHeader>
           <CardTitle>Academic Information</CardTitle>
-          <CardDescription>Your academic and enrollment details</CardDescription>
+          <CardDescription>
+            Your academic and enrollment details
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -36,11 +49,18 @@ export const StudentProfileSection = ({ user, isEditing, formData, onFormDataCha
               {isEditing ? (
                 <Input
                   id="rollNumber"
-                  value={formData.rollNumber || ''}
-                  onChange={(e) => onFormDataChange({ ...formData, rollNumber: e.target.value })}
+                  value={formData.rollNumber || ""}
+                  onChange={(e) =>
+                    onFormDataChange({
+                      ...formData,
+                      rollNumber: e.target.value,
+                    })
+                  }
                 />
               ) : (
-                <div className="text-sm">{user.rollNumber || 'Not specified'}</div>
+                <div className="text-sm">
+                  {user.rollNumber || "Not specified"}
+                </div>
               )}
             </div>
             <div className="space-y-2">
@@ -49,11 +69,18 @@ export const StudentProfileSection = ({ user, isEditing, formData, onFormDataCha
                 <Input
                   id="enrollmentYear"
                   type="number"
-                  value={formData.enrollmentYear || ''}
-                  onChange={(e) => onFormDataChange({ ...formData, enrollmentYear: e.target.value })}
+                  value={formData.enrollmentYear || ""}
+                  onChange={(e) =>
+                    onFormDataChange({
+                      ...formData,
+                      enrollmentYear: e.target.value,
+                    })
+                  }
                 />
               ) : (
-                <div className="text-sm">{user.enrollmentYear || 'Not specified'}</div>
+                <div className="text-sm">
+                  {user.enrollmentYear || "Not specified"}
+                </div>
               )}
             </div>
           </div>
@@ -63,19 +90,23 @@ export const StudentProfileSection = ({ user, isEditing, formData, onFormDataCha
               {isEditing ? (
                 <Input
                   id="degree"
-                  value={formData.degree || ''}
-                  onChange={(e) => onFormDataChange({ ...formData, degree: e.target.value })}
+                  value={formData.degree || ""}
+                  onChange={(e) =>
+                    onFormDataChange({ ...formData, degree: e.target.value })
+                  }
                 />
               ) : (
-                <div className="text-sm">{user.degree || 'Not specified'}</div>
+                <div className="text-sm">{user.degree || "Not specified"}</div>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="department">Department</Label>
               {isEditing ? (
                 <Select
-                  value={formData.department || ''}
-                  onValueChange={(value) => onFormDataChange({ ...formData, department: value })}
+                  value={formData.department || ""}
+                  onValueChange={(value) =>
+                    onFormDataChange({ ...formData, department: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -89,7 +120,9 @@ export const StudentProfileSection = ({ user, isEditing, formData, onFormDataCha
                   </SelectContent>
                 </Select>
               ) : (
-                <div className="text-sm">{user.department || 'Not specified'}</div>
+                <div className="text-sm">
+                  {user.department || "Not specified"}
+                </div>
               )}
             </div>
           </div>
@@ -98,15 +131,19 @@ export const StudentProfileSection = ({ user, isEditing, formData, onFormDataCha
             {isEditing ? (
               <Textarea
                 id="skills"
-                value={formData.skills || ''}
-                onChange={(e) => onFormDataChange({ ...formData, skills: e.target.value })}
+                value={formData.skills || ""}
+                onChange={(e) =>
+                  onFormDataChange({ ...formData, skills: e.target.value })
+                }
                 placeholder="e.g., React, Node.js, Python"
                 rows={3}
               />
             ) : (
               <div className="flex flex-wrap gap-2">
                 {(user.skills || []).map((skill: string) => (
-                  <Badge key={skill} variant="outline">{skill}</Badge>
+                  <Badge key={skill} variant="outline">
+                    {skill}
+                  </Badge>
                 ))}
               </div>
             )}
@@ -116,20 +153,26 @@ export const StudentProfileSection = ({ user, isEditing, formData, onFormDataCha
             {isEditing ? (
               <Textarea
                 id="bio"
-                value={formData.bio || ''}
-                onChange={(e) => onFormDataChange({ ...formData, bio: e.target.value })}
+                value={formData.bio || ""}
+                onChange={(e) =>
+                  onFormDataChange({ ...formData, bio: e.target.value })
+                }
                 placeholder="Tell us about yourself..."
                 rows={3}
               />
             ) : (
-              <div className="text-sm">{user.bio || 'Not specified'}</div>
+              <div className="text-sm">{user.bio || "Not specified"}</div>
             )}
           </div>
         </CardContent>
       </Card>
 
-      <OnlinePresenceSection user={user} isEditing={isEditing} formData={formData} onFormDataChange={(data) => onFormDataChange(data as StudentFormData)} />
+      <OnlinePresenceSection
+        user={user}
+        isEditing={isEditing}
+        formData={formData}
+        onFormDataChange={(data) => onFormDataChange(data as StudentFormData)}
+      />
     </>
   );
 };
-

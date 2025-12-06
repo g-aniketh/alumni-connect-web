@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { useAuth } from "../../context/AuthContext";
 import type { BackendJob } from "../../types/api";
@@ -25,9 +30,7 @@ const CollegeJobApplicationsPage = () => {
       setJobs(data);
       setSelectedJob((prev) => prev ?? data[0] ?? null);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load your jobs",
-      );
+      setError(err instanceof Error ? err.message : "Failed to load your jobs");
     } finally {
       setLoading(false);
     }
@@ -40,9 +43,7 @@ const CollegeJobApplicationsPage = () => {
   return (
     <div className="container py-8 min-h-screen space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Job Applications
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Job Applications</h1>
         <p className="text-muted-foreground">
           Review and manage applications for the jobs posted by your college.
         </p>
@@ -57,9 +58,7 @@ const CollegeJobApplicationsPage = () => {
       {loading ? (
         <p className="text-muted-foreground">Loading your jobs...</p>
       ) : jobs.length === 0 ? (
-        <p className="text-muted-foreground">
-          No jobs have been posted yet.
-        </p>
+        <p className="text-muted-foreground">No jobs have been posted yet.</p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <aside className="lg:col-span-1 space-y-3">
@@ -110,5 +109,3 @@ const CollegeJobApplicationsPage = () => {
 };
 
 export default CollegeJobApplicationsPage;
-
-

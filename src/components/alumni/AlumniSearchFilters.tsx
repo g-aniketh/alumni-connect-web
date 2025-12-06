@@ -1,8 +1,8 @@
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Search, X } from 'lucide-react';
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Search, X } from "lucide-react";
 
 interface AlumniSearchFiltersProps {
   nameSearch?: string;
@@ -75,11 +75,7 @@ export const AlumniSearchFilters = ({
         </div>
 
         {hasActiveFilters && (
-          <Button 
-            variant="outline" 
-            className="w-full" 
-            onClick={onClearFilters}
-          >
+          <Button variant="outline" className="w-full" onClick={onClearFilters}>
             <X className="w-4 h-4 mr-2" />
             Clear Filters
           </Button>
@@ -88,4 +84,3 @@ export const AlumniSearchFilters = ({
     </Card>
   );
 };
-
