@@ -10,6 +10,8 @@ import { EventCard } from "../components/events/EventCard";
 import { CampaignCard } from "../components/events/CampaignCard";
 import { DonationModal } from "../components/events/DonationModal";
 import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +28,7 @@ import type {
   BackendEvent,
   BackendEventRegistration,
 } from "../types/api";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 
 const EventsCampaignsPage = () => {
   const { user } = useAuth();
@@ -43,6 +45,9 @@ const EventsCampaignsPage = () => {
   const [myRegistrations, setMyRegistrations] = useState<string[]>([]); // Array of event IDs the user is registered for
   const [myEvents, setMyEvents] = useState<BackendEvent[]>([]);
   const [loadingMyEvents, setLoadingMyEvents] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [timeFilter, setTimeFilter] = useState("upcoming");
 
   useEffect(() => {
     loadEvents();
@@ -239,93 +244,193 @@ const EventsCampaignsPage = () => {
       ? "/alumni/events/create"
       : "/college/events/create";
 
+  // Filter events based on search and filters
+  const filteredEvents = events.filter((backendEvent) => {
+    // Search filter
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      const matchesTitle = backendEvent.title.toLowerCase().includes(lowerQuery);
+      const matchesLocation = backendEvent.location.toLowerCase().includes(lowerQuery);
+      if (!matchesTitle && !matchesLocation) return false;
+    }
+
+    // Category filter
+    if (categoryFilter !== "all") {
+      const lowerTitle = backendEvent.title.toLowerCase();
+      const lowerDesc = (backendEvent.description || "").toLowerCase();
+      const combined = lowerTitle + " " + lowerDesc;
+      
+      switch (categoryFilter) {
+        case "networking":
+          if (!combined.includes("networking") && !lowerTitle.includes("meetup")) return false;
+          break;
+        case "career":
+          if (!combined.includes("career") && !lowerTitle.includes("resume") && !lowerTitle.includes("workshop")) return false;
+          break;
+        case "technology":
+          if (!combined.includes("tech") && !combined.includes("technology") && !lowerTitle.includes("ai") && !lowerTitle.includes("software")) return false;
+          break;
+        case "social":
+          if (!combined.includes("social") && !lowerTitle.includes("homecoming") && !lowerTitle.includes("gala")) return false;
+          break;
+      }
+    }
+
+    // Time filter
+    if (timeFilter === "upcoming") {
+      const eventDate = new Date(backendEvent.eventDate);
+      const now = new Date();
+      if (eventDate < now) return false;
+    } else if (timeFilter === "past") {
+      const eventDate = new Date(backendEvent.eventDate);
+      const now = new Date();
+      if (eventDate >= now) return false;
+    }
+
+    return true;
+  });
+
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading events...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Loading events...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container py-8 min-h-screen">
-      <div className="flex flex-col gap-2 mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Events & Campaigns
-            </h1>
-            <p className="text-muted-foreground">
-              Stay connected through events and support fundraising initiatives.
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex flex-col gap-2 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                {canCreateEvents ? "Events & Campaigns" : "Upcoming Events"}
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400 mt-2">
+                Stay connected through events and support fundraising initiatives.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {canCreateEvents && (
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link to={createEventPath}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Event
+                  </Link>
+                </Button>
+              )}
+              {canCreateCampaigns && (
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link to="/college/campaigns/create">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Campaign
+                  </Link>
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="flex gap-2">
+        </div>
+
+        {error && (
+          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-lg text-red-700 dark:text-red-300">
+            {error}
+          </div>
+        )}
+
+        <Tabs defaultValue="events" className="w-full">
+          <TabsList
+            className={`grid w-full mb-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 ${
+              canCreateEvents ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"
+            }`}
+          >
+            <TabsTrigger value="events" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100">
+              Upcoming Events
+            </TabsTrigger>
             {canCreateEvents && (
-              <Button asChild>
-                <Link to={createEventPath}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Event
-                </Link>
-              </Button>
+              <TabsTrigger value="my-events" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100">
+                My Events
+              </TabsTrigger>
             )}
-            {canCreateCampaigns && (
-              <Button asChild>
-                <Link to="/college/campaigns/create">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Campaign
-                </Link>
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
+            <TabsTrigger value="campaigns" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100">
+              Fundraising Campaigns
+            </TabsTrigger>
+          </TabsList>
 
-      {error && (
-        <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-          {error}
-        </div>
-      )}
-
-      <Tabs defaultValue="events" className="w-full">
-        <TabsList
-          className={`grid w-full ${
-            canCreateEvents ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"
-          }`}
-        >
-          <TabsTrigger value="events">Upcoming Events</TabsTrigger>
-          {canCreateEvents && (
-            <TabsTrigger value="my-events">My Events</TabsTrigger>
-          )}
-          <TabsTrigger value="campaigns">Fundraising Campaigns</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="events" className="mt-6">
-          {events.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((backendEvent) => {
-                const event = transformEvent(backendEvent);
-                const isRegistered =
-                  user?.role === UserRole.Student &&
-                  myRegistrations.includes(backendEvent._id);
-                return (
-                  <EventCard
-                    key={backendEvent._id}
-                    event={event}
-                    onRSVP={() => handleRSVP(backendEvent)}
-                    isRegistered={isRegistered}
+          <TabsContent value="events" className="mt-6">
+            {/* Search and Filters */}
+            <div className="mb-6 space-y-4">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search events by title or venue..."
+                    className="w-full pl-9 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                );
-              })}
+                </div>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                    <SelectValue placeholder="Category: All" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                    <SelectItem value="all">Category: All</SelectItem>
+                    <SelectItem value="networking">Networking</SelectItem>
+                    <SelectItem value="career">Career Development</SelectItem>
+                    <SelectItem value="technology">Technology</SelectItem>
+                    <SelectItem value="social">Social</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={timeFilter} onValueChange={setTimeFilter}>
+                  <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                    <SelectValue placeholder="Time: Upcoming" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                    <SelectItem value="upcoming">Time: Upcoming</SelectItem>
+                    <SelectItem value="all">Time: All</SelectItem>
+                    <SelectItem value="past">Time: Past</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg font-medium mb-2">No upcoming events</p>
-              <p className="text-sm">Check back later for new events.</p>
-            </div>
-          )}
-        </TabsContent>
+
+            {/* Events List */}
+            {filteredEvents.length > 0 ? (
+              <div className="space-y-4">
+                {filteredEvents.map((backendEvent) => {
+                  const event = transformEvent(backendEvent);
+                  const isRegistered =
+                    user?.role === UserRole.Student &&
+                    myRegistrations.includes(backendEvent._id);
+                  return (
+                    <EventCard
+                      key={backendEvent._id}
+                      event={event}
+                      backendEvent={backendEvent}
+                      onRSVP={() => handleRSVP(backendEvent)}
+                      isRegistered={isRegistered}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-2 border-blue-200 dark:border-gray-700 rounded-lg p-12">
+                  <p className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                    No upcoming events
+                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Check back later for new events.
+                  </p>
+                </div>
+              </div>
+            )}
+          </TabsContent>
 
         {canCreateEvents && (
           <TabsContent value="my-events" className="mt-6">
@@ -344,6 +449,7 @@ const EventsCampaignsPage = () => {
                     >
                       <EventCard
                         event={event}
+                        backendEvent={backendEvent}
                         onRSVP={() => handleRSVP(backendEvent)}
                         isRegistered={false}
                       />
@@ -487,6 +593,7 @@ const EventsCampaignsPage = () => {
         open={isDonationModalOpen}
         onOpenChange={setIsDonationModalOpen}
       />
+      </div>
     </div>
   );
 };

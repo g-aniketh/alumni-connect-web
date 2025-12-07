@@ -168,167 +168,181 @@ const AlumniDirectoryPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading alumni directory...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Loading alumni directory...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container py-8 min-h-screen">
-      <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Alumni Directory</h1>
-        <p className="text-muted-foreground">
-          Connect with alumni mentors and find guidance for your career journey.
-        </p>
-      </div>
-
-      {error && !isRequestDialogOpen && (
-        <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-          {error}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex flex-col gap-2 mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            Alumni Directory
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400">
+            Connect with alumni mentors and find guidance for your career journey.
+          </p>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Search & Filters Sidebar */}
-        <aside className="lg:col-span-1">
-          <div className="sticky top-20">
-            <AlumniSearchFilters
-              nameSearch={nameSearch}
-              onNameSearchChange={setNameSearch}
-              skillSearch={skillSearch}
-              onSkillSearchChange={setSkillSearch}
-              companySearch={companySearch}
-              onCompanySearchChange={setCompanySearch}
-              onClearFilters={handleClearFilters}
-            />
+        {error && !isRequestDialogOpen && (
+          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-lg text-red-700 dark:text-red-300">
+            {error}
           </div>
-        </aside>
+        )}
 
-        {/* Alumni Cards Grid */}
-        <div className="lg:col-span-3">
-          {filteredAlumni.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredAlumni.map((backendAlumni) => {
-                const alumni = transformAlumni(backendAlumni);
-                return (
-                  <AlumniProfileCard
-                    key={backendAlumni._id}
-                    alumni={alumni}
-                    onRequestMentorship={handleRequestMentorship}
-                    viewerRole={user?.role}
-                  />
-                );
-              })}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Search & Filters Sidebar */}
+          <aside className="lg:col-span-1">
+            <div className="sticky top-20">
+              <AlumniSearchFilters
+                nameSearch={nameSearch}
+                onNameSearchChange={setNameSearch}
+                skillSearch={skillSearch}
+                onSkillSearchChange={setSkillSearch}
+                companySearch={companySearch}
+                onCompanySearchChange={setCompanySearch}
+                onClearFilters={handleClearFilters}
+              />
             </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg font-medium mb-2">No alumni found</p>
-              <p className="text-sm">
-                Try adjusting your search criteria or filters.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+          </aside>
 
-      {/* Mentorship Request Dialog */}
-      <Dialog
-        open={isRequestDialogOpen}
-        onOpenChange={(open) => {
-          setIsRequestDialogOpen(open);
-          if (!open) {
-            setRequestMessage("");
-            setAreasOfInterest("");
-            setError("");
-          }
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Request Mentorship</DialogTitle>
-            <DialogDescription>
-              {selectedAlumni && (
-                <>
-                  Send a mentorship request to{" "}
-                  <strong>{selectedAlumni.name}</strong>{" "}
-                  {selectedAlumni.currentEmployer
-                    ? `at ${selectedAlumni.currentEmployer}`
-                    : ""}
-                  .
-                </>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            {error && (
-              <div className="p-3 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300 text-sm">
-                {error}
+          {/* Alumni Cards Grid */}
+          <div className="lg:col-span-3">
+            {filteredAlumni.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredAlumni.map((backendAlumni) => {
+                  const alumni = transformAlumni(backendAlumni);
+                  return (
+                    <AlumniProfileCard
+                      key={backendAlumni._id}
+                      alumni={alumni}
+                      onRequestMentorship={handleRequestMentorship}
+                      viewerRole={user?.role}
+                    />
+                  );
+                })}
               </div>
-            )}
-
-            {!user ? (
-              <p className="text-sm text-muted-foreground">
-                Please log in as a student to request mentorship.
-              </p>
-            ) : user.role !== UserRole.Student ? (
-              <p className="text-sm text-muted-foreground">
-                Only students can request mentorship.
-              </p>
             ) : (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message (Optional)</Label>
-                  <Textarea
-                    id="message"
-                    placeholder="Tell the mentor why you're interested in their guidance..."
-                    value={requestMessage}
-                    onChange={(e) => setRequestMessage(e.target.value)}
-                    rows={4}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="areasOfInterest">
-                    Areas of Interest (Optional)
-                  </Label>
-                  <Textarea
-                    id="areasOfInterest"
-                    placeholder="e.g., Career guidance, Technical skills, Industry insights (comma-separated)"
-                    value={areasOfInterest}
-                    onChange={(e) => setAreasOfInterest(e.target.value)}
-                    rows={2}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Enter areas where you'd like mentorship, separated by commas
+              <div className="text-center py-12">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-2 border-blue-200 dark:border-gray-700 rounded-lg p-12">
+                  <p className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                    No alumni found
+                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Try adjusting your search criteria or filters.
                   </p>
                 </div>
-              </>
+              </div>
             )}
           </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsRequestDialogOpen(false);
-                setRequestMessage("");
-                setAreasOfInterest("");
-                setError("");
-              }}
-              disabled={submitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSubmitRequest}
-              disabled={!user || user.role !== UserRole.Student || submitting}
-            >
-              {submitting ? "Sending..." : "Send Request"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+
+        {/* Mentorship Request Dialog */}
+        <Dialog
+          open={isRequestDialogOpen}
+          onOpenChange={(open) => {
+            setIsRequestDialogOpen(open);
+            if (!open) {
+              setRequestMessage("");
+              setAreasOfInterest("");
+              setError("");
+            }
+          }}
+        >
+          <DialogContent className="bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-700">
+            <DialogHeader>
+              <DialogTitle className="text-slate-900 dark:text-slate-100">Request Mentorship</DialogTitle>
+              <DialogDescription className="text-slate-600 dark:text-slate-400">
+                {selectedAlumni && (
+                  <>
+                    Send a mentorship request to{" "}
+                    <strong className="text-slate-900 dark:text-slate-100">{selectedAlumni.name}</strong>{" "}
+                    {selectedAlumni.currentEmployer
+                      ? `at ${selectedAlumni.currentEmployer}`
+                      : ""}
+                    .
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              {error && (
+                <div className="p-3 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {!user ? (
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Please log in as a student to request mentorship.
+                </p>
+              ) : user.role !== UserRole.Student ? (
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Only students can request mentorship.
+                </p>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="message" className="text-slate-900 dark:text-slate-100">Message (Optional)</Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Tell the mentor why you're interested in their guidance..."
+                      value={requestMessage}
+                      onChange={(e) => setRequestMessage(e.target.value)}
+                      rows={4}
+                      className="bg-white dark:bg-gray-700 border-slate-300 dark:border-slate-600"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="areasOfInterest" className="text-slate-900 dark:text-slate-100">
+                      Areas of Interest (Optional)
+                    </Label>
+                    <Textarea
+                      id="areasOfInterest"
+                      placeholder="e.g., Career guidance, Technical skills, Industry insights (comma-separated)"
+                      value={areasOfInterest}
+                      onChange={(e) => setAreasOfInterest(e.target.value)}
+                      rows={2}
+                      className="bg-white dark:bg-gray-700 border-slate-300 dark:border-slate-600"
+                    />
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Enter areas where you'd like mentorship, separated by commas
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsRequestDialogOpen(false);
+                  setRequestMessage("");
+                  setAreasOfInterest("");
+                  setError("");
+                }}
+                disabled={submitting}
+                className="border-slate-300 dark:border-slate-600"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmitRequest}
+                disabled={!user || user.role !== UserRole.Student || submitting}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {submitting ? "Sending..." : "Send Request"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };
