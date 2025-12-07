@@ -32,11 +32,8 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  User,
   Users,
-  ArrowRight,
   Building2,
-  MapPin,
 } from "lucide-react";
 import {
   Dialog,
@@ -236,14 +233,14 @@ const StudentMentorshipsPage = () => {
               <div className="flex flex-wrap gap-2">
                 {Array.isArray(request.areasOfInterest)
                   ? request.areasOfInterest.map((area, idx) => (
-                      <Badge
-                        key={idx}
-                        variant="outline"
-                        className="bg-white/50 dark:bg-gray-800/50 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300"
-                      >
-                        {area}
-                      </Badge>
-                    ))
+                    <Badge
+                      key={idx}
+                      variant="outline"
+                      className="bg-white/50 dark:bg-gray-800/50 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300"
+                    >
+                      {area}
+                    </Badge>
+                  ))
                   : null}
               </div>
             </div>

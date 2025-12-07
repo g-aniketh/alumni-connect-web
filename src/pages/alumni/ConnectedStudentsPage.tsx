@@ -6,13 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { useAuth } from "../../context/AuthContext";
 import { GraduationCap } from "lucide-react";
 import type { BackendStudent } from "../../types/api";
-import { studentAPI } from "../../lib/api";
 
 const ConnectedStudentsPage = () => {
-  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [connectedStudents, setConnectedStudents] = useState<BackendStudent[]>(
     []

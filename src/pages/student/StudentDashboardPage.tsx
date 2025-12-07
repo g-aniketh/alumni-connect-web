@@ -8,7 +8,6 @@ import {
 } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
-import { Progress } from "../../components/ui/progress";
 import {
   Avatar,
   AvatarFallback,
@@ -28,8 +27,6 @@ import {
   Code,
   Database,
   TrendingUp,
-  CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { jobsAPI, mentorshipsAPI, eventsAPI } from "../../lib/api";
@@ -179,18 +176,18 @@ const StudentDashboardPage = () => {
   const successRate =
     totalApplications > 0
       ? Math.round(
-          (applicationStatusBreakdown.offered / totalApplications) * 100
-        )
+        (applicationStatusBreakdown.offered / totalApplications) * 100
+      )
       : 0;
 
   // Calculate response rate (any response / total)
   const responseRate =
     totalApplications > 0
       ? Math.round(
-          ((totalApplications - applicationStatusBreakdown.applied) /
-            totalApplications) *
-            100
-        )
+        ((totalApplications - applicationStatusBreakdown.applied) /
+          totalApplications) *
+        100
+      )
       : 0;
 
   const recentApplications = applications.slice(0, 4);
@@ -243,8 +240,9 @@ const StudentDashboardPage = () => {
   };
 
   // Get job icon based on title/type
-  const getJobIcon = (title: string, jobType?: string) => {
+  const getJobIcon = (title: string, _jobType?: string) => {
     const lowerTitle = title.toLowerCase();
+    console.log(_jobType);
     if (
       lowerTitle.includes("design") ||
       lowerTitle.includes("ui") ||

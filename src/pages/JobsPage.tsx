@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
-import { JobCard } from "../components/jobs/JobCard";
-import { JobFilters } from "../components/jobs/JobFilters";
 import { JobDetails } from "../components/jobs/JobDetails";
 import { ApplicationManagement } from "../components/jobs/ApplicationManagement";
 import { Button } from "../components/ui/button";
@@ -38,7 +36,6 @@ import {
 
 const JobsPage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [jobs, setJobs] = useState<BackendJob[]>([]);
@@ -53,7 +50,7 @@ const JobsPage = () => {
 
   // Filter States
   const [selectedTypes, setSelectedTypes] = useState<JobType[]>([]);
-  const [salaryMin, setSalaryMin] = useState<number>(0);
+  const [salaryMin] = useState<number>(0);
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [experienceFilter, setExperienceFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -117,18 +114,6 @@ const JobsPage = () => {
     } finally {
       setLoadingMyJobs(false);
     }
-  };
-
-  const handleTypeChange = (type: JobType) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
-  };
-
-  const handleClearFilters = () => {
-    setSelectedTypes([]);
-    setSalaryMin(0);
-    setLocationSearch("");
   };
 
   // Map backend jobType to frontend JobType for filtering
@@ -479,7 +464,6 @@ const JobsPage = () => {
                     locationParts.length > 1
                       ? locationParts[1]
                       : backendJob.location || "N/A";
-                  const isRemote = location.toLowerCase().includes("remote");
 
                   return (
                     <Card
@@ -534,7 +518,7 @@ const JobsPage = () => {
                                   {formatRelativeTime(backendJob.createdAt)}
                                   {backendJob.postedBy &&
                                     typeof backendJob.postedBy.posterId ===
-                                      "object" &&
+                                    "object" &&
                                     backendJob.postedBy.posterId.name &&
                                     ` by ${backendJob.postedBy.posterId.name}`}
                                 </span>
@@ -575,8 +559,8 @@ const JobsPage = () => {
                       </h3>
                       <p className="text-blue-700 dark:text-blue-300">
                         {searchQuery ||
-                        locationFilter !== "all" ||
-                        experienceFilter !== "all"
+                          locationFilter !== "all" ||
+                          experienceFilter !== "all"
                           ? "Try adjusting your search or filters."
                           : "No job opportunities available at the moment."}
                       </p>
@@ -756,7 +740,6 @@ const JobsPage = () => {
                   location =
                     location.replace(/\(.*?\)/g, "").trim() || "Remote";
                 }
-                const isRemote = location.toLowerCase().includes("remote");
 
                 return (
                   <Card
@@ -809,7 +792,7 @@ const JobsPage = () => {
                                 {formatRelativeTime(backendJob.createdAt)}
                                 {backendJob.postedBy &&
                                   typeof backendJob.postedBy.posterId ===
-                                    "object" &&
+                                  "object" &&
                                   backendJob.postedBy.posterId.name &&
                                   ` by ${backendJob.postedBy.posterId.name}`}
                               </span>
@@ -850,8 +833,8 @@ const JobsPage = () => {
                     </h3>
                     <p className="text-blue-700 dark:text-blue-300">
                       {searchQuery ||
-                      locationFilter !== "all" ||
-                      experienceFilter !== "all"
+                        locationFilter !== "all" ||
+                        experienceFilter !== "all"
                         ? "Try adjusting your search or filters."
                         : "No job opportunities available at the moment."}
                     </p>
