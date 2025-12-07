@@ -86,13 +86,26 @@ const StudentApplicationsPage = () => {
   // Get job icon based on title/type
   const getJobIcon = (title: string, jobType?: string) => {
     const lowerTitle = title.toLowerCase();
-    if (lowerTitle.includes("design") || lowerTitle.includes("ui") || lowerTitle.includes("ux") || lowerTitle.includes("product design")) {
+    if (
+      lowerTitle.includes("design") ||
+      lowerTitle.includes("ui") ||
+      lowerTitle.includes("ux") ||
+      lowerTitle.includes("product design")
+    ) {
       return Palette;
     }
-    if (lowerTitle.includes("frontend") || lowerTitle.includes("front-end") || lowerTitle.includes("developer")) {
+    if (
+      lowerTitle.includes("frontend") ||
+      lowerTitle.includes("front-end") ||
+      lowerTitle.includes("developer")
+    ) {
       return Code;
     }
-    if (lowerTitle.includes("data") || lowerTitle.includes("analyst") || lowerTitle.includes("science")) {
+    if (
+      lowerTitle.includes("data") ||
+      lowerTitle.includes("analyst") ||
+      lowerTitle.includes("science")
+    ) {
       return Database;
     }
     if (lowerTitle.includes("researcher") || lowerTitle.includes("research")) {
@@ -107,13 +120,26 @@ const StudentApplicationsPage = () => {
   // Get job icon color
   const getJobIconColor = (title: string) => {
     const lowerTitle = title.toLowerCase();
-    if (lowerTitle.includes("design") || lowerTitle.includes("ui") || lowerTitle.includes("ux") || lowerTitle.includes("product design")) {
+    if (
+      lowerTitle.includes("design") ||
+      lowerTitle.includes("ui") ||
+      lowerTitle.includes("ux") ||
+      lowerTitle.includes("product design")
+    ) {
       return "text-pink-500";
     }
-    if (lowerTitle.includes("frontend") || lowerTitle.includes("front-end") || lowerTitle.includes("developer")) {
+    if (
+      lowerTitle.includes("frontend") ||
+      lowerTitle.includes("front-end") ||
+      lowerTitle.includes("developer")
+    ) {
       return "text-blue-500";
     }
-    if (lowerTitle.includes("data") || lowerTitle.includes("analyst") || lowerTitle.includes("science")) {
+    if (
+      lowerTitle.includes("data") ||
+      lowerTitle.includes("analyst") ||
+      lowerTitle.includes("science")
+    ) {
       return "text-green-500";
     }
     if (lowerTitle.includes("researcher") || lowerTitle.includes("research")) {
@@ -167,11 +193,11 @@ const StudentApplicationsPage = () => {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       } else {
-    return (
+        return (
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+        );
       }
-  });
+    });
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -198,10 +224,13 @@ const StudentApplicationsPage = () => {
       offered: "Offered",
       rejected: "Rejected",
     };
-    return statusMap[status.toLowerCase()] || status
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    return (
+      statusMap[status.toLowerCase()] ||
+      status
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    );
   };
 
   if (loading) {
@@ -225,15 +254,15 @@ const StudentApplicationsPage = () => {
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
               Track the status of your job applications
-        </p>
+            </p>
           </div>
-      </div>
-
-      {error && (
-          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-lg text-red-700 dark:text-red-300">
-          {error}
         </div>
-      )}
+
+        {error && (
+          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-lg text-red-700 dark:text-red-300">
+            {error}
+          </div>
+        )}
 
         {/* Search and Filters */}
         <Card className="mb-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 shadow-lg">
@@ -259,7 +288,9 @@ const StudentApplicationsPage = () => {
                   <SelectItem value="all">All</SelectItem>
                   <SelectItem value="applied">Applied</SelectItem>
                   <SelectItem value="under_review">Under Review</SelectItem>
-                  <SelectItem value="interview_scheduled">Interviewing</SelectItem>
+                  <SelectItem value="interview_scheduled">
+                    Interviewing
+                  </SelectItem>
                   <SelectItem value="offered">Offered</SelectItem>
                   <SelectItem value="rejected">Rejected</SelectItem>
                 </SelectContent>
@@ -281,46 +312,63 @@ const StudentApplicationsPage = () => {
 
         {filteredAndSortedApplications.length === 0 ? (
           <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-2 border-blue-200 dark:border-blue-800">
-          <CardHeader>
-              <CardTitle className="text-blue-900 dark:text-blue-100">No Applications Found</CardTitle>
+            <CardHeader>
+              <CardTitle className="text-blue-900 dark:text-blue-100">
+                No Applications Found
+              </CardTitle>
               <CardDescription className="text-blue-700 dark:text-blue-300">
                 {searchQuery || statusFilter !== "all"
                   ? "No applications match your filters. Try adjusting your search or filters."
                   : "You haven't applied to any jobs yet. Start browsing available positions!"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                asChild
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
                 <a href="/jobs">Browse Jobs →</a>
               </Button>
-          </CardContent>
-        </Card>
-      ) : (
+            </CardContent>
+          </Card>
+        ) : (
           <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 shadow-lg">
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
+                <Table>
+                  <TableHeader>
                     <TableRow className="bg-gradient-to-r from-slate-100 to-slate-50 dark:from-gray-800 dark:to-gray-900 border-b-2 border-slate-200 dark:border-slate-700">
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">JOB DETAILS</TableHead>
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">LOCATION</TableHead>
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">DATE APPLIED</TableHead>
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">STATUS</TableHead>
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">ACTION</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        JOB DETAILS
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        LOCATION
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        DATE APPLIED
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        STATUS
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        ACTION
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {filteredAndSortedApplications.map((app) => {
-                  const job =
-                    typeof app.jobId === "object"
-                      ? (app.jobId as BackendJob)
-                      : null;
-                      
+                      const job =
+                        typeof app.jobId === "object"
+                          ? (app.jobId as BackendJob)
+                          : null;
+
                       if (!job || !job.title) return null;
 
-                  const posterName =
-                        job && job.postedBy && typeof job.postedBy.posterId === "object"
-                      ? job.postedBy.posterId.name
+                      const posterName =
+                        job &&
+                        job.postedBy &&
+                        typeof job.postedBy.posterId === "object"
+                          ? job.postedBy.posterId.name
                           : "Company";
 
                       const JobIcon = getJobIcon(job.title, job.jobType);
@@ -329,19 +377,38 @@ const StudentApplicationsPage = () => {
                       // Get icon background color
                       const getIconBgColor = (title: string) => {
                         const lowerTitle = title.toLowerCase();
-                        if (lowerTitle.includes("design") || lowerTitle.includes("ui") || lowerTitle.includes("ux") || lowerTitle.includes("product design")) {
+                        if (
+                          lowerTitle.includes("design") ||
+                          lowerTitle.includes("ui") ||
+                          lowerTitle.includes("ux") ||
+                          lowerTitle.includes("product design")
+                        ) {
                           return "bg-pink-50 dark:bg-pink-950";
                         }
-                        if (lowerTitle.includes("frontend") || lowerTitle.includes("front-end") || lowerTitle.includes("developer")) {
+                        if (
+                          lowerTitle.includes("frontend") ||
+                          lowerTitle.includes("front-end") ||
+                          lowerTitle.includes("developer")
+                        ) {
                           return "bg-blue-50 dark:bg-blue-950";
                         }
-                        if (lowerTitle.includes("data") || lowerTitle.includes("analyst") || lowerTitle.includes("science")) {
+                        if (
+                          lowerTitle.includes("data") ||
+                          lowerTitle.includes("analyst") ||
+                          lowerTitle.includes("science")
+                        ) {
                           return "bg-green-50 dark:bg-green-950";
                         }
-                        if (lowerTitle.includes("researcher") || lowerTitle.includes("research")) {
+                        if (
+                          lowerTitle.includes("researcher") ||
+                          lowerTitle.includes("research")
+                        ) {
                           return "bg-orange-50 dark:bg-orange-950";
                         }
-                        if (lowerTitle.includes("engineer") || lowerTitle.includes("software")) {
+                        if (
+                          lowerTitle.includes("engineer") ||
+                          lowerTitle.includes("software")
+                        ) {
                           return "bg-blue-50 dark:bg-blue-950";
                         }
                         return "bg-blue-50 dark:bg-blue-950";
@@ -349,24 +416,32 @@ const StudentApplicationsPage = () => {
 
                       // Format date
                       const appliedDate = new Date(app.createdAt);
-                      const formattedDate = appliedDate.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      });
+                      const formattedDate = appliedDate.toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        }
+                      );
 
                       // Get location (handle "Company • Location" format)
                       const locationParts = job.location?.split(" • ") || [];
-                      const location = locationParts.length > 1 ? locationParts[1] : (job.location || "N/A");
+                      const location =
+                        locationParts.length > 1
+                          ? locationParts[1]
+                          : job.location || "N/A";
 
-                  return (
+                      return (
                         <TableRow
                           key={app._id}
                           className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-gray-800 dark:hover:to-gray-900 border-b border-slate-200 dark:border-slate-700 transition-colors"
                         >
-                      <TableCell>
+                          <TableCell>
                             <div className="flex items-center gap-3">
-                              <div className={`${iconColor} p-2 rounded-lg ${getIconBgColor(job.title)}`}>
+                              <div
+                                className={`${iconColor} p-2 rounded-lg ${getIconBgColor(job.title)}`}
+                              >
                                 <JobIcon className="h-5 w-5" />
                               </div>
                               <div>
@@ -376,49 +451,49 @@ const StudentApplicationsPage = () => {
                                 <div className="text-sm text-slate-600 dark:text-slate-400">
                                   at {posterName}
                                 </div>
-                        </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
                             <div className="text-slate-700 dark:text-slate-300">
                               {location}
-                        </div>
-                      </TableCell>
-                      <TableCell>
+                            </div>
+                          </TableCell>
+                          <TableCell>
                             <div className="text-slate-700 dark:text-slate-300">
                               {formattedDate}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
                               className={`${getStatusColor(app.status)} border font-medium`}
-                        >
-                          {formatStatus(app.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                          <Button
-                            variant="ghost"
+                            >
+                              {formatStatus(app.status)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
                               size="icon"
                               asChild
                               className="hover:bg-blue-100 dark:hover:bg-blue-900"
-                          >
+                            >
                               <a href={`/jobs/${job._id}`}>
                                 <ArrowRight className="h-4 w-4 text-slate-600 dark:text-slate-400" />
                               </a>
-                          </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         )}
-        </div>
+      </div>
     </div>
   );
 };

@@ -43,7 +43,9 @@ const JobsPage = () => {
   const [error, setError] = useState<string>("");
   const [jobs, setJobs] = useState<BackendJob[]>([]);
   const [myJobs, setMyJobs] = useState<BackendJob[]>([]);
-  const [myApplications, setMyApplications] = useState<BackendJobApplication[]>([]);
+  const [myApplications, setMyApplications] = useState<BackendJobApplication[]>(
+    []
+  );
   const [selectedJob, setSelectedJob] = useState<BackendJob | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
@@ -64,7 +66,10 @@ const JobsPage = () => {
     ) {
       loadMyJobs();
     }
-    if (user && (user.role === UserRole.Student || user.role === UserRole.Alumni)) {
+    if (
+      user &&
+      (user.role === UserRole.Student || user.role === UserRole.Alumni)
+    ) {
       loadMyApplications();
     }
   }, [user]);
@@ -141,7 +146,10 @@ const JobsPage = () => {
   const hasApplied = (jobId: string): boolean => {
     if (!user || myApplications.length === 0) return false;
     return myApplications.some((app) => {
-      const appJobId = typeof app.jobId === "object" ? (app.jobId as BackendJob)._id : app.jobId;
+      const appJobId =
+        typeof app.jobId === "object"
+          ? (app.jobId as BackendJob)._id
+          : app.jobId;
       return appJobId === jobId;
     });
   };
@@ -150,13 +158,27 @@ const JobsPage = () => {
   const getExperienceLevel = (job: BackendJob): string => {
     const title = job.title.toLowerCase();
     const desc = job.description.toLowerCase();
-    if (title.includes("intern") || title.includes("internship") || desc.includes("intern")) {
+    if (
+      title.includes("intern") ||
+      title.includes("internship") ||
+      desc.includes("intern")
+    ) {
       return "Entry Level";
     }
-    if (title.includes("senior") || title.includes("lead") || title.includes("principal") || desc.includes("senior")) {
+    if (
+      title.includes("senior") ||
+      title.includes("lead") ||
+      title.includes("principal") ||
+      desc.includes("senior")
+    ) {
       return "Senior Level";
     }
-    if (title.includes("mid") || desc.includes("mid-level") || desc.includes("3+ years") || desc.includes("2+ years")) {
+    if (
+      title.includes("mid") ||
+      desc.includes("mid-level") ||
+      desc.includes("3+ years") ||
+      desc.includes("2+ years")
+    ) {
       return "Mid-Senior Level";
     }
     return "Entry Level";
@@ -169,10 +191,11 @@ const JobsPage = () => {
       const title = job.title?.toLowerCase() || "";
       const description = job.description?.toLowerCase() || "";
       const location = job.location?.toLowerCase() || "";
-      const company = job.postedBy && typeof job.postedBy.posterId === "object"
-        ? job.postedBy.posterId.name?.toLowerCase() || ""
-        : "";
-      
+      const company =
+        job.postedBy && typeof job.postedBy.posterId === "object"
+          ? job.postedBy.posterId.name?.toLowerCase() || ""
+          : "";
+
       if (
         !title.includes(searchLower) &&
         !description.includes(searchLower) &&
@@ -282,7 +305,8 @@ const JobsPage = () => {
     const diffInDays = Math.floor(diffInHours / 24);
 
     if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+    if (diffInHours < 24)
+      return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
     if (diffInDays === 1) return "1 day ago";
     if (diffInDays < 7) return `${diffInDays} days ago`;
     if (diffInDays < 14) return "1 week ago";
@@ -324,33 +348,315 @@ const JobsPage = () => {
               Job Opportunities
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Find your next career opportunity or internship within the alumni network
+              Find your next career opportunity or internship within the alumni
+              network
             </p>
           </div>
           {canCreateJobs && (
-            <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button
+              asChild
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
               <Link to={createJobPath}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Job
               </Link>
             </Button>
           )}
-      </div>
-
-      {error && (
-          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-lg text-red-700 dark:text-red-300">
-          {error}
         </div>
-      )}
 
-      {canCreateJobs ? (
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700">
-            <TabsTrigger value="all">All Jobs</TabsTrigger>
-            <TabsTrigger value="my-jobs">My Posted Jobs</TabsTrigger>
-          </TabsList>
+        {error && (
+          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-lg text-red-700 dark:text-red-300">
+            {error}
+          </div>
+        )}
 
-          <TabsContent value="all" className="mt-6">
+        {canCreateJobs ? (
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700">
+              <TabsTrigger value="all">All Jobs</TabsTrigger>
+              <TabsTrigger value="my-jobs">My Posted Jobs</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="all" className="mt-6">
+              {/* Search and Filters */}
+              <Card className="mb-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 shadow-lg">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    {/* Search Bar */}
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        placeholder="Search jobs by title, skill, or company..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400"
+                      />
+                    </div>
+
+                    {/* Type Filter */}
+                    <Select
+                      value={
+                        selectedTypes.length === 0 ? "all" : selectedTypes[0]
+                      }
+                      onValueChange={(value) => {
+                        if (value === "all") {
+                          setSelectedTypes([]);
+                        } else {
+                          setSelectedTypes([value as JobType]);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-full md:w-[150px] bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700">
+                        <SelectValue placeholder="Type: All" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value={JobType.FullTime}>
+                          Full-time
+                        </SelectItem>
+                        <SelectItem value={JobType.PartTime}>
+                          Part-time
+                        </SelectItem>
+                        <SelectItem value={JobType.Internship}>
+                          Internship
+                        </SelectItem>
+                        <SelectItem value={JobType.Contract}>
+                          Contract
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* Location Filter */}
+                    <Select
+                      value={locationFilter}
+                      onValueChange={setLocationFilter}
+                    >
+                      <SelectTrigger className="w-full md:w-[150px] bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700">
+                        <SelectValue placeholder="Location: All" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="remote">Remote</SelectItem>
+                        <SelectItem value="onsite">On-site</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* Experience Filter */}
+                    <Select
+                      value={experienceFilter}
+                      onValueChange={setExperienceFilter}
+                    >
+                      <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700">
+                        <SelectValue placeholder="Experience: All" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="entry">Entry Level</SelectItem>
+                        <SelectItem value="mid">Mid-Senior Level</SelectItem>
+                        <SelectItem value="senior">Senior Level</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Job Listings */}
+              <div className="space-y-4">
+                {filteredJobs.map((backendJob) => {
+                  const posterName = getPosterName(backendJob);
+                  const applied = hasApplied(backendJob._id);
+                  const experience = getExperienceLevel(backendJob);
+                  const jobType = mapBackendJobType(backendJob.jobType);
+
+                  // Get location (handle "Company • Location" format)
+                  const locationParts = backendJob.location?.split(" • ") || [];
+                  const location =
+                    locationParts.length > 1
+                      ? locationParts[1]
+                      : backendJob.location || "N/A";
+                  const isRemote = location.toLowerCase().includes("remote");
+
+                  return (
+                    <Card
+                      key={backendJob._id}
+                      className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          {/* Company Logo Placeholder */}
+                          <div
+                            className={`w-16 h-16 rounded-lg bg-gradient-to-br ${getLogoGradient(posterName)} flex items-center justify-center flex-shrink-0 shadow-md`}
+                          >
+                            <Building2 className="h-8 w-8 text-white" />
+                          </div>
+
+                          {/* Job Details */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-4 mb-3">
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">
+                                  {backendJob.title}
+                                </h3>
+                                <p className="text-base font-medium text-slate-700 dark:text-slate-300">
+                                  {posterName}
+                                </p>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {backendJob.referral && (
+                                  <Badge className="bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-200 border">
+                                    <Star className="h-3 w-3 mr-1" />
+                                    Alumni Referral
+                                  </Badge>
+                                )}
+                                <Badge className="bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-200 border">
+                                  {jobType}
+                                </Badge>
+                                <Badge className="bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-200 border">
+                                  {experience}
+                                </Badge>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-4">
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-4 w-4" />
+                                <span>{location}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-4 w-4" />
+                                <span>
+                                  Posted{" "}
+                                  {formatRelativeTime(backendJob.createdAt)}
+                                  {backendJob.postedBy &&
+                                    typeof backendJob.postedBy.posterId ===
+                                      "object" &&
+                                    backendJob.postedBy.posterId.name &&
+                                    ` by ${backendJob.postedBy.posterId.name}`}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Action Button */}
+                          <div className="flex-shrink-0">
+                            {applied ? (
+                              <Button
+                                disabled
+                                className="bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed min-w-[120px]"
+                              >
+                                Applied
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => handleViewDetails(backendJob)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white min-w-[120px]"
+                              >
+                                Apply Now
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+
+                {filteredJobs.length === 0 && (
+                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-2 border-blue-200 dark:border-blue-800">
+                    <CardContent className="p-12 text-center">
+                      <Briefcase className="h-16 w-16 mx-auto mb-4 text-blue-500 opacity-50" />
+                      <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                        No jobs found
+                      </h3>
+                      <p className="text-blue-700 dark:text-blue-300">
+                        {searchQuery ||
+                        locationFilter !== "all" ||
+                        experienceFilter !== "all"
+                          ? "Try adjusting your search or filters."
+                          : "No job opportunities available at the moment."}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="my-jobs" className="mt-6">
+              {loadingMyJobs ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  Loading your jobs...
+                </div>
+              ) : myJobs.length > 0 ? (
+                <div className="space-y-6">
+                  {myJobs.map((backendJob) => {
+                    const job = transformJob(backendJob);
+                    return (
+                      <div
+                        key={backendJob._id}
+                        className="border rounded-lg p-6"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h3 className="text-xl font-semibold">
+                              {job.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {job.company} • {job.location}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" asChild>
+                              <Link
+                                to={
+                                  user?.role === UserRole.Alumni
+                                    ? `/alumni/jobs/edit/${backendJob._id}`
+                                    : `/college/jobs/edit/${backendJob._id}`
+                                }
+                              >
+                                Edit
+                              </Link>
+                            </Button>
+                            <Button variant="outline" asChild>
+                              <Link
+                                to={
+                                  user?.role === UserRole.Alumni
+                                    ? `/alumni/jobs/applications?jobId=${backendJob._id}`
+                                    : `/college/jobs/applications?jobId=${backendJob._id}`
+                                }
+                              >
+                                View Applications
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
+                        <ApplicationManagement job={backendJob} />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <p className="text-lg font-medium mb-2">No jobs posted yet</p>
+                  <p className="text-sm mb-4">
+                    Start by creating your first job posting
+                  </p>
+                  <Button asChild>
+                    <Link to={createJobPath}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Job
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <>
             {/* Search and Filters */}
             <Card className="mb-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 shadow-lg">
               <CardContent className="pt-6">
@@ -368,7 +674,9 @@ const JobsPage = () => {
 
                   {/* Type Filter */}
                   <Select
-                    value={selectedTypes.length === 0 ? "all" : selectedTypes[0]}
+                    value={
+                      selectedTypes.length === 0 ? "all" : selectedTypes[0]
+                    }
                     onValueChange={(value) => {
                       if (value === "all") {
                         setSelectedTypes([]);
@@ -382,15 +690,24 @@ const JobsPage = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All</SelectItem>
-                      <SelectItem value={JobType.FullTime}>Full-time</SelectItem>
-                      <SelectItem value={JobType.PartTime}>Part-time</SelectItem>
-                      <SelectItem value={JobType.Internship}>Internship</SelectItem>
+                      <SelectItem value={JobType.FullTime}>
+                        Full-time
+                      </SelectItem>
+                      <SelectItem value={JobType.PartTime}>
+                        Part-time
+                      </SelectItem>
+                      <SelectItem value={JobType.Internship}>
+                        Internship
+                      </SelectItem>
                       <SelectItem value={JobType.Contract}>Contract</SelectItem>
                     </SelectContent>
                   </Select>
 
                   {/* Location Filter */}
-                  <Select value={locationFilter} onValueChange={setLocationFilter}>
+                  <Select
+                    value={locationFilter}
+                    onValueChange={setLocationFilter}
+                  >
                     <SelectTrigger className="w-full md:w-[150px] bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700">
                       <SelectValue placeholder="Location: All" />
                     </SelectTrigger>
@@ -402,7 +719,10 @@ const JobsPage = () => {
                   </Select>
 
                   {/* Experience Filter */}
-                  <Select value={experienceFilter} onValueChange={setExperienceFilter}>
+                  <Select
+                    value={experienceFilter}
+                    onValueChange={setExperienceFilter}
+                  >
                     <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700">
                       <SelectValue placeholder="Experience: All" />
                     </SelectTrigger>
@@ -424,10 +744,18 @@ const JobsPage = () => {
                 const applied = hasApplied(backendJob._id);
                 const experience = getExperienceLevel(backendJob);
                 const jobType = mapBackendJobType(backendJob.jobType);
-                
+
                 // Get location (handle "Company • Location" format)
                 const locationParts = backendJob.location?.split(" • ") || [];
-                const location = locationParts.length > 1 ? locationParts[1] : (backendJob.location || "N/A");
+                let location =
+                  locationParts.length > 1
+                    ? locationParts[1]
+                    : backendJob.location || "N/A";
+                // Handle "Remote (US)" format
+                if (location.toLowerCase().includes("remote")) {
+                  location =
+                    location.replace(/\(.*?\)/g, "").trim() || "Remote";
+                }
                 const isRemote = location.toLowerCase().includes("remote");
 
                 return (
@@ -438,7 +766,7 @@ const JobsPage = () => {
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
                         {/* Company Logo Placeholder */}
-                        <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${getLogoGradient(posterName)} flex items-center justify-center flex-shrink-0 shadow-md`}>
+                        <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                           <Building2 className="h-8 w-8 text-white" />
                         </div>
 
@@ -477,14 +805,17 @@ const JobsPage = () => {
                             <div className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
                               <span>
-                                Posted {formatRelativeTime(backendJob.createdAt)}
-                                {backendJob.postedBy && typeof backendJob.postedBy.posterId === "object" && backendJob.postedBy.posterId.name && (
-                                  ` by ${backendJob.postedBy.posterId.name}`
-                                )}
+                                Posted{" "}
+                                {formatRelativeTime(backendJob.createdAt)}
+                                {backendJob.postedBy &&
+                                  typeof backendJob.postedBy.posterId ===
+                                    "object" &&
+                                  backendJob.postedBy.posterId.name &&
+                                  ` by ${backendJob.postedBy.posterId.name}`}
                               </span>
                             </div>
                           </div>
-                  </div>
+                        </div>
 
                         {/* Action Button */}
                         <div className="flex-shrink-0">
@@ -502,8 +833,8 @@ const JobsPage = () => {
                             >
                               Apply Now
                             </Button>
-                )}
-              </div>
+                          )}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -518,7 +849,9 @@ const JobsPage = () => {
                       No jobs found
                     </h3>
                     <p className="text-blue-700 dark:text-blue-300">
-                      {searchQuery || locationFilter !== "all" || experienceFilter !== "all"
+                      {searchQuery ||
+                      locationFilter !== "all" ||
+                      experienceFilter !== "all"
                         ? "Try adjusting your search or filters."
                         : "No job opportunities available at the moment."}
                     </p>
@@ -526,261 +859,14 @@ const JobsPage = () => {
                 </Card>
               )}
             </div>
-          </TabsContent>
+          </>
+        )}
 
-          <TabsContent value="my-jobs" className="mt-6">
-            {loadingMyJobs ? (
-              <div className="text-center py-12 text-muted-foreground">
-                Loading your jobs...
-              </div>
-            ) : myJobs.length > 0 ? (
-              <div className="space-y-6">
-                {myJobs.map((backendJob) => {
-                  const job = transformJob(backendJob);
-                  return (
-                    <div key={backendJob._id} className="border rounded-lg p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h3 className="text-xl font-semibold">{job.title}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {job.company} • {job.location}
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" asChild>
-                            <Link
-                              to={
-                                user?.role === UserRole.Alumni
-                                  ? `/alumni/jobs/edit/${backendJob._id}`
-                                  : `/college/jobs/edit/${backendJob._id}`
-                              }
-                            >
-                              Edit
-                            </Link>
-                          </Button>
-                          <Button variant="outline" asChild>
-                            <Link
-                              to={
-                                user?.role === UserRole.Alumni
-                                  ? `/alumni/jobs/applications?jobId=${backendJob._id}`
-                                  : `/college/jobs/applications?jobId=${backendJob._id}`
-                              }
-                            >
-                              View Applications
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
-                      <ApplicationManagement job={backendJob} />
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-12 text-muted-foreground">
-                <p className="text-lg font-medium mb-2">No jobs posted yet</p>
-                <p className="text-sm mb-4">
-                  Start by creating your first job posting
-                </p>
-                <Button asChild>
-                  <Link to={createJobPath}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Job
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <>
-          {/* Search and Filters */}
-          <Card className="mb-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 shadow-lg">
-            <CardContent className="pt-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                {/* Search Bar */}
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    placeholder="Search jobs by title, skill, or company..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400"
-                  />
-                </div>
-
-                {/* Type Filter */}
-                <Select
-                  value={selectedTypes.length === 0 ? "all" : selectedTypes[0]}
-                  onValueChange={(value) => {
-                    if (value === "all") {
-                      setSelectedTypes([]);
-                    } else {
-                      setSelectedTypes([value as JobType]);
-                    }
-                  }}
-                >
-                  <SelectTrigger className="w-full md:w-[150px] bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700">
-                    <SelectValue placeholder="Type: All" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value={JobType.FullTime}>Full-time</SelectItem>
-                    <SelectItem value={JobType.PartTime}>Part-time</SelectItem>
-                    <SelectItem value={JobType.Internship}>Internship</SelectItem>
-                    <SelectItem value={JobType.Contract}>Contract</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Location Filter */}
-                <Select value={locationFilter} onValueChange={setLocationFilter}>
-                  <SelectTrigger className="w-full md:w-[150px] bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700">
-                    <SelectValue placeholder="Location: All" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="remote">Remote</SelectItem>
-                    <SelectItem value="onsite">On-site</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Experience Filter */}
-                <Select value={experienceFilter} onValueChange={setExperienceFilter}>
-                  <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-900 border-2 border-slate-200 dark:border-slate-700">
-                    <SelectValue placeholder="Experience: All" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="entry">Entry Level</SelectItem>
-                    <SelectItem value="mid">Mid-Senior Level</SelectItem>
-                    <SelectItem value="senior">Senior Level</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Job Listings */}
-          <div className="space-y-4">
-              {filteredJobs.map((backendJob) => {
-              const posterName = getPosterName(backendJob);
-              const applied = hasApplied(backendJob._id);
-              const experience = getExperienceLevel(backendJob);
-              const jobType = mapBackendJobType(backendJob.jobType);
-              
-              // Get location (handle "Company • Location" format)
-              const locationParts = backendJob.location?.split(" • ") || [];
-              let location = locationParts.length > 1 ? locationParts[1] : (backendJob.location || "N/A");
-              // Handle "Remote (US)" format
-              if (location.toLowerCase().includes("remote")) {
-                location = location.replace(/\(.*?\)/g, "").trim() || "Remote";
-              }
-              const isRemote = location.toLowerCase().includes("remote");
-
-                return (
-                <Card
-                    key={backendJob._id}
-                  className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all"
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      {/* Company Logo Placeholder */}
-                      <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                        <Building2 className="h-8 w-8 text-white" />
-                      </div>
-
-                      {/* Job Details */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4 mb-3">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">
-                              {backendJob.title}
-                            </h3>
-                            <p className="text-base font-medium text-slate-700 dark:text-slate-300">
-                              {posterName}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {backendJob.referral && (
-                              <Badge className="bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-200 border">
-                                <Star className="h-3 w-3 mr-1" />
-                                Alumni Referral
-                              </Badge>
-                            )}
-                            <Badge className="bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-200 border">
-                              {jobType}
-                            </Badge>
-                            <Badge className="bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-200 border">
-                              {experience}
-                            </Badge>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-4">
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            <span>{location}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>
-                              Posted {formatRelativeTime(backendJob.createdAt)}
-                              {backendJob.postedBy && typeof backendJob.postedBy.posterId === "object" && backendJob.postedBy.posterId.name && (
-                                ` by ${backendJob.postedBy.posterId.name}`
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Action Button */}
-                      <div className="flex-shrink-0">
-                        {applied ? (
-                          <Button
-                            disabled
-                            className="bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed min-w-[120px]"
-                          >
-                            Applied
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={() => handleViewDetails(backendJob)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white min-w-[120px]"
-                          >
-                            Apply Now
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                );
-              })}
-
-            {filteredJobs.length === 0 && (
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-2 border-blue-200 dark:border-blue-800">
-                <CardContent className="p-12 text-center">
-                  <Briefcase className="h-16 w-16 mx-auto mb-4 text-blue-500 opacity-50" />
-                  <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                    No jobs found
-                  </h3>
-                  <p className="text-blue-700 dark:text-blue-300">
-                    {searchQuery || locationFilter !== "all" || experienceFilter !== "all"
-                      ? "Try adjusting your search or filters."
-                      : "No job opportunities available at the moment."}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </>
-      )}
-
-      <JobDetails
-        job={selectedJob ? transformJob(selectedJob) : null}
-        open={isDetailsOpen}
-        onOpenChange={setIsDetailsOpen}
-      />
+        <JobDetails
+          job={selectedJob ? transformJob(selectedJob) : null}
+          open={isDetailsOpen}
+          onOpenChange={setIsDetailsOpen}
+        />
       </div>
     </div>
   );

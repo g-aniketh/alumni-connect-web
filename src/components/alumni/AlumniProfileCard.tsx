@@ -36,7 +36,9 @@ export const AlumniProfileCard = ({
             </AvatarFallback>
           </Avatar>
           <div className="space-y-1">
-            <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100">{alumni.name}</h3>
+            <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100">
+              {alumni.name}
+            </h3>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               {alumni.designation} @ {alumni.currentEmployer}
             </p>
@@ -72,7 +74,9 @@ export const AlumniProfileCard = ({
           </div>
         )}
         <div className="space-y-2">
-          <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Skills</p>
+          <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
+            Skills
+          </p>
           <div className="flex flex-wrap gap-1">
             {alumni.skills.slice(0, 4).map((skill) => (
               <Badge
@@ -84,7 +88,10 @@ export const AlumniProfileCard = ({
               </Badge>
             ))}
             {alumni.skills.length > 4 && (
-              <Badge variant="outline" className="text-xs font-normal bg-white/50 dark:bg-gray-800/50 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300">
+              <Badge
+                variant="outline"
+                className="text-xs font-normal bg-white/50 dark:bg-gray-800/50 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300"
+              >
                 +{alumni.skills.length - 4} more
               </Badge>
             )}
@@ -107,7 +114,9 @@ export const AlumniProfileCard = ({
             variant={isAvailable ? "default" : "outline"}
             disabled={!isAvailable}
             onClick={() => onRequestMentorship(alumni)}
-            style={isAvailable ? { backgroundColor: "#2563eb", color: "white" } : {}}
+            style={
+              isAvailable ? { backgroundColor: "#2563eb", color: "white" } : {}
+            }
           >
             <UserPlus className="w-4 h-4 mr-2" />
             {isAvailable ? "Request Mentorship" : "Currently Busy"}

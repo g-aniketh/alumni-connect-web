@@ -1,7 +1,4 @@
-import {
-  Card,
-  CardContent,
-} from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { type AlumniEvent } from "../../types";
@@ -21,19 +18,41 @@ const getEventTags = (title: string, description: string): string[] => {
   const lowerDesc = description.toLowerCase();
   const tags: string[] = [];
 
-  if (lowerTitle.includes("networking") || lowerDesc.includes("networking") || lowerTitle.includes("meetup")) {
+  if (
+    lowerTitle.includes("networking") ||
+    lowerDesc.includes("networking") ||
+    lowerTitle.includes("meetup")
+  ) {
     tags.push("Networking");
   }
-  if (lowerTitle.includes("career") || lowerDesc.includes("career") || lowerTitle.includes("resume") || lowerTitle.includes("workshop")) {
+  if (
+    lowerTitle.includes("career") ||
+    lowerDesc.includes("career") ||
+    lowerTitle.includes("resume") ||
+    lowerTitle.includes("workshop")
+  ) {
     tags.push("Career Development");
   }
-  if (lowerTitle.includes("tech") || lowerDesc.includes("technology") || lowerTitle.includes("ai") || lowerTitle.includes("software")) {
+  if (
+    lowerTitle.includes("tech") ||
+    lowerDesc.includes("technology") ||
+    lowerTitle.includes("ai") ||
+    lowerTitle.includes("software")
+  ) {
     tags.push("Technology");
   }
-  if (lowerTitle.includes("lecture") || lowerDesc.includes("lecture") || lowerTitle.includes("talk")) {
+  if (
+    lowerTitle.includes("lecture") ||
+    lowerDesc.includes("lecture") ||
+    lowerTitle.includes("talk")
+  ) {
     tags.push("Lecture");
   }
-  if (lowerTitle.includes("homecoming") || lowerTitle.includes("gala") || lowerTitle.includes("social")) {
+  if (
+    lowerTitle.includes("homecoming") ||
+    lowerTitle.includes("gala") ||
+    lowerTitle.includes("social")
+  ) {
     tags.push("Social");
   }
   if (lowerTitle.includes("popular") || lowerDesc.includes("popular")) {
@@ -42,7 +61,12 @@ const getEventTags = (title: string, description: string): string[] => {
 
   // Determine if virtual or in-person
   const location = lowerTitle + " " + lowerDesc;
-  if (location.includes("online") || location.includes("zoom") || location.includes("virtual") || location.includes("webinar")) {
+  if (
+    location.includes("online") ||
+    location.includes("zoom") ||
+    location.includes("virtual") ||
+    location.includes("webinar")
+  ) {
     tags.push("Virtual");
   } else {
     tags.push("In-person");
@@ -54,7 +78,9 @@ const getEventTags = (title: string, description: string): string[] => {
 // Format date for display
 const formatEventDate = (dateString: string) => {
   const date = new Date(dateString);
-  const month = date.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
+  const month = date
+    .toLocaleDateString("en-US", { month: "short" })
+    .toUpperCase();
   const day = date.getDate();
   return { month, day };
 };
@@ -88,7 +114,9 @@ export const EventCard = ({
   const timeRange = backendEvent
     ? formatTimeRange(backendEvent.startTime, backendEvent.endTime)
     : null;
-  const attendance = backendEvent ? getAttendanceCount(backendEvent._id) : "120 attending";
+  const attendance = backendEvent
+    ? getAttendanceCount(backendEvent._id)
+    : "120 attending";
 
   // Split location to get venue name
   const locationParts = event.location?.split(" • ") || [event.location || ""];

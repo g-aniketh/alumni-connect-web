@@ -180,4 +180,3 @@ const StudentSkillsSelectionPage = () => {
 };
 
 export default StudentSkillsSelectionPage;
-

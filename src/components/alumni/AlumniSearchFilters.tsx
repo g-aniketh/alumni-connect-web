@@ -36,7 +36,12 @@ export const AlumniSearchFilters = ({
       <CardContent className="space-y-4 pt-6">
         {onNameSearchChange && (
           <div className="space-y-2">
-            <Label htmlFor="name-search" className="text-slate-900 dark:text-slate-100">Search by Name</Label>
+            <Label
+              htmlFor="name-search"
+              className="text-slate-900 dark:text-slate-100"
+            >
+              Search by Name
+            </Label>
             <Input
               id="name-search"
               placeholder="e.g., John Doe"
@@ -50,7 +55,12 @@ export const AlumniSearchFilters = ({
           </div>
         )}
         <div className="space-y-2">
-          <Label htmlFor="skill-search" className="text-slate-900 dark:text-slate-100">Search by Skillset</Label>
+          <Label
+            htmlFor="skill-search"
+            className="text-slate-900 dark:text-slate-100"
+          >
+            Search by Skillset
+          </Label>
           <Input
             id="skill-search"
             placeholder="e.g., React, Python, Machine Learning"
@@ -64,7 +74,12 @@ export const AlumniSearchFilters = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="company-search" className="text-slate-900 dark:text-slate-100">Search by Company</Label>
+          <Label
+            htmlFor="company-search"
+            className="text-slate-900 dark:text-slate-100"
+          >
+            Search by Company
+          </Label>
           <Input
             id="company-search"
             placeholder="e.g., Google, Microsoft, Tesla"

@@ -114,11 +114,7 @@ const StudentEventRegistrationsPage = () => {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {formatStatus(status)}
-          </Badge>
-        );
+        return <Badge variant="outline">{formatStatus(status)}</Badge>;
     }
   };
 
@@ -146,7 +142,9 @@ const StudentEventRegistrationsPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading registrations...</p>
+          <p className="text-slate-600 dark:text-slate-400">
+            Loading registrations...
+          </p>
         </div>
       </div>
     );
@@ -188,7 +186,10 @@ const StudentEventRegistrationsPage = () => {
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                   You have not registered for any events yet.
                 </p>
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button
+                  asChild
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
                   <a href="/events">Browse Events</a>
                 </Button>
               </div>
@@ -197,11 +198,21 @@ const StudentEventRegistrationsPage = () => {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gradient-to-r from-slate-100 to-slate-50 dark:from-gray-800 dark:to-gray-900 border-b-2 border-slate-200 dark:border-slate-700">
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">EVENT</TableHead>
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">DATE</TableHead>
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">LOCATION</TableHead>
-                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">STATUS</TableHead>
-                      <TableHead className="text-right font-semibold text-slate-900 dark:text-slate-100">ACTIONS</TableHead>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        EVENT
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        DATE
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        LOCATION
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-900 dark:text-slate-100">
+                        STATUS
+                      </TableHead>
+                      <TableHead className="text-right font-semibold text-slate-900 dark:text-slate-100">
+                        ACTIONS
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -210,7 +221,10 @@ const StudentEventRegistrationsPage = () => {
                       if (!event) return null;
 
                       const locationParts = event.location?.split(" • ") || [];
-                      const location = locationParts.length > 1 ? locationParts[1] : (event.location || "N/A");
+                      const location =
+                        locationParts.length > 1
+                          ? locationParts[1]
+                          : event.location || "N/A";
                       const time = formatEventTime(event);
 
                       return (
@@ -243,9 +257,7 @@ const StudentEventRegistrationsPage = () => {
                               {location}
                             </div>
                           </TableCell>
-                          <TableCell>
-                            {getStatusBadge(reg.status)}
-                          </TableCell>
+                          <TableCell>{getStatusBadge(reg.status)}</TableCell>
                           <TableCell className="text-right">
                             {reg.status.toLowerCase() !== "cancelled" && (
                               <Button

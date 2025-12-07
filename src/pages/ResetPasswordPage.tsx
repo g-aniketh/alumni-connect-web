@@ -25,9 +25,7 @@ const ResetPasswordPage = () => {
   const token = searchParams.get("token");
   const typeFromUrl = searchParams.get("type"); // Backend sends 'type' in URL
   // Use type from URL if available, otherwise default to "alumni"
-  const [userType, setUserType] = useState<string>(
-    typeFromUrl || "alumni"
-  );
+  const [userType, setUserType] = useState<string>(typeFromUrl || "alumni");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -45,7 +43,7 @@ const ResetPasswordPage = () => {
         setError("");
       }
     }
-    
+
     if (!token) {
       setError(
         "Invalid or missing reset token. Please request a new password reset link."
@@ -126,8 +124,8 @@ const ResetPasswordPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="userType">Account Type</Label>
-              <Select 
-                value={userType} 
+              <Select
+                value={userType}
                 onValueChange={setUserType}
                 disabled={!!typeFromUrl} // Disable if type is from URL (to prevent changing it)
               >
@@ -150,14 +148,14 @@ const ResetPasswordPage = () => {
             <div className="space-y-2">
               <Label htmlFor="newPassword">New Password</Label>
               <div className="relative">
-              <Input
-                id="newPassword"
+                <Input
+                  id="newPassword"
                   type={showNewPassword ? "text" : "password"}
-                placeholder="Enter new password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                minLength={8}
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  minLength={8}
                   className="pr-10"
                 />
                 <Button
@@ -182,14 +180,14 @@ const ResetPasswordPage = () => {
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <div className="relative">
-              <Input
-                id="confirmPassword"
+                <Input
+                  id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm new password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={8}
+                  placeholder="Confirm new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={8}
                   className="pr-10"
                 />
                 <Button

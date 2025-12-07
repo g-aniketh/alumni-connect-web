@@ -171,7 +171,9 @@ const AlumniDirectoryPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading alumni directory...</p>
+          <p className="text-slate-600 dark:text-slate-400">
+            Loading alumni directory...
+          </p>
         </div>
       </div>
     );
@@ -186,7 +188,8 @@ const AlumniDirectoryPage = () => {
             Alumni Directory
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            Connect with alumni mentors and find guidance for your career journey.
+            Connect with alumni mentors and find guidance for your career
+            journey.
           </p>
         </div>
 
@@ -257,12 +260,16 @@ const AlumniDirectoryPage = () => {
         >
           <DialogContent className="bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-700">
             <DialogHeader>
-              <DialogTitle className="text-slate-900 dark:text-slate-100">Request Mentorship</DialogTitle>
+              <DialogTitle className="text-slate-900 dark:text-slate-100">
+                Request Mentorship
+              </DialogTitle>
               <DialogDescription className="text-slate-600 dark:text-slate-400">
                 {selectedAlumni && (
                   <>
                     Send a mentorship request to{" "}
-                    <strong className="text-slate-900 dark:text-slate-100">{selectedAlumni.name}</strong>{" "}
+                    <strong className="text-slate-900 dark:text-slate-100">
+                      {selectedAlumni.name}
+                    </strong>{" "}
                     {selectedAlumni.currentEmployer
                       ? `at ${selectedAlumni.currentEmployer}`
                       : ""}
@@ -289,7 +296,12 @@ const AlumniDirectoryPage = () => {
               ) : (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="message" className="text-slate-900 dark:text-slate-100">Message (Optional)</Label>
+                    <Label
+                      htmlFor="message"
+                      className="text-slate-900 dark:text-slate-100"
+                    >
+                      Message (Optional)
+                    </Label>
                     <Textarea
                       id="message"
                       placeholder="Tell the mentor why you're interested in their guidance..."
@@ -300,7 +312,10 @@ const AlumniDirectoryPage = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="areasOfInterest" className="text-slate-900 dark:text-slate-100">
+                    <Label
+                      htmlFor="areasOfInterest"
+                      className="text-slate-900 dark:text-slate-100"
+                    >
                       Areas of Interest (Optional)
                     </Label>
                     <Textarea
@@ -312,7 +327,8 @@ const AlumniDirectoryPage = () => {
                       className="bg-white dark:bg-gray-700 border-slate-300 dark:border-slate-600"
                     />
                     <p className="text-xs text-slate-600 dark:text-slate-400">
-                      Enter areas where you'd like mentorship, separated by commas
+                      Enter areas where you'd like mentorship, separated by
+                      commas
                     </p>
                   </div>
                 </>

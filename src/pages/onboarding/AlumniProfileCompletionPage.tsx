@@ -21,8 +21,59 @@ import {
 } from "../../components/ui/select";
 import { ChevronRight, ChevronLeft, CheckCircle } from "lucide-react";
 import { alumniAPI } from "../../lib/api";
-import { SkillSet } from "./skillsData";
 import { useAuth } from "../../context/AuthContext";
+
+// Skills data matching backend SkillSet
+const SkillSet: string[] = [
+  "JavaScript",
+  "TypeScript",
+  "Python",
+  "Java",
+  "C++",
+  "C#",
+  "Ruby",
+  "Go",
+  "PHP",
+  "Rust",
+  "Swift",
+  "Kotlin",
+  "HTML",
+  "CSS",
+  "React",
+  "Angular",
+  "Vue.js",
+  "Node.js",
+  "Django",
+  "Flask",
+  "Spring Boot",
+  "Ruby on Rails",
+  "Machine Learning",
+  "Data Science",
+  "DevOps",
+  "Cloud Computing",
+  "UI/UX Design",
+  "Project Management",
+  "Agile Methodologies",
+  "Database Management",
+  "Cybersecurity",
+  "Mobile App Development",
+  "Game Development",
+  "Blockchain",
+  "Artificial Intelligence",
+  "Big Data",
+  "Internet of Things (IoT)",
+  "Networking",
+  "Software Testing",
+  "Version Control (Git)",
+  "Docker",
+  "Continuous Integration/Continuous Deployment (CI/CD)",
+  "AWS",
+  "Azure",
+  "Google Cloud Platform",
+  "Kubernetes",
+  "Object-Oriented Programming (OOP)",
+  "Others",
+];
 
 const AlumniProfileCompletionPage = () => {
   const navigate = useNavigate();

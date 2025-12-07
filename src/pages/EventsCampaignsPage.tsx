@@ -11,7 +11,13 @@ import { CampaignCard } from "../components/events/CampaignCard";
 import { DonationModal } from "../components/events/DonationModal";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -249,8 +255,12 @@ const EventsCampaignsPage = () => {
     // Search filter
     if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
-      const matchesTitle = backendEvent.title.toLowerCase().includes(lowerQuery);
-      const matchesLocation = backendEvent.location.toLowerCase().includes(lowerQuery);
+      const matchesTitle = backendEvent.title
+        .toLowerCase()
+        .includes(lowerQuery);
+      const matchesLocation = backendEvent.location
+        .toLowerCase()
+        .includes(lowerQuery);
       if (!matchesTitle && !matchesLocation) return false;
     }
 
@@ -259,19 +269,39 @@ const EventsCampaignsPage = () => {
       const lowerTitle = backendEvent.title.toLowerCase();
       const lowerDesc = (backendEvent.description || "").toLowerCase();
       const combined = lowerTitle + " " + lowerDesc;
-      
+
       switch (categoryFilter) {
         case "networking":
-          if (!combined.includes("networking") && !lowerTitle.includes("meetup")) return false;
+          if (
+            !combined.includes("networking") &&
+            !lowerTitle.includes("meetup")
+          )
+            return false;
           break;
         case "career":
-          if (!combined.includes("career") && !lowerTitle.includes("resume") && !lowerTitle.includes("workshop")) return false;
+          if (
+            !combined.includes("career") &&
+            !lowerTitle.includes("resume") &&
+            !lowerTitle.includes("workshop")
+          )
+            return false;
           break;
         case "technology":
-          if (!combined.includes("tech") && !combined.includes("technology") && !lowerTitle.includes("ai") && !lowerTitle.includes("software")) return false;
+          if (
+            !combined.includes("tech") &&
+            !combined.includes("technology") &&
+            !lowerTitle.includes("ai") &&
+            !lowerTitle.includes("software")
+          )
+            return false;
           break;
         case "social":
-          if (!combined.includes("social") && !lowerTitle.includes("homecoming") && !lowerTitle.includes("gala")) return false;
+          if (
+            !combined.includes("social") &&
+            !lowerTitle.includes("homecoming") &&
+            !lowerTitle.includes("gala")
+          )
+            return false;
           break;
       }
     }
@@ -295,7 +325,9 @@ const EventsCampaignsPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading events...</p>
+          <p className="text-slate-600 dark:text-slate-400">
+            Loading events...
+          </p>
         </div>
       </div>
     );
@@ -312,12 +344,16 @@ const EventsCampaignsPage = () => {
                 {canCreateEvents ? "Events & Campaigns" : "Upcoming Events"}
               </h1>
               <p className="text-slate-600 dark:text-slate-400 mt-2">
-                Stay connected through events and support fundraising initiatives.
+                Stay connected through events and support fundraising
+                initiatives.
               </p>
             </div>
             <div className="flex gap-2">
               {canCreateEvents && (
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button
+                  asChild
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
                   <Link to={createEventPath}>
                     <Plus className="h-4 w-4 mr-2" />
                     Create Event
@@ -325,7 +361,10 @@ const EventsCampaignsPage = () => {
                 </Button>
               )}
               {canCreateCampaigns && (
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button
+                  asChild
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
                   <Link to="/college/campaigns/create">
                     <Plus className="h-4 w-4 mr-2" />
                     Create Campaign
@@ -348,15 +387,24 @@ const EventsCampaignsPage = () => {
               canCreateEvents ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"
             }`}
           >
-            <TabsTrigger value="events" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100">
+            <TabsTrigger
+              value="events"
+              className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100"
+            >
               Upcoming Events
             </TabsTrigger>
             {canCreateEvents && (
-              <TabsTrigger value="my-events" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100">
+              <TabsTrigger
+                value="my-events"
+                className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100"
+              >
                 My Events
               </TabsTrigger>
             )}
-            <TabsTrigger value="campaigns" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100">
+            <TabsTrigger
+              value="campaigns"
+              className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100"
+            >
               Fundraising Campaigns
             </TabsTrigger>
           </TabsList>
@@ -374,7 +422,10 @@ const EventsCampaignsPage = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <Select
+                  value={categoryFilter}
+                  onValueChange={setCategoryFilter}
+                >
                   <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
                     <SelectValue placeholder="Category: All" />
                   </SelectTrigger>
@@ -432,167 +483,167 @@ const EventsCampaignsPage = () => {
             )}
           </TabsContent>
 
-        {canCreateEvents && (
-          <TabsContent value="my-events" className="mt-6">
-            {loadingMyEvents ? (
-              <div className="text-center py-12 text-muted-foreground">
-                Loading your events...
-              </div>
-            ) : myEvents.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myEvents.map((backendEvent) => {
-                  const event = transformEvent(backendEvent);
-                  return (
-                    <div
-                      key={backendEvent._id}
-                      className="border rounded-lg p-4"
-                    >
-                      <EventCard
-                        event={event}
-                        backendEvent={backendEvent}
-                        onRSVP={() => handleRSVP(backendEvent)}
-                        isRegistered={false}
-                      />
-                      <div className="mt-4 flex gap-2">
-                        <Button variant="outline" asChild className="flex-1">
-                          <Link
-                            to={
-                              user?.role === UserRole.Alumni
-                                ? `/alumni/events/edit/${backendEvent._id}`
-                                : `/college/events/edit/${backendEvent._id}`
-                            }
-                          >
-                            Edit
-                          </Link>
-                        </Button>
-                        <Button variant="outline" asChild className="flex-1">
-                          <Link
-                            to={
-                              user?.role === UserRole.Alumni
-                                ? `/alumni/events/registrations?eventId=${backendEvent._id}`
-                                : `/college/events/registrations?eventId=${backendEvent._id}`
-                            }
-                          >
-                            View Registrations
-                          </Link>
-                        </Button>
+          {canCreateEvents && (
+            <TabsContent value="my-events" className="mt-6">
+              {loadingMyEvents ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  Loading your events...
+                </div>
+              ) : myEvents.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {myEvents.map((backendEvent) => {
+                    const event = transformEvent(backendEvent);
+                    return (
+                      <div
+                        key={backendEvent._id}
+                        className="border rounded-lg p-4"
+                      >
+                        <EventCard
+                          event={event}
+                          backendEvent={backendEvent}
+                          onRSVP={() => handleRSVP(backendEvent)}
+                          isRegistered={false}
+                        />
+                        <div className="mt-4 flex gap-2">
+                          <Button variant="outline" asChild className="flex-1">
+                            <Link
+                              to={
+                                user?.role === UserRole.Alumni
+                                  ? `/alumni/events/edit/${backendEvent._id}`
+                                  : `/college/events/edit/${backendEvent._id}`
+                              }
+                            >
+                              Edit
+                            </Link>
+                          </Button>
+                          <Button variant="outline" asChild className="flex-1">
+                            <Link
+                              to={
+                                user?.role === UserRole.Alumni
+                                  ? `/alumni/events/registrations?eventId=${backendEvent._id}`
+                                  : `/college/events/registrations?eventId=${backendEvent._id}`
+                              }
+                            >
+                              View Registrations
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <p className="text-lg font-medium mb-2">
+                    No events organized yet
+                  </p>
+                  <p className="text-sm mb-4">
+                    Start by creating your first event
+                  </p>
+                  <Button asChild>
+                    <Link to={createEventPath}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Event
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+          )}
+
+          <TabsContent value="campaigns" className="mt-6">
+            {campaignsLoading ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <p>Loading campaigns...</p>
               </div>
+            ) : campaigns.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {campaigns.map((backendCampaign) => {
+                    const campaign = transformCampaign(backendCampaign);
+                    // Show all campaigns (upcoming, active, and recently completed)
+                    return (
+                      <CampaignCard
+                        key={backendCampaign._id}
+                        campaign={campaign}
+                        onDonate={() => handleDonate(backendCampaign)}
+                      />
+                    );
+                  })}
+                </div>
+              </>
             ) : (
               <div className="text-center py-12 text-muted-foreground">
-                <p className="text-lg font-medium mb-2">
-                  No events organized yet
+                <p className="text-lg font-medium mb-2">No campaigns found</p>
+                <p className="text-sm">
+                  Check back later for new fundraising initiatives.
                 </p>
-                <p className="text-sm mb-4">
-                  Start by creating your first event
-                </p>
-                <Button asChild>
-                  <Link to={createEventPath}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Event
-                  </Link>
-                </Button>
               </div>
             )}
           </TabsContent>
-        )}
+        </Tabs>
 
-        <TabsContent value="campaigns" className="mt-6">
-          {campaignsLoading ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <p>Loading campaigns...</p>
-            </div>
-          ) : campaigns.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {campaigns.map((backendCampaign) => {
-                  const campaign = transformCampaign(backendCampaign);
-                  // Show all campaigns (upcoming, active, and recently completed)
-                  return (
-                    <CampaignCard
-                      key={backendCampaign._id}
-                      campaign={campaign}
-                      onDonate={() => handleDonate(backendCampaign)}
-                    />
-                  );
-                })}
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg font-medium mb-2">No campaigns found</p>
-              <p className="text-sm">
-                Check back later for new fundraising initiatives.
-              </p>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
-
-      {/* RSVP Dialog */}
-      <Dialog open={isRSVPDialogOpen} onOpenChange={setIsRSVPDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>RSVP to Event</DialogTitle>
-            <DialogDescription>
-              {selectedEvent && (
-                <>
-                  Confirm your attendance for{" "}
-                  <strong>{selectedEvent.title || "this event"}</strong>.
-                </>
+        {/* RSVP Dialog */}
+        <Dialog open={isRSVPDialogOpen} onOpenChange={setIsRSVPDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>RSVP to Event</DialogTitle>
+              <DialogDescription>
+                {selectedEvent && (
+                  <>
+                    Confirm your attendance for{" "}
+                    <strong>{selectedEvent.title || "this event"}</strong>.
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              {error && (
+                <div className="mb-4 p-3 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300 text-sm">
+                  {error}
+                </div>
               )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            {error && (
-              <div className="mb-4 p-3 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300 text-sm">
-                {error}
-              </div>
-            )}
-            {!user ? (
-              <p className="text-sm text-muted-foreground">
-                Please log in as a student to register for events.
-              </p>
-            ) : user.role !== UserRole.Student ? (
-              <p className="text-sm text-muted-foreground">
-                Only students can register for events.
-              </p>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Your registration will be recorded. You will receive a
-                confirmation email shortly.
-              </p>
-            )}
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsRSVPDialogOpen(false);
-                setError("");
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleRSVPSubmit}
-              disabled={!user || user.role !== UserRole.Student}
-            >
-              Confirm Registration
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+              {!user ? (
+                <p className="text-sm text-muted-foreground">
+                  Please log in as a student to register for events.
+                </p>
+              ) : user.role !== UserRole.Student ? (
+                <p className="text-sm text-muted-foreground">
+                  Only students can register for events.
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Your registration will be recorded. You will receive a
+                  confirmation email shortly.
+                </p>
+              )}
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsRSVPDialogOpen(false);
+                  setError("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleRSVPSubmit}
+                disabled={!user || user.role !== UserRole.Student}
+              >
+                Confirm Registration
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
-      {/* Donation Modal */}
-      <DonationModal
-        campaign={selectedCampaign}
-        open={isDonationModalOpen}
-        onOpenChange={setIsDonationModalOpen}
-      />
+        {/* Donation Modal */}
+        <DonationModal
+          campaign={selectedCampaign}
+          open={isDonationModalOpen}
+          onOpenChange={setIsDonationModalOpen}
+        />
       </div>
     </div>
   );

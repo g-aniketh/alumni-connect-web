@@ -165,9 +165,10 @@ const StudentMentorshipsPage = () => {
 
     const designation = mentor.currentDesignation || "";
     const employer = mentor.currentEmployer || "";
-    const roleText = designation && employer
-      ? `${designation} at ${employer}`
-      : designation || employer || "Alumni";
+    const roleText =
+      designation && employer
+        ? `${designation} at ${employer}`
+        : designation || employer || "Alumni";
 
     // Get gradient based on status
     const getCardGradient = (status: string) => {
@@ -184,7 +185,9 @@ const StudentMentorshipsPage = () => {
     };
 
     return (
-      <Card className={`hover:shadow-xl transition-all ${getCardGradient(request.status)} border-2`}>
+      <Card
+        className={`hover:shadow-xl transition-all ${getCardGradient(request.status)} border-2`}
+      >
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -220,7 +223,9 @@ const StudentMentorshipsPage = () => {
               <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                 Your Message:
               </p>
-              <p className="text-sm text-slate-900 dark:text-slate-100">{request.message}</p>
+              <p className="text-sm text-slate-900 dark:text-slate-100">
+                {request.message}
+              </p>
             </div>
           )}
           {request.areasOfInterest && request.areasOfInterest.length > 0 && (
@@ -280,7 +285,9 @@ const StudentMentorshipsPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading mentorships...</p>
+          <p className="text-slate-600 dark:text-slate-400">
+            Loading mentorships...
+          </p>
         </div>
       </div>
     );
@@ -307,13 +314,22 @@ const StudentMentorshipsPage = () => {
 
         <Tabs defaultValue="active" className="w-full">
           <TabsList className="grid w-full max-w-2xl grid-cols-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700">
-            <TabsTrigger value="active" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 dark:data-[state=active]:bg-green-900 dark:data-[state=active]:text-green-100">
+            <TabsTrigger
+              value="active"
+              className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 dark:data-[state=active]:bg-green-900 dark:data-[state=active]:text-green-100"
+            >
               Active ({activeMentorships.length})
             </TabsTrigger>
-            <TabsTrigger value="pending" className="data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-900 dark:data-[state=active]:bg-yellow-900 dark:data-[state=active]:text-yellow-100">
+            <TabsTrigger
+              value="pending"
+              className="data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-900 dark:data-[state=active]:bg-yellow-900 dark:data-[state=active]:text-yellow-100"
+            >
               Pending ({pendingRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="completed" className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100">
+            <TabsTrigger
+              value="completed"
+              className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100"
+            >
               Completed ({completedMentorships.length})
             </TabsTrigger>
           </TabsList>
@@ -333,10 +349,13 @@ const StudentMentorshipsPage = () => {
                     No active mentorships
                   </p>
                   <p className="text-sm text-green-700 dark:text-green-300 text-center max-w-md mb-4">
-                    You don't have any active mentorship relationships yet. Browse
-                    alumni to find a mentor.
+                    You don't have any active mentorship relationships yet.
+                    Browse alumni to find a mentor.
                   </p>
-                  <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
+                  <Button
+                    asChild
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
                     <a href="/student/alumni">Browse Alumni</a>
                   </Button>
                 </CardContent>
@@ -395,7 +414,9 @@ const StudentMentorshipsPage = () => {
         >
           <DialogContent className="bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-700">
             <DialogHeader>
-              <DialogTitle className="text-slate-900 dark:text-slate-100">Mentorship Feedback</DialogTitle>
+              <DialogTitle className="text-slate-900 dark:text-slate-100">
+                Mentorship Feedback
+              </DialogTitle>
               <DialogDescription className="text-slate-600 dark:text-slate-400">
                 View feedback from your completed mentorship relationship.
               </DialogDescription>
@@ -404,10 +425,14 @@ const StudentMentorshipsPage = () => {
               {selectedMentorship?.mentorFeedback ? (
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium mb-2 text-slate-900 dark:text-slate-100">Mentor Feedback</p>
+                    <p className="text-sm font-medium mb-2 text-slate-900 dark:text-slate-100">
+                      Mentor Feedback
+                    </p>
                     <div className="p-4 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950 dark:to-amber-900 rounded-lg border border-yellow-200 dark:border-yellow-800">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Rating: </span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          Rating:{" "}
+                        </span>
                         <div className="flex">
                           {Array.from({
                             length: selectedMentorship.mentorFeedback.rating,
@@ -428,8 +453,8 @@ const StudentMentorshipsPage = () => {
                 </div>
               ) : (
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  No feedback available yet. Feedback will be displayed here once
-                  the mentorship is completed and feedback is provided.
+                  No feedback available yet. Feedback will be displayed here
+                  once the mentorship is completed and feedback is provided.
                 </p>
               )}
             </div>
