@@ -102,20 +102,32 @@ const AppShell = () => {
   );
 };
 
+import AuthLayout from "./components/layout/AuthLayout";
+import LandingPageLayout from "./components/layout/LandingPageLayout";
+
+// ... (imports remain the same)
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route element={<AppShell />}>
-            {/* Auth */}
+          {/* Landing page route */}
+          <Route element={<LandingPageLayout />}>
             <Route path="/" element={<LandingPage />} />
+          </Route>
+
+          {/* Auth routes */}
+          <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/verify-email" element={<EmailVerificationPage />} />
+          </Route>
 
+          {/* Protected routes with the main app shell and navbar */}
+          <Route element={<AppShell />}>
             {/* Onboarding - Profile Completion */}
             <Route
               path="/onboarding/alumni"
