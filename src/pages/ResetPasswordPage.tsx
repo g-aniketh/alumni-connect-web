@@ -23,7 +23,11 @@ import { ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  const [userType, setUserType] = useState<string>("alumni");
+  const typeFromUrl = searchParams.get("type"); // Backend sends 'type' in URL
+  // Use type from URL if available, otherwise default to "alumni"
+  const [userType, setUserType] = useState<string>(
+    typeFromUrl || "alumni"
+  );
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -33,12 +37,26 @@ const ResetPasswordPage = () => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    // Update userType if type is provided in URL
+    if (typeFromUrl) {
+      setUserType(typeFromUrl);
+      // Clear error if type is now available
+      if (error && error.includes("User type not found")) {
+        setError("");
+      }
+    }
+    
     if (!token) {
       setError(
         "Invalid or missing reset token. Please request a new password reset link."
       );
+    } else if (!typeFromUrl) {
+      // If token exists but type is missing, show warning but allow manual selection
+      setError(
+        "User type not found in reset link. Please select your account type below."
+      );
     }
-  }, [token]);
+  }, [token, typeFromUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +126,11 @@ const ResetPasswordPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="userType">Account Type</Label>
-              <Select value={userType} onValueChange={setUserType}>
+              <Select 
+                value={userType} 
+                onValueChange={setUserType}
+                disabled={!!typeFromUrl} // Disable if type is from URL (to prevent changing it)
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -118,19 +140,24 @@ const ResetPasswordPage = () => {
                   <SelectItem value="college">College</SelectItem>
                 </SelectContent>
               </Select>
+              {typeFromUrl && (
+                <p className="text-xs text-muted-foreground">
+                  Account type detected from reset link.
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="newPassword">New Password</Label>
               <div className="relative">
-                <Input
-                  id="newPassword"
+              <Input
+                id="newPassword"
                   type={showNewPassword ? "text" : "password"}
-                  placeholder="Enter new password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  minLength={8}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                minLength={8}
                   className="pr-10"
                 />
                 <Button
@@ -155,14 +182,14 @@ const ResetPasswordPage = () => {
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <div className="relative">
-                <Input
-                  id="confirmPassword"
+              <Input
+                id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm new password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  minLength={8}
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                minLength={8}
                   className="pr-10"
                 />
                 <Button

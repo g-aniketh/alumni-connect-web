@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -86,6 +87,14 @@ export const LoginForm = ({ role }: LoginFormProps) => {
                   <Eye className="h-4 w-4 text-muted-foreground" />
                 )}
               </Button>
+            </div>
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Forgot password?
+              </Link>
             </div>
           </div>
 
