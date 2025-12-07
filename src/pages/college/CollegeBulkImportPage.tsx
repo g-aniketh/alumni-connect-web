@@ -336,209 +336,211 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
   };
 
   return (
-    <div className="container py-8 max-w-4xl space-y-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Bulk Import</h1>
-        <p className="text-muted-foreground">
-          Import multiple students or alumni at once using a CSV file.
-        </p>
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">Bulk Import</h1>
+          <p className="text-muted-foreground">
+            Import multiple students or alumni at once using a CSV file.
+          </p>
+        </div>
+
+        <Tabs
+          value={importType}
+          onValueChange={(v) => setImportType(v as ImportType)}
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="students">Import Students</TabsTrigger>
+            <TabsTrigger value="alumni">Import Alumni</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="students" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Import Students</CardTitle>
+                <CardDescription>
+                  Upload a CSV file with student data. All imported students
+                  will be automatically verified and linked to your college.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label>CSV Template</Label>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={downloadTemplate}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Template
+                    </Button>
+                    <p className="text-sm text-muted-foreground">
+                      Required columns: name, email, rollNumber, enrollmentYear,
+                      department, degree, graduationYear
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="file-upload">Upload CSV File</Label>
+                  <Input
+                    id="file-upload"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="csv-data">Or Paste CSV Data</Label>
+                  <Textarea
+                    id="csv-data"
+                    placeholder="Paste CSV data here..."
+                    value={csvData}
+                    onChange={(e) => setCsvData(e.target.value)}
+                    rows={10}
+                    className="font-mono text-sm"
+                  />
+                </div>
+
+                {validationErrors.length > 0 && (
+                  <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertCircle className="h-4 w-4 text-red-600" />
+                      <h4 className="font-medium text-red-900 dark:text-red-100">
+                        Validation Errors
+                      </h4>
+                    </div>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-red-700 dark:text-red-300">
+                      {validationErrors.map((err, idx) => (
+                        <li key={idx}>{err}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+                    {error}
+                  </div>
+                )}
+
+                {success && (
+                  <div className="p-4 border border-green-200 bg-green-50 dark:bg-green-950 rounded-md">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <h4 className="font-medium text-green-900 dark:text-green-100">
+                        Import Successful
+                      </h4>
+                    </div>
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      {success.message}. Created {success.created} {importType}.
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleImport}
+                  disabled={loading || !csvData.trim()}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {loading ? "Importing..." : "Import Students"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="alumni" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Import Alumni</CardTitle>
+                <CardDescription>
+                  Upload a CSV file with alumni data. All imported alumni will
+                  be automatically verified and linked to your college.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label>CSV Template</Label>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={downloadTemplate}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Template
+                    </Button>
+                    <p className="text-sm text-muted-foreground">
+                      Required columns: name, email, graduationYear, degree,
+                      department
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="file-upload-alumni">Upload CSV File</Label>
+                  <Input
+                    id="file-upload-alumni"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="csv-data-alumni">Or Paste CSV Data</Label>
+                  <Textarea
+                    id="csv-data-alumni"
+                    placeholder="Paste CSV data here..."
+                    value={csvData}
+                    onChange={(e) => setCsvData(e.target.value)}
+                    rows={10}
+                    className="font-mono text-sm"
+                  />
+                </div>
+
+                {validationErrors.length > 0 && (
+                  <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertCircle className="h-4 w-4 text-red-600" />
+                      <h4 className="font-medium text-red-900 dark:text-red-100">
+                        Validation Errors
+                      </h4>
+                    </div>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-red-700 dark:text-red-300">
+                      {validationErrors.map((err, idx) => (
+                        <li key={idx}>{err}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+                    {error}
+                  </div>
+                )}
+
+                {success && (
+                  <div className="p-4 border border-green-200 bg-green-50 dark:bg-green-950 rounded-md">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <h4 className="font-medium text-green-900 dark:text-green-100">
+                        Import Successful
+                      </h4>
+                    </div>
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      {success.message}. Created {success.created} {importType}.
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleImport}
+                  disabled={loading || !csvData.trim()}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {loading ? "Importing..." : "Import Alumni"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      <Tabs
-        value={importType}
-        onValueChange={(v) => setImportType(v as ImportType)}
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="students">Import Students</TabsTrigger>
-          <TabsTrigger value="alumni">Import Alumni</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="students" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Import Students</CardTitle>
-              <CardDescription>
-                Upload a CSV file with student data. All imported students will
-                be automatically verified and linked to your college.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>CSV Template</Label>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" onClick={downloadTemplate}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Template
-                  </Button>
-                  <p className="text-sm text-muted-foreground">
-                    Required columns: name, email, rollNumber, enrollmentYear,
-                    department, degree, graduationYear
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="file-upload">Upload CSV File</Label>
-                <Input
-                  id="file-upload"
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileUpload}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="csv-data">Or Paste CSV Data</Label>
-                <Textarea
-                  id="csv-data"
-                  placeholder="Paste CSV data here..."
-                  value={csvData}
-                  onChange={(e) => setCsvData(e.target.value)}
-                  rows={10}
-                  className="font-mono text-sm"
-                />
-              </div>
-
-              {validationErrors.length > 0 && (
-                <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md">
-                  <div className="flex items-center gap-2 mb-2">
-                    <AlertCircle className="h-4 w-4 text-red-600" />
-                    <h4 className="font-medium text-red-900 dark:text-red-100">
-                      Validation Errors
-                    </h4>
-                  </div>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-red-700 dark:text-red-300">
-                    {validationErrors.map((err, idx) => (
-                      <li key={idx}>{err}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {error && (
-                <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-                  {error}
-                </div>
-              )}
-
-              {success && (
-                <div className="p-4 border border-green-200 bg-green-50 dark:bg-green-950 rounded-md">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    <h4 className="font-medium text-green-900 dark:text-green-100">
-                      Import Successful
-                    </h4>
-                  </div>
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    {success.message}. Created {success.created} {importType}.
-                  </p>
-                </div>
-              )}
-
-              <Button
-                onClick={handleImport}
-                disabled={loading || !csvData.trim()}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                {loading ? "Importing..." : "Import Students"}
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="alumni" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Import Alumni</CardTitle>
-              <CardDescription>
-                Upload a CSV file with alumni data. All imported alumni will be
-                automatically verified and linked to your college.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>CSV Template</Label>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" onClick={downloadTemplate}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Template
-                  </Button>
-                  <p className="text-sm text-muted-foreground">
-                    Required columns: name, email, graduationYear, degree,
-                    department
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="file-upload-alumni">Upload CSV File</Label>
-                <Input
-                  id="file-upload-alumni"
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileUpload}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="csv-data-alumni">Or Paste CSV Data</Label>
-                <Textarea
-                  id="csv-data-alumni"
-                  placeholder="Paste CSV data here..."
-                  value={csvData}
-                  onChange={(e) => setCsvData(e.target.value)}
-                  rows={10}
-                  className="font-mono text-sm"
-                />
-              </div>
-
-              {validationErrors.length > 0 && (
-                <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md">
-                  <div className="flex items-center gap-2 mb-2">
-                    <AlertCircle className="h-4 w-4 text-red-600" />
-                    <h4 className="font-medium text-red-900 dark:text-red-100">
-                      Validation Errors
-                    </h4>
-                  </div>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-red-700 dark:text-red-300">
-                    {validationErrors.map((err, idx) => (
-                      <li key={idx}>{err}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {error && (
-                <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-                  {error}
-                </div>
-              )}
-
-              {success && (
-                <div className="p-4 border border-green-200 bg-green-50 dark:bg-green-950 rounded-md">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    <h4 className="font-medium text-green-900 dark:text-green-100">
-                      Import Successful
-                    </h4>
-                  </div>
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    {success.message}. Created {success.created} {importType}.
-                  </p>
-                </div>
-              )}
-
-              <Button
-                onClick={handleImport}
-                disabled={loading || !csvData.trim()}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                {loading ? "Importing..." : "Import Alumni"}
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };

@@ -25,7 +25,7 @@ import { Button } from "../../components/ui/button";
 import { collegeAPI } from "../../lib/api";
 import type { BackendAlumni } from "../../types/api";
 import { Department } from "../../types";
-import { Search, CheckCircle2 } from "lucide-react";
+import { Search, CheckCircle2, Users } from "lucide-react";
 
 const CollegeAlumniPage = () => {
   const [loading, setLoading] = useState(true);
@@ -127,191 +127,76 @@ const CollegeAlumniPage = () => {
   }
 
   return (
-    <div className="container py-8 min-h-screen space-y-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Alumni Management</h1>
-        <p className="text-muted-foreground">
-          Review pending alumni and manage the verified alumni directory for
-          your institution.
-        </p>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-          {error}
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Alumni Management
+          </h1>
+          <p className="text-muted-foreground">
+            Review pending alumni and manage the verified alumni directory for
+            your institution.
+          </p>
         </div>
-      )}
+        {error && (
+          <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+            {error}
+          </div>
+        )}
+        {/* Pending Verifications */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg">
+              <CheckCircle2 className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold">
+                Pending Alumni Verifications
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                These alumni have signed up but are not yet verified. Verify
+                them to grant full access.
+              </p>
+            </div>
+          </div>
 
-      {/* Pending Verifications */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Pending Alumni Verifications</h2>
-        <p className="text-sm text-muted-foreground">
-          These alumni have signed up but are not yet verified. Verify them to
-          grant full access.
-        </p>
-
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Alumni</TableHead>
-                <TableHead>Batch</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Current Company</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pendingAlumni.map((alumni) => (
-                <TableRow key={alumni._id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage
-                          src={alumni.profilePictureUrl}
-                          alt={alumni.name}
-                        />
-                        <AvatarFallback>{alumni.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{alumni.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {alumni.email}
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{alumni.graduationYear}</TableCell>
-                  <TableCell>{alumni.department}</TableCell>
-                  <TableCell>{alumni.currentEmployer || "N/A"}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleVerify(alumni._id)}
-                    >
-                      <CheckCircle2 className="h-4 w-4 mr-1" />
-                      Verify
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {pendingAlumni.length === 0 && (
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="h-20 text-center text-sm text-muted-foreground"
-                  >
-                    No pending alumni verifications.
-                  </TableCell>
+                  <TableHead>Alumni</TableHead>
+                  <TableHead>Batch</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Current Company</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      {/* Verified Alumni Directory */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Alumni Directory</h2>
-        <p className="text-sm text-muted-foreground">
-          Search and manage all alumni associated with your college.
-        </p>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name or company..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <div className="flex gap-2">
-            <Select
-              value={departmentFilter}
-              onValueChange={setDepartmentFilter}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Department" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Departments</SelectItem>
-                {Object.values(Department).map((dept) => (
-                  <SelectItem key={dept} value={dept}>
-                    {dept}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={yearFilter} onValueChange={setYearFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Graduation Year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Years</SelectItem>
-                {years.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Alumni</TableHead>
-                <TableHead>Batch</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Current Company</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredAlumni.map((alumni) => (
-                <TableRow key={alumni._id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage
-                          src={alumni.profilePictureUrl}
-                          alt={alumni.name}
-                        />
-                        <AvatarFallback>{alumni.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{alumni.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {alumni.email}
+              </TableHeader>
+              <TableBody>
+                {pendingAlumni.map((alumni) => (
+                  <TableRow key={alumni._id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={alumni.profilePictureUrl}
+                            alt={alumni.name}
+                          />
+                          <AvatarFallback>
+                            {alumni.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium">{alumni.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {alumni.email}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{alumni.graduationYear}</TableCell>
-                  <TableCell>{alumni.department}</TableCell>
-                  <TableCell>{alumni.currentEmployer || "N/A"}</TableCell>
-                  <TableCell>{alumni.currentDesignation || "N/A"}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={
-                        alumni.isVerified
-                          ? "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100"
-                          : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-100"
-                      }
-                    >
-                      {alumni.isVerified ? "Verified" : "Pending"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {!alumni.isVerified && (
+                    </TableCell>
+                    <TableCell>{alumni.graduationYear}</TableCell>
+                    <TableCell>{alumni.department}</TableCell>
+                    <TableCell>{alumni.currentEmployer || "N/A"}</TableCell>
+                    <TableCell>
                       <Button
                         variant="outline"
                         size="sm"
@@ -320,19 +205,155 @@ const CollegeAlumniPage = () => {
                         <CheckCircle2 className="h-4 w-4 mr-1" />
                         Verify
                       </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {filteredAlumni.length === 0 && (
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {pendingAlumni.length === 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="h-20 text-center text-sm text-muted-foreground"
+                    >
+                      No pending alumni verifications.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>{" "}
+        {/* Verified Alumni Directory */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
+              <Users className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold">Alumni Directory</h2>
+              <p className="text-sm text-muted-foreground">
+                Search and manage all alumni associated with your college.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name or company..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Select
+                value={departmentFilter}
+                onValueChange={setDepartmentFilter}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Department" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  {Object.values(Department).map((dept) => (
+                    <SelectItem key={dept} value={dept}>
+                      {dept}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={yearFilter} onValueChange={setYearFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Graduation Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Years</SelectItem>
+                  {years.map((year) => (
+                    <SelectItem key={year} value={year.toString()}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
-                    No alumni found.
-                  </TableCell>
+                  <TableHead>Alumni</TableHead>
+                  <TableHead>Batch</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Current Company</TableHead>
+                  <TableHead>Designation</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredAlumni.map((alumni) => (
+                  <TableRow key={alumni._id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={alumni.profilePictureUrl}
+                            alt={alumni.name}
+                          />
+                          <AvatarFallback>
+                            {alumni.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium">{alumni.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {alumni.email}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{alumni.graduationYear}</TableCell>
+                    <TableCell>{alumni.department}</TableCell>
+                    <TableCell>{alumni.currentEmployer || "N/A"}</TableCell>
+                    <TableCell>{alumni.currentDesignation || "N/A"}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          alumni.isVerified
+                            ? "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100"
+                            : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-100"
+                        }
+                      >
+                        {alumni.isVerified ? "Verified" : "Pending"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {!alumni.isVerified && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleVerify(alumni._id)}
+                        >
+                          <CheckCircle2 className="h-4 w-4 mr-1" />
+                          Verify
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredAlumni.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      No alumni found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
     </div>

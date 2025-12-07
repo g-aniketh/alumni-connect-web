@@ -43,73 +43,75 @@ const CollegeEventRegistrationsPage = () => {
   }
 
   return (
-    <div className="container py-8 min-h-screen space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Event Registrations
-        </h1>
-        <p className="text-muted-foreground">
-          View and manage registrations for events organized by your college.
-        </p>
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Event Registrations
+          </h1>
+          <p className="text-muted-foreground">
+            View and manage registrations for events organized by your college.
+          </p>
+        </div>
+
+        {error && (
+          <div className="p-3 border border-red-200 bg-red-50 rounded-md text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <p className="text-muted-foreground">Loading your events...</p>
+        ) : events.length === 0 ? (
+          <p className="text-muted-foreground">
+            Your college is not organizing any events yet.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <aside className="lg:col-span-1 space-y-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">College Events</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {events.map((event) => (
+                    <Button
+                      key={event._id}
+                      variant={
+                        selectedEvent?._id === event._id ? "default" : "outline"
+                      }
+                      className="w-full justify-start text-left"
+                      onClick={() => setSelectedEvent(event)}
+                    >
+                      <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium truncate">
+                          {event.title}
+                        </span>
+                        <span className="text-xs text-muted-foreground truncate">
+                          {new Date(event.eventDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
+            </aside>
+
+            <main className="lg:col-span-3 space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">
+                    {selectedEvent ? selectedEvent.title : "Select an event"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <RegistrationManagement event={selectedEvent} />
+                </CardContent>
+              </Card>
+            </main>
+          </div>
+        )}
       </div>
-
-      {error && (
-        <div className="p-3 border border-red-200 bg-red-50 rounded-md text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <p className="text-muted-foreground">Loading your events...</p>
-      ) : events.length === 0 ? (
-        <p className="text-muted-foreground">
-          Your college is not organizing any events yet.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <aside className="lg:col-span-1 space-y-3">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">College Events</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {events.map((event) => (
-                  <Button
-                    key={event._id}
-                    variant={
-                      selectedEvent?._id === event._id ? "default" : "outline"
-                    }
-                    className="w-full justify-start text-left"
-                    onClick={() => setSelectedEvent(event)}
-                  >
-                    <div className="flex flex-col items-start">
-                      <span className="text-sm font-medium truncate">
-                        {event.title}
-                      </span>
-                      <span className="text-xs text-muted-foreground truncate">
-                        {new Date(event.eventDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
-          </aside>
-
-          <main className="lg:col-span-3 space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {selectedEvent ? selectedEvent.title : "Select an event"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RegistrationManagement event={selectedEvent} />
-              </CardContent>
-            </Card>
-          </main>
-        </div>
-      )}
     </div>
   );
 };

@@ -130,7 +130,9 @@ const CollegeDashboardPage = () => {
       description: `${stats.verifiedAlumni} verified`,
       icon: Users,
       color: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950",
+      bgColor:
+        "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800",
+      iconBg: "bg-blue-500",
       link: "/college/alumni",
     },
     {
@@ -139,7 +141,9 @@ const CollegeDashboardPage = () => {
       description: `${stats.verifiedStudents} verified`,
       icon: GraduationCap,
       color: "text-green-600",
-      bgColor: "bg-green-50 dark:bg-green-950",
+      bgColor:
+        "bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800",
+      iconBg: "bg-green-500",
       link: "/college/students",
     },
     {
@@ -148,7 +152,9 @@ const CollegeDashboardPage = () => {
       description: "Active opportunities",
       icon: Briefcase,
       color: "text-purple-600",
-      bgColor: "bg-purple-50 dark:bg-purple-950",
+      bgColor:
+        "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800",
+      iconBg: "bg-purple-500",
       link: "/jobs",
     },
     {
@@ -162,7 +168,9 @@ const CollegeDashboardPage = () => {
       description: "From campaigns",
       icon: DollarSign,
       color: "text-orange-600",
-      bgColor: "bg-orange-50 dark:bg-orange-950",
+      bgColor:
+        "bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800",
+      iconBg: "bg-orange-500",
       link: "/events",
     },
   ];
@@ -178,337 +186,353 @@ const CollegeDashboardPage = () => {
   }
 
   return (
-    <div className="container py-8 space-y-8">
-      {/* Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">College Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back, {user?.name}! Manage your institution's alumni network
-          and activities.
-        </p>
-      </div>
-
-      {error && (
-        <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-          {error}
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Header */}
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            College Dashboard
+          </h1>
+          <p className="text-muted-foreground">
+            Welcome back, {user?.name}! Manage your institution's alumni network
+            and activities.
+          </p>
         </div>
-      )}
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statsCards.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card
-              key={stat.title}
-              className="hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => (window.location.href = stat.link)}
-            >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <div className={`${stat.bgColor} p-2 rounded-lg`}>
-                  <Icon className={`h-4 w-4 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {stat.description}
-                </p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common management tasks</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto flex-col items-start p-4"
-            >
-              <Link to="/college/alumni">
-                <Users className="h-5 w-5 mb-2" />
-                <span className="font-semibold">Manage Alumni</span>
-                <span className="text-xs text-muted-foreground mt-1">
-                  View directory
-                </span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto flex-col items-start p-4"
-            >
-              <Link to="/college/students">
-                <GraduationCap className="h-5 w-5 mb-2" />
-                <span className="font-semibold">Manage Students</span>
-                <span className="text-xs text-muted-foreground mt-1">
-                  View directory
-                </span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto flex-col items-start p-4"
-            >
-              <Link to="/college/jobs/create">
-                <Plus className="h-5 w-5 mb-2" />
-                <span className="font-semibold">Post Job</span>
-                <span className="text-xs text-muted-foreground mt-1">
-                  Create listing
-                </span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto flex-col items-start p-4"
-            >
-              <Link to="/college/campaigns/create">
-                <DollarSign className="h-5 w-5 mb-2" />
-                <span className="font-semibold">Create Campaign</span>
-                <span className="text-xs text-muted-foreground mt-1">
-                  Start fundraising
-                </span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto flex-col items-start p-4"
-            >
-              <Link to="/college/bulk-import">
-                <Upload className="h-5 w-5 mb-2" />
-                <span className="font-semibold">Bulk Import</span>
-                <span className="text-xs text-muted-foreground mt-1">
-                  Import students/alumni
-                </span>
-              </Link>
-            </Button>
+        {error && (
+          <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+            {error}
           </div>
-        </CardContent>
-      </Card>
+        )}
 
-      {/* Analytics Section */}
-      <div className="grid gap-6 md:grid-cols-2">
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {statsCards.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <Card
+                key={stat.title}
+                className={`hover:shadow-lg transition-all cursor-pointer ${stat.bgColor}`}
+                onClick={() => (window.location.href = stat.link)}
+              >
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle
+                    className={`text-sm font-medium ${stat.color.replace("600", "900")} dark:${stat.color.replace("600", "100")}`}
+                  >
+                    {stat.title}
+                  </CardTitle>
+                  <div className={`${stat.iconBg} p-2 rounded-lg shadow-sm`}>
+                    <Icon className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div
+                    className={`text-2xl font-bold ${stat.color.replace("600", "900")} dark:${stat.color.replace("600", "100")}`}
+                  >
+                    {stat.value}
+                  </div>
+                  <p
+                    className={`text-xs ${stat.color.replace("600", "700")} dark:${stat.color.replace("600", "300")} mt-1`}
+                  >
+                    {stat.description}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Alumni Employment Distribution
-            </CardTitle>
-            <CardDescription>
-              Current employment status of alumni
-            </CardDescription>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Common management tasks</CardDescription>
           </CardHeader>
           <CardContent>
-            <EmploymentChart />
-          </CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Button
+                asChild
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+              >
+                <Link to="/college/alumni">
+                  <Users className="h-5 w-5 mb-2" />
+                  <span className="font-semibold">Manage Alumni</span>
+                  <span className="text-xs text-muted-foreground mt-1">
+                    View directory
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+              >
+                <Link to="/college/students">
+                  <GraduationCap className="h-5 w-5 mb-2" />
+                  <span className="font-semibold">Manage Students</span>
+                  <span className="text-xs text-muted-foreground mt-1">
+                    View directory
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+              >
+                <Link to="/college/jobs/create">
+                  <Plus className="h-5 w-5 mb-2" />
+                  <span className="font-semibold">Post Job</span>
+                  <span className="text-xs text-muted-foreground mt-1">
+                    Create listing
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+              >
+                <Link to="/college/campaigns/create">
+                  <DollarSign className="h-5 w-5 mb-2" />
+                  <span className="font-semibold">Create Campaign</span>
+                  <span className="text-xs text-muted-foreground mt-1">
+                    Start fundraising
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+              >
+                <Link to="/college/bulk-import">
+                  <Upload className="h-5 w-5 mb-2" />
+                  <span className="font-semibold">Bulk Import</span>
+                  <span className="text-xs text-muted-foreground mt-1">
+                    Import students/alumni
+                  </span>
+                </Link>
+              </Button>
+            </div>
+          </CardContent>{" "}
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Recent Activity
-            </CardTitle>
-            <CardDescription>Latest updates and events</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3 p-3 border rounded-lg">
-                <div className="p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <Users className="h-4 w-4 text-blue-600" />
+        {/* Analytics Section */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Alumni Employment Distribution
+              </CardTitle>
+              <CardDescription>
+                Current employment status of alumni
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EmploymentChart />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5" />
+                Recent Activity
+              </CardTitle>
+              <CardDescription>Latest updates and events</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 p-3 border rounded-lg">
+                  <div className="p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <Users className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">New alumni registered</p>
+                    <p className="text-xs text-muted-foreground">2 hours ago</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">New alumni registered</p>
-                  <p className="text-xs text-muted-foreground">2 hours ago</p>
+                <div className="flex items-start gap-3 p-3 border rounded-lg">
+                  <div className="p-2 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <Briefcase className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">New job posted</p>
+                    <p className="text-xs text-muted-foreground">5 hours ago</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 border rounded-lg">
+                  <div className="p-2 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                    <Calendar className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Event created</p>
+                    <p className="text-xs text-muted-foreground">1 day ago</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-3 border rounded-lg">
-                <div className="p-2 bg-green-50 dark:bg-green-950 rounded-lg">
-                  <Briefcase className="h-4 w-4 text-green-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">New job posted</p>
-                  <p className="text-xs text-muted-foreground">5 hours ago</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 border rounded-lg">
-                <div className="p-2 bg-purple-50 dark:bg-purple-950 rounded-lg">
-                  <Calendar className="h-4 w-4 text-purple-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Event created</p>
-                  <p className="text-xs text-muted-foreground">1 day ago</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
 
-      {/* Management Sections */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Jobs Management */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Job Postings</CardTitle>
-              <CardDescription>Manage opportunities</CardDescription>
-            </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/jobs">
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Active Jobs</span>
-              <span className="text-2xl font-bold">{stats.totalJobs}</span>
-            </div>
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/college/jobs/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Post New Job
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Events Management */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Events</CardTitle>
-              <CardDescription>Upcoming activities</CardDescription>
-            </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/events">
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Upcoming</span>
-              <span className="text-2xl font-bold">{upcomingEvents}</span>
-            </div>
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/college/events/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Event
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Campaigns Management */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Campaigns</CardTitle>
-              <CardDescription>Fundraising initiatives</CardDescription>
-            </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/events">
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Active</span>
-              <span className="text-2xl font-bold">{stats.totalCampaigns}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
-                Total Raised
-              </span>
-              <span className="text-lg font-semibold">
-                {(() => {
-                  const raised = stats.totalRaised || 0;
-                  if (raised === 0) return "$0";
-                  if (raised < 1000) return `$${raised}`;
-                  return `$${(raised / 1000).toFixed(0)}k`;
-                })()}
-              </span>
-            </div>
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/college/campaigns/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Campaign
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Directory Quick Access */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Alumni Directory
-            </CardTitle>
-            <CardDescription>
-              View and manage all registered alumni
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+        {/* Management Sections */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Jobs Management */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <p className="font-semibold">Total Alumni</p>
-                <p className="text-sm text-muted-foreground">
-                  {stats.verifiedAlumni} verified
-                </p>
+                <CardTitle>Job Postings</CardTitle>
+                <CardDescription>Manage opportunities</CardDescription>
               </div>
-              <div className="text-3xl font-bold">{stats.totalAlumni}</div>
-            </div>
-            <Button asChild className="w-full">
-              <Link to="/college/alumni">View Alumni Directory</Link>
-            </Button>
-          </CardContent>
-        </Card>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/jobs">
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  Active Jobs
+                </span>
+                <span className="text-2xl font-bold">{stats.totalJobs}</span>
+              </div>
+              <Button asChild variant="outline" className="w-full">
+                <Link to="/college/jobs/create">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Post New Job
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <GraduationCap className="h-5 w-5" />
-              Student Directory
-            </CardTitle>
-            <CardDescription>
-              View and manage all registered students
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+          {/* Events Management */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <p className="font-semibold">Total Students</p>
-                <p className="text-sm text-muted-foreground">
-                  {stats.verifiedStudents} verified
-                </p>
+                <CardTitle>Events</CardTitle>
+                <CardDescription>Upcoming activities</CardDescription>
               </div>
-              <div className="text-3xl font-bold">{stats.totalStudents}</div>
-            </div>
-            <Button asChild className="w-full">
-              <Link to="/college/students">View Student Directory</Link>
-            </Button>
-          </CardContent>
-        </Card>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/events">
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Upcoming</span>
+                <span className="text-2xl font-bold">{upcomingEvents}</span>
+              </div>
+              <Button asChild variant="outline" className="w-full">
+                <Link to="/college/events/create">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Event
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Campaigns Management */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Campaigns</CardTitle>
+                <CardDescription>Fundraising initiatives</CardDescription>
+              </div>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/events">
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Active</span>
+                <span className="text-2xl font-bold">
+                  {stats.totalCampaigns}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  Total Raised
+                </span>
+                <span className="text-lg font-semibold">
+                  {(() => {
+                    const raised = stats.totalRaised || 0;
+                    if (raised === 0) return "$0";
+                    if (raised < 1000) return `$${raised}`;
+                    return `$${(raised / 1000).toFixed(0)}k`;
+                  })()}
+                </span>
+              </div>
+              <Button asChild variant="outline" className="w-full">
+                <Link to="/college/campaigns/create">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Campaign
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Directory Quick Access */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Alumni Directory
+              </CardTitle>
+              <CardDescription>
+                View and manage all registered alumni
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <p className="font-semibold">Total Alumni</p>
+                  <p className="text-sm text-muted-foreground">
+                    {stats.verifiedAlumni} verified
+                  </p>
+                </div>
+                <div className="text-3xl font-bold">{stats.totalAlumni}</div>
+              </div>
+              <Button asChild className="w-full">
+                <Link to="/college/alumni">View Alumni Directory</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5" />
+                Student Directory
+              </CardTitle>
+              <CardDescription>
+                View and manage all registered students
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <p className="font-semibold">Total Students</p>
+                  <p className="text-sm text-muted-foreground">
+                    {stats.verifiedStudents} verified
+                  </p>
+                </div>
+                <div className="text-3xl font-bold">{stats.totalStudents}</div>
+              </div>
+              <Button asChild className="w-full">
+                <Link to="/college/students">View Student Directory</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
