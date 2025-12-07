@@ -5,6 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
@@ -19,13 +20,21 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../components/ui/tabs";
-import { Calendar, CheckCircle2, XCircle, Clock, User } from "lucide-react";
+import {
+  Calendar,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  User,
+  MessageSquare,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "../../components/ui/dialog";
 import { Textarea } from "../../components/ui/textarea";
 import { Label } from "../../components/ui/label";
@@ -36,19 +45,21 @@ import type {
   BackendStudent,
   BackendAlumni,
 } from "../../types/api";
+import { motion } from "motion/react";
+import AlumniMentorshipsSkeleton from "./AlumniMentorshipsSkeleton";
 
 const AlumniMentorshipsPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
-  const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
+  const [selectedMentorship, setSelectedMentorship] =
+    useState<BackendMentorship | null>(null);
   const [actionType, setActionType] = useState<
     "accept" | "reject" | "end" | null
   >(null);
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
-  const [rating, setRating] = useState<number>(5);
-  const [, setMyMentorships] = useState<BackendMentorship[]>([]);
+
   const [pendingRequests, setPendingRequests] = useState<BackendMentorship[]>(
     []
   );
@@ -68,7 +79,6 @@ const AlumniMentorshipsPage = () => {
       setLoading(true);
       setError("");
 
-      // Get all mentorships where current user is the mentor (alumni)
       const response = await mentorshipsAPI.getMy();
       const allMentorships = response.mentorships.filter(
         (m: BackendMentorship) => {
@@ -80,7 +90,6 @@ const AlumniMentorshipsPage = () => {
         }
       );
 
-      setMyMentorships(allMentorships);
       setPendingRequests(
         allMentorships.filter((m) => m.status.toLowerCase() === "pending")
       );
@@ -88,7 +97,9 @@ const AlumniMentorshipsPage = () => {
         allMentorships.filter((m) => m.status.toLowerCase() === "active")
       );
       setCompletedMentorships(
-        allMentorships.filter((m) => m.status.toLowerCase() === "completed")
+        allMentorships.filter((m) =>
+          ["completed", "declined"].includes(m.status.toLowerCase())
+        )
       );
     } catch (err) {
       setError(
@@ -99,50 +110,43 @@ const AlumniMentorshipsPage = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "pending":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-yellow-50 text-yellow-700 border-yellow-200"
-          >
-            <Clock className="h-3 w-3 mr-1" />
-            Pending
-          </Badge>
-        );
-      case "active":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-green-50 text-green-700 border-green-200"
-          >
-            <CheckCircle2 className="h-3 w-3 mr-1" />
-            Active
-          </Badge>
-        );
-      case "completed":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-blue-50 text-blue-700 border-blue-200"
-          >
-            <CheckCircle2 className="h-3 w-3 mr-1" />
-            Completed
-          </Badge>
-        );
-      case "declined":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-red-50 text-red-700 border-red-200"
-          >
-            <XCircle className="h-3 w-3 mr-1" />
-            Declined
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">{status}</Badge>;
+  const handleAction = (
+    mentorship: BackendMentorship,
+    type: "accept" | "reject" | "end"
+  ) => {
+    setSelectedMentorship(mentorship);
+    setActionType(type);
+    setIsActionDialogOpen(true);
+  };
+
+  const handleSubmitAction = async () => {
+    if (!selectedMentorship || !actionType) return;
+
+    try {
+      setError("");
+
+      if (actionType === "accept") {
+        await mentorshipsAPI.updateStatus(selectedMentorship._id, {
+          status: "active",
+          startDate: new Date().toISOString(),
+        });
+      } else if (actionType === "reject") {
+        await mentorshipsAPI.updateStatus(selectedMentorship._id, {
+          status: "declined",
+        });
+      } else if (actionType === "end") {
+        await mentorshipsAPI.end(selectedMentorship._id, {
+          feedback: feedback || undefined,
+        });
+      }
+
+      await loadMentorships();
+      setIsActionDialogOpen(false);
+      setSelectedMentorship(null);
+      setActionType(null);
+      setFeedback("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to perform action");
     }
   };
 
@@ -155,265 +159,35 @@ const AlumniMentorshipsPage = () => {
     return null;
   };
 
-  const handleAction = (
-    requestId: string,
-    type: "accept" | "reject" | "end"
-  ) => {
-    setSelectedRequest(requestId);
-    setActionType(type);
-    setIsActionDialogOpen(true);
-  };
-
-  const handleSubmitAction = async () => {
-    if (!selectedRequest || !actionType) return;
-
-    try {
-      setError("");
-
-      if (actionType === "accept") {
-        await mentorshipsAPI.updateStatus(selectedRequest, {
-          status: "active",
-          startDate: new Date().toISOString(),
-        });
-      } else if (actionType === "reject") {
-        await mentorshipsAPI.updateStatus(selectedRequest, {
-          status: "declined",
-        });
-      } else if (actionType === "end") {
-        await mentorshipsAPI.end(selectedRequest);
-        // If feedback provided, add it
-        if (feedback.trim() || rating) {
-          await mentorshipsAPI.addFeedback(selectedRequest, {
-            rating,
-            comment: feedback.trim() || undefined,
-          });
-        }
-      }
-
-      await loadMentorships();
-      setIsActionDialogOpen(false);
-      setSelectedRequest(null);
-      setActionType(null);
-      setFeedback("");
-      setRating(5);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to perform action");
-    }
-  };
-
-  const PendingRequestCard = ({ request }: { request: BackendMentorship }) => {
-    const student = getStudentInfo(request);
-    if (!student) return null;
-
-    return (
-      <Card className="hover:shadow-md transition-shadow">
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage
-                  src={student.profilePictureUrl}
-                  alt={student.name}
-                />
-                <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-lg">{student.name}</CardTitle>
-                <CardDescription className="flex items-center gap-2 mt-1">
-                  <span>{student.degree}</span>
-                  <span>•</span>
-                  <span>{student.department}</span>
-                </CardDescription>
-              </div>
-            </div>
-            {getStatusBadge(request.status)}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {request.message && (
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">
-                Student's Message:
-              </p>
-              <p className="text-sm">{request.message}</p>
-            </div>
-          )}
-          {request.areasOfInterest && (
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">
-                Areas of Interest:
-              </p>
-              <p className="text-sm">
-                {Array.isArray(request.areasOfInterest)
-                  ? request.areasOfInterest.join(", ")
-                  : request.areasOfInterest}
-              </p>
-            </div>
-          )}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>
-              Requested on {new Date(request.createdAt).toLocaleDateString()}
-            </span>
-          </div>
-          <div className="flex gap-2 pt-2">
-            <Button
-              size="sm"
-              className="flex-1"
-              onClick={() => handleAction(request._id, "accept")}
-            >
-              <CheckCircle2 className="h-4 w-4 mr-2" />
-              Accept
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="flex-1"
-              onClick={() => handleAction(request._id, "reject")}
-            >
-              <XCircle className="h-4 w-4 mr-2" />
-              Decline
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  const ActiveMentorshipCard = ({
-    request,
-  }: {
-    request: BackendMentorship;
-  }) => {
-    const student = getStudentInfo(request);
-    if (!student) return null;
-
-    return (
-      <Card className="hover:shadow-md transition-shadow">
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage
-                  src={student.profilePictureUrl}
-                  alt={student.name}
-                />
-                <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-lg">{student.name}</CardTitle>
-                <CardDescription className="flex items-center gap-2 mt-1">
-                  <span>{student.degree}</span>
-                  <span>•</span>
-                  <span>{student.department}</span>
-                </CardDescription>
-              </div>
-            </div>
-            {getStatusBadge(request.status)}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {request.startDate && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <span>
-                Started on {new Date(request.startDate).toLocaleDateString()}
-              </span>
-            </div>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={() => handleAction(request._id, "end")}
-          >
-            <XCircle className="h-4 w-4 mr-2" />
-            End Mentorship
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  const CompletedMentorshipCard = ({
-    request,
-  }: {
-    request: BackendMentorship;
-  }) => {
-    const student = getStudentInfo(request);
-    if (!student) return null;
-
-    return (
-      <Card className="hover:shadow-md transition-shadow">
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage
-                  src={student.profilePictureUrl}
-                  alt={student.name}
-                />
-                <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-lg">{student.name}</CardTitle>
-                <CardDescription className="flex items-center gap-2 mt-1">
-                  <span>{student.degree}</span>
-                  <span>•</span>
-                  <span>{student.department}</span>
-                </CardDescription>
-              </div>
-            </div>
-            {getStatusBadge(request.status)}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {request.endDate && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <span>
-                Completed on {new Date(request.endDate).toLocaleDateString()}
-              </span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    );
-  };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-cyan-950 dark:to-blue-900">
-        <div className="container py-8">
-          <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Loading mentorships...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <AlumniMentorshipsSkeleton />;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-cyan-950 dark:to-blue-900">
-      <div className="container py-8">
-        <div className="flex flex-col gap-2 mb-8">
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-            Mentorship Requests
+    <div className="bg-stone-50 min-h-screen">
+      <div className="container mx-auto py-8">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Mentorships
           </h1>
-          <p className="text-muted-foreground">
-            Manage mentorship requests from students and track your active
-            mentorship relationships.
+          <p className="text-gray-500 mt-2">
+            Manage your mentorship requests and active connections.
           </p>
-        </div>
+        </motion.div>
 
         {error && (
-          <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          <div className="mb-4 p-4 border border-red-200 bg-red-50 rounded-md text-red-700">
             {error}
           </div>
         )}
 
         <Tabs defaultValue="pending" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="pending">
               Pending ({pendingRequests.length})
             </TabsTrigger>
@@ -421,174 +195,263 @@ const AlumniMentorshipsPage = () => {
               Active ({activeMentorships.length})
             </TabsTrigger>
             <TabsTrigger value="completed">
-              Completed ({completedMentorships.length})
+              History ({completedMentorships.length})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending" className="mt-6">
             {pendingRequests.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {pendingRequests.map((request) => (
-                  <PendingRequestCard key={request._id} request={request} />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pendingRequests.map((m) => (
+                  <MentorshipCard
+                    key={m._id}
+                    mentorship={m}
+                    student={getStudentInfo(m)}
+                    onAction={handleAction}
+                  />
                 ))}
               </div>
             ) : (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <CheckCircle2 className="h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-lg font-medium mb-2">
-                    No pending requests
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    All mentorship requests have been responded to.
-                  </p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={<MessageSquare className="w-12 h-12 text-gray-400" />}
+                message="No pending requests."
+              />
             )}
           </TabsContent>
 
           <TabsContent value="active" className="mt-6">
             {activeMentorships.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {activeMentorships.map((request) => (
-                  <ActiveMentorshipCard key={request._id} request={request} />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {activeMentorships.map((m) => (
+                  <MentorshipCard
+                    key={m._id}
+                    mentorship={m}
+                    student={getStudentInfo(m)}
+                    onAction={handleAction}
+                  />
                 ))}
               </div>
             ) : (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <User className="h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-lg font-medium mb-2">
-                    No active mentorships
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    You don't have any active mentorship relationships at the
-                    moment.
-                  </p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={<User className="w-12 h-12 text-gray-400" />}
+                message="No active mentorships."
+              />
             )}
           </TabsContent>
 
           <TabsContent value="completed" className="mt-6">
             {completedMentorships.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {completedMentorships.map((request) => (
-                  <CompletedMentorshipCard
-                    key={request._id}
-                    request={request}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {completedMentorships.map((m) => (
+                  <MentorshipCard
+                    key={m._id}
+                    mentorship={m}
+                    student={getStudentInfo(m)}
+                    onAction={handleAction}
                   />
                 ))}
               </div>
             ) : (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <CheckCircle2 className="h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-lg font-medium mb-2">
-                    No completed mentorships
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Completed mentorship relationships will appear here.
-                  </p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={<CheckCircle2 className="w-12 h-12 text-gray-400" />}
+                message="No completed mentorships yet."
+              />
             )}
           </TabsContent>
         </Tabs>
 
-        <Dialog open={isActionDialogOpen} onOpenChange={setIsActionDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {actionType === "accept" && "Accept Mentorship Request"}
-                {actionType === "reject" && "Decline Mentorship Request"}
-                {actionType === "end" && "End Mentorship"}
-              </DialogTitle>
-              <DialogDescription>
-                {actionType === "accept" &&
-                  "Accept this mentorship request and start guiding the student."}
-                {actionType === "reject" &&
-                  "Decline this mentorship request. The student will be notified."}
-                {actionType === "end" &&
-                  "End this mentorship relationship. You can provide feedback."}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-              {actionType === "end" && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="rating">Rating (1-5)</Label>
-                    <select
-                      id="rating"
-                      value={rating}
-                      onChange={(e) => setRating(parseInt(e.target.value))}
-                      className="w-full p-2 border rounded-md"
-                    >
-                      {[1, 2, 3, 4, 5].map((r) => (
-                        <option key={r} value={r}>
-                          {r} {r === 5 ? "⭐" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="feedback">Feedback (Optional)</Label>
-                    <Textarea
-                      id="feedback"
-                      placeholder="Add any feedback or notes..."
-                      value={feedback}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        setFeedback(e.target.value)
-                      }
-                      rows={4}
-                    />
-                  </div>
-                </>
-              )}
-              {actionType === "reject" && (
-                <div className="space-y-2">
-                  <Label htmlFor="feedback">
-                    Reason for Decline (Optional)
-                  </Label>
-                  <Textarea
-                    id="feedback"
-                    placeholder="Add any feedback or notes..."
-                    value={feedback}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                      setFeedback(e.target.value)
-                    }
-                    rows={4}
-                  />
-                </div>
-              )}
-              {actionType === "accept" && (
-                <p className="text-sm text-muted-foreground">
-                  By accepting, you agree to mentor this student. The mentorship
-                  will become active.
-                </p>
-              )}
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsActionDialogOpen(false);
-                  setFeedback("");
-                }}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleSubmitAction}>
-                {actionType === "accept" && "Accept Request"}
-                {actionType === "reject" && "Decline Request"}
-                {actionType === "end" && "End Mentorship"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <ActionDialog
+          isOpen={isActionDialogOpen}
+          onOpenChange={setIsActionDialogOpen}
+          actionType={actionType}
+          mentorship={selectedMentorship}
+          onSubmit={handleSubmitAction}
+          feedback={feedback}
+          setFeedback={setFeedback}
+        />
       </div>
     </div>
   );
 };
+
+const MentorshipCard = ({ mentorship, student, onAction }) => {
+  if (!student) return null;
+
+  const status = mentorship.status.toLowerCase();
+
+  return (
+    <Card className="flex flex-col h-full bg-white hover:shadow-md transition-shadow">
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-14 w-14">
+              <AvatarImage src={student.profilePictureUrl} alt={student.name} />
+              <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="text-lg">{student.name}</CardTitle>
+              <CardDescription>
+                {student.degree} • {student.department}
+              </CardDescription>
+            </div>
+          </div>
+          <StatusBadge status={status} />
+        </div>
+      </CardHeader>
+      <CardContent className="flex-1 space-y-4">
+        {mentorship.message && (
+          <div>
+            <p className="text-sm font-semibold mb-1">Message:</p>
+            <p className="text-sm text-gray-600 line-clamp-3">
+              {mentorship.message}
+            </p>
+          </div>
+        )}
+        <div className="text-xs text-gray-500 flex items-center gap-2">
+          <Calendar className="w-4 h-4" />
+          <span>
+            Requested on {new Date(mentorship.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+      </CardContent>
+      {status === "pending" && (
+        <CardFooter className="flex gap-2">
+          <Button
+            size="sm"
+            className="flex-1"
+            onClick={() => onAction(mentorship, "accept")}
+          >
+            <CheckCircle2 className="h-4 w-4 mr-2" />
+            Accept
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1"
+            onClick={() => onAction(mentorship, "reject")}
+          >
+            <XCircle className="h-4 w-4 mr-2" />
+            Decline
+          </Button>
+        </CardFooter>
+      )}
+      {status === "active" && (
+        <CardFooter>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() => onAction(mentorship, "end")}
+          >
+            <XCircle className="h-4 w-4 mr-2" />
+            End Mentorship
+          </Button>
+        </CardFooter>
+      )}
+    </Card>
+  );
+};
+
+const StatusBadge = ({ status }) => {
+  const statusMap = {
+    pending: {
+      icon: <Clock className="h-3 w-3 mr-1.5" />,
+      label: "Pending",
+      className: "bg-yellow-100 text-yellow-800",
+    },
+    active: {
+      icon: <CheckCircle2 className="h-3 w-3 mr-1.5" />,
+      label: "Active",
+      className: "bg-green-100 text-green-800",
+    },
+    completed: {
+      icon: <CheckCircle2 className="h-3 w-3 mr-1.5" />,
+      label: "Completed",
+      className: "bg-blue-100 text-blue-800",
+    },
+    declined: {
+      icon: <XCircle className="h-3 w-3 mr-1.5" />,
+      label: "Declined",
+      className: "bg-red-100 text-red-800",
+    },
+  };
+  const { icon, label, className } = statusMap[status] || {
+    icon: null,
+    label: status,
+    className: "",
+  };
+  return (
+    <Badge className={className}>
+      {icon}
+      {label}
+    </Badge>
+  );
+};
+
+const ActionDialog = ({
+  isOpen,
+  onOpenChange,
+  actionType,
+  mentorship,
+  onSubmit,
+  feedback,
+  setFeedback,
+}) => {
+  if (!mentorship) return null;
+
+  const titles = {
+    accept: "Accept Mentorship Request",
+    reject: "Decline Mentorship Request",
+    end: "End Mentorship",
+  };
+  const descriptions = {
+    accept: "You are about to start a new mentorship.",
+    reject:
+      "The student will be notified that you have declined their request.",
+    end: "Provide feedback for this mentorship.",
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{titles[actionType]}</DialogTitle>
+          <DialogDescription>{descriptions[actionType]}</DialogDescription>
+        </DialogHeader>
+        {(actionType === "end" || actionType === "reject") && (
+          <div className="py-4">
+            <Label htmlFor="feedback">
+              {actionType === "end"
+                ? "Feedback (Optional)"
+                : "Reason for Decline (Optional)"}
+            </Label>
+            <Textarea
+              id="feedback"
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              className="mt-2"
+              placeholder="Provide some details..."
+            />
+          </div>
+        )}
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button onClick={onSubmit}>Confirm</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const EmptyState = ({ message, icon }) => (
+  <Card>
+    <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+      {icon}
+      <p className="mt-4 font-medium">{message}</p>
+    </CardContent>
+  </Card>
+);
 
 export default AlumniMentorshipsPage;

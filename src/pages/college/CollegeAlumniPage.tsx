@@ -22,10 +22,20 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import { Button } from "../../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "../../components/ui/card";
 import { collegeAPI } from "../../lib/api";
 import type { BackendAlumni } from "../../types/api";
 import { Department } from "../../types";
 import { Search, CheckCircle2, Users } from "lucide-react";
+import { motion } from "motion/react";
+import CollegeAlumniPageSkeleton from "./CollegeAlumniPageSkeleton";
 
 const CollegeAlumniPage = () => {
   const [loading, setLoading] = useState(true);
@@ -44,43 +54,28 @@ const CollegeAlumniPage = () => {
     try {
       setLoading(true);
       setError("");
-
-      // Clear any existing data first - ensure no stale data
       setAlumni([]);
       setPendingAlumni([]);
 
-      // Fetch verified alumni linked to this college - real data only
       const alumniData = await collegeAPI.getAllAlumni();
-
-      // Validate response is an array
-      if (!Array.isArray(alumniData)) {
-        console.error("Invalid API response:", alumniData);
-        throw new Error("Invalid response from server: expected array");
-      }
-
-      // Ensure we only use real data - filter out any invalid entries
-      const validAlumni = alumniData.filter((a: BackendAlumni) => {
-        return a && a._id && typeof a._id === "string" && a.name;
-      });
-
+      if (!Array.isArray(alumniData))
+        throw new Error("Invalid response from server");
+      const validAlumni = alumniData.filter(
+        (a: BackendAlumni) => a && a._id && a.name
+      );
       setAlumni(validAlumni);
 
-      // Fetch pending verifications (alumni + students) - real data only
       const pending = await collegeAPI.getPendingVerifications();
-
-      // Validate pending response
       if (pending && Array.isArray(pending.alumni)) {
-        const validPending = pending.alumni.filter((a: BackendAlumni) => {
-          return a && a._id && typeof a._id === "string" && a.name;
-        });
+        const validPending = pending.alumni.filter(
+          (a: BackendAlumni) => a && a._id && a.name
+        );
         setPendingAlumni(validPending);
       } else {
         setPendingAlumni([]);
       }
     } catch (err) {
-      console.error("Error loading alumni:", err);
       setError(err instanceof Error ? err.message : "Failed to load alumni");
-      // Set empty arrays on error - no mock data, no fallback
       setAlumni([]);
       setPendingAlumni([]);
     } finally {
@@ -91,7 +86,7 @@ const CollegeAlumniPage = () => {
   const handleVerify = async (alumniId: string) => {
     try {
       await collegeAPI.verifyAlumni(alumniId);
-      await loadAlumni(); // Reload to move from pending to verified list
+      await loadAlumni();
       alert("Alumni verified successfully!");
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to verify alumni");
@@ -102,262 +97,246 @@ const CollegeAlumniPage = () => {
     new Set<number>(alumni.map((a) => a.graduationYear))
   ).sort((a, b) => b - a);
 
-  const filteredAlumni = alumni.filter((alumni) => {
+  const filteredAlumni = alumni.filter((alumnus) => {
     const matchesSearch =
       search === "" ||
-      alumni.name.toLowerCase().includes(search.toLowerCase()) ||
-      (alumni.currentEmployer &&
-        alumni.currentEmployer.toLowerCase().includes(search.toLowerCase()));
+      alumnus.name.toLowerCase().includes(search.toLowerCase()) ||
+      (alumnus.currentEmployer &&
+        alumnus.currentEmployer.toLowerCase().includes(search.toLowerCase()));
     const matchesDept =
-      departmentFilter === "all" || alumni.department === departmentFilter;
+      departmentFilter === "all" || alumnus.department === departmentFilter;
     const matchesYear =
-      yearFilter === "all" || alumni.graduationYear.toString() === yearFilter;
-
+      yearFilter === "all" || alumnus.graduationYear.toString() === yearFilter;
     return matchesSearch && matchesDept && matchesYear;
   });
 
   if (loading) {
-    return (
-      <div className="container py-8 min-h-screen">
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading alumni...</p>
-        </div>
-      </div>
-    );
+    return <CollegeAlumniPageSkeleton />;
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">
+    <div className="bg-stone-50 min-h-screen">
+      <div className="container mx-auto py-8 space-y-8">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
             Alumni Management
           </h1>
-          <p className="text-muted-foreground">
-            Review pending alumni and manage the verified alumni directory for
-            your institution.
+          <p className="text-gray-500 mt-2">
+            Verify new alumni and manage your institution's directory.
           </p>
-        </div>
+        </motion.div>
+
         {error && (
-          <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          <div className="p-4 border border-red-200 bg-red-50 rounded-md text-red-700">
             {error}
           </div>
         )}
-        {/* Pending Verifications */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg">
-              <CheckCircle2 className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold">
-                Pending Alumni Verifications
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                These alumni have signed up but are not yet verified. Verify
-                them to grant full access.
-              </p>
-            </div>
-          </div>
 
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Alumni</TableHead>
-                  <TableHead>Batch</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Current Company</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingAlumni.map((alumni) => (
-                  <TableRow key={alumni._id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={alumni.profilePictureUrl}
-                            alt={alumni.name}
-                          />
-                          <AvatarFallback>
-                            {alumni.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{alumni.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {alumni.email}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{alumni.graduationYear}</TableCell>
-                    <TableCell>{alumni.department}</TableCell>
-                    <TableCell>{alumni.currentEmployer || "N/A"}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleVerify(alumni._id)}
-                      >
-                        <CheckCircle2 className="h-4 w-4 mr-1" />
-                        Verify
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {pendingAlumni.length === 0 && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="h-20 text-center text-sm text-muted-foreground"
-                    >
-                      No pending alumni verifications.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </div>{" "}
-        {/* Verified Alumni Directory */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
-              <Users className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold">Alumni Directory</h2>
-              <p className="text-sm text-muted-foreground">
-                Search and manage all alumni associated with your college.
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name or company..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Select
-                value={departmentFilter}
-                onValueChange={setDepartmentFilter}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Department" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
-                  {Object.values(Department).map((dept) => (
-                    <SelectItem key={dept} value={dept}>
-                      {dept}
-                    </SelectItem>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Pending Verifications</CardTitle>
+              <CardDescription>
+                These alumni are awaiting verification to get full access.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {pendingAlumni.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {pendingAlumni.map((alumnus) => (
+                    <PendingAlumniCard
+                      key={alumnus._id}
+                      alumnus={alumnus}
+                      onVerify={handleVerify}
+                    />
                   ))}
-                </SelectContent>
-              </Select>
+                </div>
+              ) : (
+                <EmptyState message="No pending alumni verifications." />
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
-              <Select value={yearFilter} onValueChange={setYearFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Graduation Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Years</SelectItem>
-                  {years.map((year) => (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Alumni</TableHead>
-                  <TableHead>Batch</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Current Company</TableHead>
-                  <TableHead>Designation</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredAlumni.map((alumni) => (
-                  <TableRow key={alumni._id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={alumni.profilePictureUrl}
-                            alt={alumni.name}
-                          />
-                          <AvatarFallback>
-                            {alumni.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{alumni.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {alumni.email}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Alumni Directory</CardTitle>
+              <CardDescription>
+                Search and manage all verified alumni.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search by name or company..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Select
+                    value={departmentFilter}
+                    onValueChange={setDepartmentFilter}
+                  >
+                    <SelectTrigger className="w-full sm:w-[180px]">
+                      <SelectValue placeholder="Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Departments</SelectItem>
+                      {Object.values(Department).map((dept) => (
+                        <SelectItem key={dept} value={dept}>
+                          {dept}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={yearFilter} onValueChange={setYearFilter}>
+                    <SelectTrigger className="w-full sm:w-[180px]">
+                      <SelectValue placeholder="Graduation Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Years</SelectItem>
+                      {years.map((year) => (
+                        <SelectItem key={year} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Alumni</TableHead>
+                      <TableHead>Batch</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Current Role</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAlumni.map((alumnus) => (
+                      <TableRow key={alumnus._id}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9">
+                              <AvatarImage
+                                src={alumnus.profilePictureUrl}
+                                alt={alumnus.name}
+                              />
+                              <AvatarFallback>
+                                {alumnus.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium">{alumnus.name}</div>
+                              <div className="text-sm text-gray-500">
+                                {alumnus.email}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{alumni.graduationYear}</TableCell>
-                    <TableCell>{alumni.department}</TableCell>
-                    <TableCell>{alumni.currentEmployer || "N/A"}</TableCell>
-                    <TableCell>{alumni.currentDesignation || "N/A"}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={
-                          alumni.isVerified
-                            ? "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100"
-                            : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-100"
-                        }
-                      >
-                        {alumni.isVerified ? "Verified" : "Pending"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {!alumni.isVerified && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleVerify(alumni._id)}
-                        >
-                          <CheckCircle2 className="h-4 w-4 mr-1" />
-                          Verify
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {filteredAlumni.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
-                      No alumni found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+                        </TableCell>
+                        <TableCell>{alumnus.graduationYear}</TableCell>
+                        <TableCell>{alumnus.department}</TableCell>
+                        <TableCell>
+                          {alumnus.currentDesignation || "N/A"} @{" "}
+                          {alumnus.currentEmployer || "N/A"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              alumnus.isVerified ? "default" : "secondary"
+                            }
+                            className={
+                              alumnus.isVerified
+                                ? "bg-green-100 text-green-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }
+                          >
+                            {alumnus.isVerified ? "Verified" : "Pending"}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredAlumni.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          No alumni found.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
 };
+
+const PendingAlumniCard = ({ alumnus, onVerify }) => (
+  <Card>
+    <CardHeader>
+      <div className="flex items-center gap-4">
+        <Avatar className="h-12 w-12">
+          <AvatarImage src={alumnus.profilePictureUrl} alt={alumnus.name} />
+          <AvatarFallback>{alumnus.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div>
+          <CardTitle className="text-base">{alumnus.name}</CardTitle>
+          <CardDescription>{alumnus.email}</CardDescription>
+        </div>
+      </div>
+    </CardHeader>
+    <CardContent className="text-sm space-y-1">
+      <p>
+        <strong>Batch:</strong> {alumnus.graduationYear}
+      </p>
+      <p>
+        <strong>Department:</strong> {alumnus.department}
+      </p>
+      <p>
+        <strong>Company:</strong> {alumnus.currentEmployer || "N/A"}
+      </p>
+    </CardContent>
+    <CardFooter>
+      <Button
+        size="sm"
+        className="w-full"
+        onClick={() => onVerify(alumnus._id)}
+      >
+        <CheckCircle2 className="h-4 w-4 mr-2" />
+        Verify
+      </Button>
+    </CardFooter>
+  </Card>
+);
+
+const EmptyState = ({ message }) => (
+  <div className="text-center py-12 text-gray-500">
+    <Users className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+    {message}
+  </div>
+);
 
 export default CollegeAlumniPage;
