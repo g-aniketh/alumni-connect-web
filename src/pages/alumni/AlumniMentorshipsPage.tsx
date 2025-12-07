@@ -383,148 +383,173 @@ const AlumniMentorshipsPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading mentorships...</p>
+      <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-cyan-950 dark:to-blue-900">
+        <div className="container py-8">
+          <div className="flex items-center justify-center py-12">
+            <p className="text-muted-foreground">Loading mentorships...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container py-8 min-h-screen">
-      <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Mentorship Requests
-        </h1>
-        <p className="text-muted-foreground">
-          Manage mentorship requests from students and track your active
-          mentorship relationships.
-        </p>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-          {error}
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-cyan-950 dark:to-blue-900">
+      <div className="container py-8">
+        <div className="flex flex-col gap-2 mb-8">
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+            Mentorship Requests
+          </h1>
+          <p className="text-muted-foreground">
+            Manage mentorship requests from students and track your active
+            mentorship relationships.
+          </p>
         </div>
-      )}
 
-      <Tabs defaultValue="pending" className="w-full">
-        <TabsList className="grid w-full max-w-2xl grid-cols-3">
-          <TabsTrigger value="pending">
-            Pending ({pendingRequests.length})
-          </TabsTrigger>
-          <TabsTrigger value="active">
-            Active ({activeMentorships.length})
-          </TabsTrigger>
-          <TabsTrigger value="completed">
-            Completed ({completedMentorships.length})
-          </TabsTrigger>
-        </TabsList>
+        {error && (
+          <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+            {error}
+          </div>
+        )}
 
-        <TabsContent value="pending" className="mt-6">
-          {pendingRequests.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {pendingRequests.map((request) => (
-                <PendingRequestCard key={request._id} request={request} />
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <CheckCircle2 className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">No pending requests</p>
-                <p className="text-sm text-muted-foreground">
-                  All mentorship requests have been responded to.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
+        <Tabs defaultValue="pending" className="w-full">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+            <TabsTrigger value="pending">
+              Pending ({pendingRequests.length})
+            </TabsTrigger>
+            <TabsTrigger value="active">
+              Active ({activeMentorships.length})
+            </TabsTrigger>
+            <TabsTrigger value="completed">
+              Completed ({completedMentorships.length})
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="active" className="mt-6">
-          {activeMentorships.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {activeMentorships.map((request) => (
-                <ActiveMentorshipCard key={request._id} request={request} />
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <User className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">
-                  No active mentorships
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  You don't have any active mentorship relationships at the
-                  moment.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
+          <TabsContent value="pending" className="mt-6">
+            {pendingRequests.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {pendingRequests.map((request) => (
+                  <PendingRequestCard key={request._id} request={request} />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <CheckCircle2 className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-lg font-medium mb-2">
+                    No pending requests
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    All mentorship requests have been responded to.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
 
-        <TabsContent value="completed" className="mt-6">
-          {completedMentorships.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {completedMentorships.map((request) => (
-                <CompletedMentorshipCard key={request._id} request={request} />
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <CheckCircle2 className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">
-                  No completed mentorships
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Completed mentorship relationships will appear here.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="active" className="mt-6">
+            {activeMentorships.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {activeMentorships.map((request) => (
+                  <ActiveMentorshipCard key={request._id} request={request} />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <User className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-lg font-medium mb-2">
+                    No active mentorships
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    You don't have any active mentorship relationships at the
+                    moment.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
 
-      <Dialog open={isActionDialogOpen} onOpenChange={setIsActionDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {actionType === "accept" && "Accept Mentorship Request"}
-              {actionType === "reject" && "Decline Mentorship Request"}
-              {actionType === "end" && "End Mentorship"}
-            </DialogTitle>
-            <DialogDescription>
-              {actionType === "accept" &&
-                "Accept this mentorship request and start guiding the student."}
-              {actionType === "reject" &&
-                "Decline this mentorship request. The student will be notified."}
-              {actionType === "end" &&
-                "End this mentorship relationship. You can provide feedback."}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            {actionType === "end" && (
-              <>
+          <TabsContent value="completed" className="mt-6">
+            {completedMentorships.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {completedMentorships.map((request) => (
+                  <CompletedMentorshipCard
+                    key={request._id}
+                    request={request}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <CheckCircle2 className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-lg font-medium mb-2">
+                    No completed mentorships
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Completed mentorship relationships will appear here.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
+
+        <Dialog open={isActionDialogOpen} onOpenChange={setIsActionDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {actionType === "accept" && "Accept Mentorship Request"}
+                {actionType === "reject" && "Decline Mentorship Request"}
+                {actionType === "end" && "End Mentorship"}
+              </DialogTitle>
+              <DialogDescription>
+                {actionType === "accept" &&
+                  "Accept this mentorship request and start guiding the student."}
+                {actionType === "reject" &&
+                  "Decline this mentorship request. The student will be notified."}
+                {actionType === "end" &&
+                  "End this mentorship relationship. You can provide feedback."}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              {actionType === "end" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="rating">Rating (1-5)</Label>
+                    <select
+                      id="rating"
+                      value={rating}
+                      onChange={(e) => setRating(parseInt(e.target.value))}
+                      className="w-full p-2 border rounded-md"
+                    >
+                      {[1, 2, 3, 4, 5].map((r) => (
+                        <option key={r} value={r}>
+                          {r} {r === 5 ? "⭐" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="feedback">Feedback (Optional)</Label>
+                    <Textarea
+                      id="feedback"
+                      placeholder="Add any feedback or notes..."
+                      value={feedback}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setFeedback(e.target.value)
+                      }
+                      rows={4}
+                    />
+                  </div>
+                </>
+              )}
+              {actionType === "reject" && (
                 <div className="space-y-2">
-                  <Label htmlFor="rating">Rating (1-5)</Label>
-                  <select
-                    id="rating"
-                    value={rating}
-                    onChange={(e) => setRating(parseInt(e.target.value))}
-                    className="w-full p-2 border rounded-md"
-                  >
-                    {[1, 2, 3, 4, 5].map((r) => (
-                      <option key={r} value={r}>
-                        {r} {r === 5 ? "⭐" : ""}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="feedback">Feedback (Optional)</Label>
+                  <Label htmlFor="feedback">
+                    Reason for Decline (Optional)
+                  </Label>
                   <Textarea
                     id="feedback"
                     placeholder="Add any feedback or notes..."
@@ -535,47 +560,33 @@ const AlumniMentorshipsPage = () => {
                     rows={4}
                   />
                 </div>
-              </>
-            )}
-            {actionType === "reject" && (
-              <div className="space-y-2">
-                <Label htmlFor="feedback">Reason for Decline (Optional)</Label>
-                <Textarea
-                  id="feedback"
-                  placeholder="Add any feedback or notes..."
-                  value={feedback}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    setFeedback(e.target.value)
-                  }
-                  rows={4}
-                />
-              </div>
-            )}
-            {actionType === "accept" && (
-              <p className="text-sm text-muted-foreground">
-                By accepting, you agree to mentor this student. The mentorship
-                will become active.
-              </p>
-            )}
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsActionDialogOpen(false);
-                setFeedback("");
-              }}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleSubmitAction}>
-              {actionType === "accept" && "Accept Request"}
-              {actionType === "reject" && "Decline Request"}
-              {actionType === "end" && "End Mentorship"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+              )}
+              {actionType === "accept" && (
+                <p className="text-sm text-muted-foreground">
+                  By accepting, you agree to mentor this student. The mentorship
+                  will become active.
+                </p>
+              )}
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsActionDialogOpen(false);
+                  setFeedback("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSubmitAction}>
+                {actionType === "accept" && "Accept Request"}
+                {actionType === "reject" && "Decline Request"}
+                {actionType === "end" && "End Mentorship"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };

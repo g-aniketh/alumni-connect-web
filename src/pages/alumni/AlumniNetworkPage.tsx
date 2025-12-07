@@ -141,105 +141,114 @@ const AlumniNetworkPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading alumni network...</p>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-indigo-950 dark:to-purple-900">
+        <div className="container py-8">
+          <div className="flex items-center justify-center py-12">
+            <p className="text-muted-foreground">Loading alumni network...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container py-8 min-h-screen">
-      <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Alumni Network</h1>
-        <p className="text-muted-foreground">
-          Connect with fellow alumni from your institution and expand your
-          professional network.
-        </p>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-          {error}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-indigo-950 dark:to-purple-900">
+      <div className="container py-8">
+        <div className="flex flex-col gap-2 mb-8">
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Alumni Network
+          </h1>
+          <p className="text-muted-foreground">
+            Connect with fellow alumni from your institution and expand your
+            professional network.
+          </p>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <aside className="lg:col-span-1">
-          <div className="sticky top-20">
-            <AlumniSearchFilters
-              nameSearch={nameSearch}
-              onNameSearchChange={setNameSearch}
-              skillSearch={skillSearch}
-              onSkillSearchChange={setSkillSearch}
-              companySearch={companySearch}
-              onCompanySearchChange={setCompanySearch}
-              onClearFilters={handleClearFilters}
-            />
+        {error && (
+          <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+            {error}
           </div>
-        </aside>
+        )}
 
-        <div className="lg:col-span-3">
-          {filteredAlumni.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredAlumni.map((backendAlumni) => {
-                const alumni = transformAlumni(backendAlumni);
-                return (
-                  <AlumniProfileCard
-                    key={backendAlumni._id}
-                    alumni={alumni}
-                    onConnect={handleConnect}
-                    viewerRole={user?.role}
-                  />
-                );
-              })}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <aside className="lg:col-span-1">
+            <div className="sticky top-20">
+              <AlumniSearchFilters
+                nameSearch={nameSearch}
+                onNameSearchChange={setNameSearch}
+                skillSearch={skillSearch}
+                onSkillSearchChange={setSkillSearch}
+                companySearch={companySearch}
+                onCompanySearchChange={setCompanySearch}
+                onClearFilters={handleClearFilters}
+              />
             </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg font-medium mb-2">No alumni found</p>
-              <p className="text-sm">
-                Try adjusting your search criteria or filters.
+          </aside>
+
+          <div className="lg:col-span-3">
+            {filteredAlumni.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredAlumni.map((backendAlumni) => {
+                  const alumni = transformAlumni(backendAlumni);
+                  return (
+                    <AlumniProfileCard
+                      key={backendAlumni._id}
+                      alumni={alumni}
+                      onConnect={handleConnect}
+                      viewerRole={user?.role}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                <p className="text-lg font-medium mb-2">No alumni found</p>
+                <p className="text-sm">
+                  Try adjusting your search criteria or filters.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <Dialog
+          open={isConnectDialogOpen}
+          onOpenChange={setIsConnectDialogOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Connect with Alumni</DialogTitle>
+              <DialogDescription>
+                {selectedAlumni && (
+                  <>
+                    Send a connection request to{" "}
+                    <strong>{selectedAlumni.name}</strong>{" "}
+                    {selectedAlumni.currentEmployer
+                      ? `at ${selectedAlumni.currentEmployer}`
+                      : ""}
+                    .
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-sm text-muted-foreground">
+                Your connection request will be sent. They will be notified and
+                can accept your request.
               </p>
             </div>
-          )}
-        </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsConnectDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSubmitConnect}>Send Request</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      <Dialog open={isConnectDialogOpen} onOpenChange={setIsConnectDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Connect with Alumni</DialogTitle>
-            <DialogDescription>
-              {selectedAlumni && (
-                <>
-                  Send a connection request to{" "}
-                  <strong>{selectedAlumni.name}</strong>{" "}
-                  {selectedAlumni.currentEmployer
-                    ? `at ${selectedAlumni.currentEmployer}`
-                    : ""}
-                  .
-                </>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              Your connection request will be sent. They will be notified and
-              can accept your request.
-            </p>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setIsConnectDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleSubmitConnect}>Send Request</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
