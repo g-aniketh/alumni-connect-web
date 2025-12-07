@@ -1,20 +1,41 @@
-node_modules
-npm-debug.log
-dist
-build
-.env
-.env.local
-.git
-.gitignore
-README.md
-*.md
-.vscode
-.idea
-*.swp
-*.swo
-.DS_Store
-coverage
-.nyc_output
-*.test.ts
-*.spec.ts
+# Ignore node_modules
+node_modules/
 
+# Ignore dist (will be built in container)
+dist/
+
+# Ignore environment files (will be set at runtime)
+.env
+.env.*
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore documentation
+docs/
+*.md
+README.md
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore test files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Ignore logs
+*.log
+npm-debug.log*
+
+# Ignore config files not needed in production
+.prettierrc
+.prettierignore
+.hintrc
+eslint.config.js
+tsconfig.*.json
+
+# Keep nginx.conf (needed for production)

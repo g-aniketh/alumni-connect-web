@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { type AlumniEvent } from "../../types";
 import type { BackendEvent } from "../../types/api";
-import { MapPin, Clock, Users } from "lucide-react";
+import { Clock, Users } from "lucide-react";
 
 interface EventCardProps {
   event: AlumniEvent;
@@ -97,7 +97,7 @@ const formatTimeRange = (startTime?: string, endTime?: string) => {
 };
 
 // Get attendance count (placeholder - would need API call)
-const getAttendanceCount = (eventId: string): string => {
+const getAttendanceCount = (_eventId: string): string => {
   // This would ideally come from the backend
   // For now, return a placeholder
   return "120 attending";
@@ -156,11 +156,10 @@ export const EventCard = ({
                   <Badge
                     key={idx}
                     variant="outline"
-                    className={`text-xs ${
-                      isPopular || isSocial
+                    className={`text-xs ${isPopular || isSocial
                         ? "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-900 dark:text-teal-200 dark:border-teal-700"
                         : "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700"
-                    }`}
+                      }`}
                   >
                     {tag}
                   </Badge>

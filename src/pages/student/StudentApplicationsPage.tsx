@@ -28,10 +28,6 @@ import { jobsAPI } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
 import type { BackendJobApplication, BackendJob } from "../../types/api";
 import {
-  Calendar,
-  Building2,
-  MapPin,
-  X,
   Search,
   ArrowRight,
   Briefcase,
@@ -70,22 +66,10 @@ const StudentApplicationsPage = () => {
     }
   };
 
-  const handleWithdraw = async (applicationId: string) => {
-    if (!confirm("Are you sure you want to withdraw this application?")) return;
-
-    try {
-      await jobsAPI.withdrawApplication(applicationId);
-      await loadApplications();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to withdraw application"
-      );
-    }
-  };
-
   // Get job icon based on title/type
-  const getJobIcon = (title: string, jobType?: string) => {
+  const getJobIcon = (title: string, _jobType?: string) => {
     const lowerTitle = title.toLowerCase();
+    console.log(_jobType);
     if (
       lowerTitle.includes("design") ||
       lowerTitle.includes("ui") ||
@@ -366,8 +350,8 @@ const StudentApplicationsPage = () => {
 
                       const posterName =
                         job &&
-                        job.postedBy &&
-                        typeof job.postedBy.posterId === "object"
+                          job.postedBy &&
+                          typeof job.postedBy.posterId === "object"
                           ? job.postedBy.posterId.name
                           : "Company";
 

@@ -23,7 +23,6 @@ import {
   Clock,
   X,
   CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 
 const StudentEventRegistrationsPage = () => {

@@ -7,7 +7,6 @@ import {
 import { AlumniSignupForm } from "../components/auth/AlumniSignupForm";
 import { StudentSignupForm } from "../components/auth/StudentSignupForm";
 import { CollegeSignupForm } from "../components/auth/CollegeSignupForm";
-import { UserRole } from "../types";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
