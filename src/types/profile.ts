@@ -7,7 +7,7 @@ export interface AlumniFormData {
   graduationYear: string;
   degree: string;
   department: string;
-  skills: string;
+  skills: string[]; // Changed from string to string[]
   mentorshipAvailable: boolean;
   linkedInProfile: string;
   githubProfile: string;
@@ -25,7 +25,7 @@ export interface StudentFormData {
   enrollmentYear: string;
   degree: string;
   department: string;
-  skills: string;
+  skills: string[]; // Changed from string to string[]
   linkedInProfile: string;
   githubProfile: string;
   personalWebsite: string;

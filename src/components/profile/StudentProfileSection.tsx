@@ -19,6 +19,59 @@ import {
 import { Department, type Student } from "../../types";
 import { OnlinePresenceSection } from "./OnlinePresenceSection";
 import type { StudentFormData } from "../../types/profile";
+import { SkillsAutocomplete } from "../skills/SkillsAutocomplete";
+
+// Skills list matching backend SkillSet
+const AVAILABLE_SKILLS = [
+  "JavaScript",
+  "TypeScript",
+  "Python",
+  "Java",
+  "C++",
+  "C#",
+  "Ruby",
+  "Go",
+  "PHP",
+  "Rust",
+  "Swift",
+  "Kotlin",
+  "HTML",
+  "CSS",
+  "React",
+  "Angular",
+  "Vue.js",
+  "Node.js",
+  "Django",
+  "Flask",
+  "Spring Boot",
+  "Ruby on Rails",
+  "Machine Learning",
+  "Data Science",
+  "DevOps",
+  "Cloud Computing",
+  "UI/UX Design",
+  "Project Management",
+  "Agile Methodologies",
+  "Database Management",
+  "Cybersecurity",
+  "Mobile App Development",
+  "Game Development",
+  "Blockchain",
+  "Artificial Intelligence",
+  "Big Data",
+  "Internet of Things (IoT)",
+  "Networking",
+  "Software Testing",
+  "Version Control (Git)",
+  "Docker",
+  "Continuous Integration/Continuous Deployment (CI/CD)",
+  "AWS",
+  "Azure",
+  "Google Cloud Platform",
+  "Kubernetes",
+  "Object-Oriented Programming (OOP)",
+  "Others",
+];
 
 interface StudentProfileSectionProps {
   user: Student;
@@ -127,24 +180,37 @@ export const StudentProfileSection = ({
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="skills">Skills (comma-separated)</Label>
             {isEditing ? (
-              <Textarea
-                id="skills"
-                value={formData.skills || ""}
-                onChange={(e) =>
-                  onFormDataChange({ ...formData, skills: e.target.value })
+              <SkillsAutocomplete
+                skills={AVAILABLE_SKILLS}
+                selectedSkills={
+                  formData.skills
+                    ? Array.isArray(formData.skills)
+                      ? formData.skills
+                      : []
+                    : []
                 }
-                placeholder="e.g., React, Node.js, Python"
-                rows={3}
+                onSkillsChange={(skills) =>
+                  onFormDataChange({ ...formData, skills })
+                }
+                label="Skills"
               />
             ) : (
-              <div className="flex flex-wrap gap-2">
-                {(user.skills || []).map((skill: string) => (
-                  <Badge key={skill} variant="outline">
-                    {skill}
-                  </Badge>
-                ))}
+              <div>
+                <Label>Skills</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {(user.skills || []).length > 0 ? (
+                    (user.skills || []).map((skill: string) => (
+                      <Badge key={skill} variant="outline">
+                        {skill}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-sm text-muted-foreground">
+                      No skills added yet
+                    </span>
+                  )}
+                </div>
               </div>
             )}
           </div>

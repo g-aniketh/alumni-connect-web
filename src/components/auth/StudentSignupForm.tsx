@@ -110,7 +110,8 @@ export const StudentSignupForm = () => {
       alert(
         "Account created successfully! Please check your email and verify your account before logging in."
       );
-      navigate("/login");
+      // Redirect to skills selection page after signup
+      navigate("/student/skills-selection");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
@@ -152,12 +153,12 @@ export const StudentSignupForm = () => {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <Input
-                id="password"
+            <Input
+              id="password"
                 type={showPassword ? "text" : "password"}
-                value={password}
+              value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
+              required
                 className="pr-10"
               />
               <Button
@@ -201,7 +202,7 @@ export const StudentSignupForm = () => {
                       ? "Loading colleges..."
                       : colleges.length === 0
                         ? "No colleges registered yet"
-                        : "Select College"
+                      : "Select College"
                   }
                 />
               </SelectTrigger>
@@ -217,19 +218,19 @@ export const StudentSignupForm = () => {
                   </SelectItem>
                 ) : (
                   colleges.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))
                 )}
               </SelectContent>
             </Select>
             {colleges.length === 0 && !loadingColleges && (
-              <p className="text-xs text-muted-foreground">
-                ⚠️ <strong>Important:</strong> Your college must be registered
+            <p className="text-xs text-muted-foreground">
+              ⚠️ <strong>Important:</strong> Your college must be registered
                 in the system first. Please ask your college administrator to
                 sign up before you can create your account.
-              </p>
+            </p>
             )}
           </div>
 

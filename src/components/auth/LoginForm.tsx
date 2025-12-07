@@ -35,6 +35,7 @@ export const LoginForm = ({ role }: LoginFormProps) => {
 
     try {
       await login(role, email, password);
+      // Navigate to dashboard - RoleDashboard will handle redirect to skills selection if needed
       navigate("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
@@ -66,12 +67,12 @@ export const LoginForm = ({ role }: LoginFormProps) => {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <Input
-                id="password"
+            <Input
+              id="password"
                 type={showPassword ? "text" : "password"}
-                value={password}
+              value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
+              required
                 className="pr-10"
               />
               <Button

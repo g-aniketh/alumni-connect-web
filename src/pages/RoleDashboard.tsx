@@ -22,6 +22,11 @@ const RoleDashboard = () => {
   // Redirect to role-specific dashboard
   switch (user.role) {
     case UserRole.Student:
+      // Check if student has skills, if not redirect to skills selection
+      const student = user as import("../types").Student;
+      if (!student.skills || student.skills.length === 0) {
+        return <Navigate to="/student/skills-selection" replace />;
+      }
       return <Navigate to="/student/dashboard" replace />;
     case UserRole.Alumni:
       return <Navigate to="/alumni/dashboard" replace />;

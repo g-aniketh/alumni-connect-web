@@ -12,6 +12,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import RoleDashboard from "./pages/RoleDashboard";
 import StudentDashboardPage from "./pages/student/StudentDashboardPage";
+import StudentSkillsSelectionPage from "./pages/student/StudentSkillsSelectionPage";
 import AlumniDashboardPage from "./pages/alumni/AlumniDashboardPage";
 import CollegeDashboardPage from "./pages/college/CollegeDashboardPage";
 import JobsPage from "./pages/JobsPage";
@@ -132,63 +133,71 @@ function App() {
             />
 
             {/* Role-based Dashboards */}
-            <Route
-              path="/dashboard"
+            <Route 
+              path="/dashboard" 
               element={
                 <ProtectedRoute>
                   <RoleDashboard />
                 </ProtectedRoute>
-              }
+              } 
             />
             <Route
-              path="/student/dashboard"
+              path="/student/skills-selection"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Student]}>
+                  <StudentSkillsSelectionPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/student/dashboard" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Student]}>
                   <StudentDashboardPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/alumni/dashboard"
+            <Route 
+              path="/alumni/dashboard" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniDashboardPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/dashboard"
+            <Route 
+              path="/college/dashboard" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeDashboardPage />
                 </ProtectedRoute>
-              }
+              } 
             />
 
             {/* Student Routes */}
-            <Route
-              path="/student/alumni"
+            <Route 
+              path="/student/alumni" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Student]}>
                   <AlumniDirectoryPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/student/applications"
+            <Route 
+              path="/student/applications" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Student]}>
                   <StudentApplicationsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/student/mentorships"
+            <Route 
+              path="/student/mentorships" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Student]}>
                   <StudentMentorshipsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
             <Route
               path="/student/events"
@@ -196,25 +205,25 @@ function App() {
                 <ProtectedRoute allowedRoles={[UserRole.Student]}>
                   <StudentEventRegistrationsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
 
             {/* Alumni Routes */}
-            <Route
-              path="/alumni/network"
+            <Route 
+              path="/alumni/network" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniNetworkPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/alumni/students"
+            <Route 
+              path="/alumni/students" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniStudentsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
             <Route
               path="/alumni/connected-alumni"
@@ -232,61 +241,61 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/alumni/jobs/create"
+            <Route 
+              path="/alumni/jobs/create" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniJobCreationPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/alumni/jobs"
+            <Route 
+              path="/alumni/jobs" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniJobManagementPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/alumni/jobs/edit/:id"
+            <Route 
+              path="/alumni/jobs/edit/:id" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniJobEditPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/alumni/events/create"
+            <Route 
+              path="/alumni/events/create" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniEventCreationPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/alumni/events"
+            <Route 
+              path="/alumni/events" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniEventManagementPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/alumni/events/edit/:id"
+            <Route 
+              path="/alumni/events/edit/:id" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniEventEditPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/alumni/mentorships"
+            <Route 
+              path="/alumni/mentorships" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniMentorshipsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
             <Route
               path="/alumni/events/registrations"
@@ -302,97 +311,97 @@ function App() {
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniJobApplicationsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
 
             {/* College Routes */}
-            <Route
-              path="/college/alumni"
+            <Route 
+              path="/college/alumni" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeAlumniPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/students"
+            <Route 
+              path="/college/students" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeStudentsPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/jobs/create"
+            <Route 
+              path="/college/jobs/create" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeJobCreationPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/jobs"
+            <Route 
+              path="/college/jobs" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeJobManagementPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/jobs/edit/:id"
+            <Route 
+              path="/college/jobs/edit/:id" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeJobEditPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/events/create"
+            <Route 
+              path="/college/events/create" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeEventCreationPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/events"
+            <Route 
+              path="/college/events" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeEventManagementPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/events/edit/:id"
+            <Route 
+              path="/college/events/edit/:id" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeEventEditPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/campaigns/create"
+            <Route 
+              path="/college/campaigns/create" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeCampaignCreationPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/newsletters"
+            <Route 
+              path="/college/newsletters" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeNewslettersPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/college/newsletters/create"
+            <Route 
+              path="/college/newsletters/create" 
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeNewsletterCreationPage />
                 </ProtectedRoute>
-              }
+              } 
             />
             <Route
               path="/college/events/registrations"
@@ -416,20 +425,20 @@ function App() {
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeBulkImportPage />
                 </ProtectedRoute>
-              }
+              } 
             />
 
             {/* Legacy route for alumni directory (public) */}
             <Route path="/alumni" element={<AlumniDirectoryPage />} />
 
             {/* Profile Page */}
-            <Route
-              path="/profile"
+            <Route 
+              path="/profile" 
               element={
                 <ProtectedRoute>
                   <ProfilePage />
                 </ProtectedRoute>
-              }
+              } 
             />
           </Route>
         </Routes>

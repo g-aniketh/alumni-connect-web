@@ -63,11 +63,8 @@ export const useProfileSave = () => {
             : alumni.graduationYear,
           degree: alumniFormData.degree,
           department: alumniFormData.department,
-          skills: alumniFormData.skills
+          skills: Array.isArray(alumniFormData.skills)
             ? alumniFormData.skills
-                .split(",")
-                .map((s: string) => s.trim())
-                .filter((s: string) => s)
             : [],
           mentorshipAvailable: alumniFormData.mentorshipAvailable,
           linkedInProfile: alumniFormData.linkedInProfile?.trim() || undefined,
@@ -96,11 +93,8 @@ export const useProfileSave = () => {
             : student.enrollmentYear,
           degree: studentFormData.degree,
           department: studentFormData.department,
-          skills: studentFormData.skills
+          skills: Array.isArray(studentFormData.skills)
             ? studentFormData.skills
-                .split(",")
-                .map((s: string) => s.trim())
-                .filter((s: string) => s)
             : [],
           linkedInProfile: studentFormData.linkedInProfile?.trim() || undefined,
           githubProfile: studentFormData.githubProfile?.trim() || undefined,
