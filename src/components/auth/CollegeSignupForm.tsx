@@ -70,8 +70,10 @@ export const CollegeSignupForm = () => {
         website: website.trim() || undefined,
       };
       await signup("College", signupData);
-      alert("Account created successfully! Please log in.");
-      navigate("/login");
+      alert(
+        "Account created successfully! Please log in to complete your profile."
+      );
+      navigate("/login?role=college");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {

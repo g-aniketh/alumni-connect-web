@@ -94,9 +94,9 @@ export const AlumniSignupForm = () => {
       };
       await signup("Alumni", signupData);
       alert(
-        "Account created successfully! Please check your email and verify your account before logging in."
+        "Account created successfully! Please check your email to verify your account, then log in to complete your profile."
       );
-      navigate("/login");
+      navigate("/login?role=alumni");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {

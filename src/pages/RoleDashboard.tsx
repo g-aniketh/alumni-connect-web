@@ -19,19 +19,29 @@ const RoleDashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Redirect to role-specific dashboard
+  // Redirect to role-specific dashboard or onboarding
   switch (user.role) {
-    case UserRole.Student:
-      // Check if student has skills, if not redirect to skills selection
+    case UserRole.Student: {
       const student = user as import("../types").Student;
-      if (!student.skills || student.skills.length === 0) {
-        return <Navigate to="/student/skills-selection" replace />;
+      // Check if profile is incomplete (no bio or minimal fields)
+      if (!student.bio || !student.skills || student.skills.length === 0) {
+        return <Navigate to="/onboarding/student" replace />;
       }
       return <Navigate to="/student/dashboard" replace />;
-    case UserRole.Alumni:
+    }
+    case UserRole.Alumni: {
+      const alumni = user as import("../types").Alumni;
+      // Check if profile is incomplete (no current employer or designation)
+      if (!alumni.currentEmployer || !alumni.designation || !alumni.bio) {
+        return <Navigate to="/onboarding/alumni" replace />;
+      }
       return <Navigate to="/alumni/dashboard" replace />;
-    case UserRole.College:
+    }
+    case UserRole.College: {
+      // College profiles are typically complete after signup
+      // But we can check for optional fields
       return <Navigate to="/college/dashboard" replace />;
+    }
     default:
       return <Navigate to="/login" replace />;
   }
