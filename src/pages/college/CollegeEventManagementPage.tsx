@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Card, CardContent } from "../../components/ui/card";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import {
@@ -21,16 +27,9 @@ import {
 } from "../../components/ui/dialog";
 import { eventsAPI } from "../../lib/api";
 import type { BackendEvent } from "../../types/api";
-import {
-  Edit2,
-  Trash2,
-  Calendar,
-  MapPin,
-  Eye,
-  Plus,
-  Users,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Edit, Trash2, Calendar, MapPin, Plus, Users } from "lucide-react";
+import { motion } from "motion/react";
+import CollegeEventManagementPageSkeleton from "./CollegeEventManagementPageSkeleton";
 
 const CollegeEventManagementPage = () => {
   const navigate = useNavigate();
@@ -70,7 +69,6 @@ const CollegeEventManagementPage = () => {
       await loadEvents();
       setIsDeleteDialogOpen(false);
       setEventToDelete(null);
-      alert("Event deleted successfully!");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete event");
     } finally {
@@ -87,189 +85,139 @@ const CollegeEventManagementPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="container py-8 min-h-screen">
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading events...</p>
-        </div>
-      </div>
-    );
+    return <CollegeEventManagementPageSkeleton />;
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">Events</h1>
-            <p className="text-muted-foreground">
-              Manage your college's events, view registrations, and update event
-              details.
+    <div className="bg-stone-50 min-h-screen">
+      <div className="container mx-auto py-8">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between mb-8"
+        >
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Event Management
+            </h1>
+            <p className="text-gray-500 mt-2">
+              Create, update, and manage all your institution's events.
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            <Button
-              asChild
-              className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
-            >
-              <Link to="/college/events/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Create New Event
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to="/college/events/registrations">View Registrations</Link>
-            </Button>
-          </div>
-        </div>
+          <Button asChild>
+            <Link to="/college/events/create">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Event
+            </Link>
+          </Button>
+        </motion.div>
 
         {error && (
-          <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          <div className="mb-6 p-4 border border-red-200 bg-red-50 rounded-md text-red-700">
             {error}
           </div>
         )}
 
-        {events.length === 0 ? (
-          <Card>
-            <CardContent className="py-12">
-              <div className="text-center text-muted-foreground">
-                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium mb-2">
-                  No events organized yet
-                </p>
-                <p className="text-sm mb-4">
-                  Start by creating your first event.
-                </p>
-                <Button asChild>
-                  <Link to="/college/events/create">
-                    Create Your First Event
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Event Title</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {events.map((event) => {
-                  const organizerName =
-                    typeof event.organizedBy.organizerId === "object"
-                      ? event.organizedBy.organizerId.name
-                      : "Organizer";
-                  const status = getEventStatus(event.eventDate);
-
-                  return (
-                    <TableRow key={event._id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{event.title}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {organizerName}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <Calendar className="h-3 w-3" />
+        <Card>
+          <CardContent className="pt-6">
+            {events.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Event</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {events.map((event) => {
+                    const status = getEventStatus(event.eventDate);
+                    return (
+                      <TableRow key={event._id}>
+                        <TableCell className="font-medium">
+                          {event.title}
+                        </TableCell>
+                        <TableCell>
                           {new Date(event.eventDate).toLocaleDateString()}
-                          {event.startTime && (
-                            <span className="text-muted-foreground">
-                              {" "}
-                              at {event.startTime}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <MapPin className="h-3 w-3" />
-                          {event.location}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            status === "Completed" ? "secondary" : "default"
-                          }
-                        >
-                          {status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              navigate(`/college/events/edit/${event._id}`)
+                        </TableCell>
+                        <TableCell>{event.location}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              status === "Completed" ? "secondary" : "default"
                             }
                           >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setEventToDelete(event);
-                              setIsDeleteDialogOpen(true);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              navigate(
-                                `/college/events/registrations?eventId=${event._id}`
-                              )
-                            }
-                          >
-                            <Users className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link to={`/events?eventId=${event._id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+                            {status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() =>
+                                navigate(`/college/events/edit/${event._id}`)
+                              }
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() =>
+                                navigate(
+                                  `/college/events/registrations?eventId=${event._id}`
+                                )
+                              }
+                            >
+                              <Users className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setEventToDelete(event);
+                                setIsDeleteDialogOpen(true);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            ) : (
+              <EmptyState
+                message="No events created yet."
+                cta={{
+                  text: "Create Your First Event",
+                  link: "/college/events/create",
+                }}
+                icon={<Calendar className="w-12 h-12 text-gray-400" />}
+              />
+            )}
+          </CardContent>
+        </Card>
 
-        {/* Delete Confirmation Dialog */}
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Delete Event</DialogTitle>
+              <DialogTitle>Are you sure?</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete "{eventToDelete?.title}"? This
-                action cannot be undone and will also delete all associated
-                registrations.
+                This will permanently delete the event "{eventToDelete?.title}".
+                This action cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => {
-                  setIsDeleteDialogOpen(false);
-                  setEventToDelete(null);
-                }}
+                onClick={() => setIsDeleteDialogOpen(false)}
                 disabled={deleting}
               >
                 Cancel
@@ -288,5 +236,17 @@ const CollegeEventManagementPage = () => {
     </div>
   );
 };
+
+const EmptyState = ({ message, cta, icon }) => (
+  <div className="text-center py-16 rounded-lg flex flex-col items-center">
+    {icon}
+    <p className="mt-4 font-medium">{message}</p>
+    {cta && (
+      <Button asChild className="mt-4">
+        <Link to={cta.link}>{cta.text}</Link>
+      </Button>
+    )}
+  </div>
+);
 
 export default CollegeEventManagementPage;

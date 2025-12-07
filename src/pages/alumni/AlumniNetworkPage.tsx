@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { AlumniProfileCard } from "../../components/alumni/AlumniProfileCard";
 import { AlumniSearchFilters } from "../../components/alumni/AlumniSearchFilters";
 import { type Alumni, UserRole } from "../../types";
@@ -13,15 +13,24 @@ import { Button } from "../../components/ui/button";
 import { useAuth } from "../../context/AuthContext";
 import { mentorshipsAPI } from "../../lib/api";
 import type { BackendAlumni } from "../../types/api";
+import { motion } from "motion/react";
+import AlumniNetworkSkeleton from "./AlumniNetworkSkeleton";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const AlumniNetworkPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [alumni, setAlumni] = useState<BackendAlumni[]>([]);
+
   const [nameSearch, setNameSearch] = useState("");
   const [skillSearch, setSkillSearch] = useState("");
   const [companySearch, setCompanySearch] = useState("");
+
+  const debouncedNameSearch = useDebounce(nameSearch, 300);
+  const debouncedSkillSearch = useDebounce(skillSearch, 300);
+  const debouncedCompanySearch = useDebounce(companySearch, 300);
+
   const [selectedAlumni, setSelectedAlumni] = useState<BackendAlumni | null>(
     null
   );
@@ -35,144 +44,131 @@ const AlumniNetworkPage = () => {
     try {
       setLoading(true);
       setError("");
-      // Clear any existing data first - ensure no stale data
       setAlumni([]);
 
-      // Fetch real data from API - no mock data, no fallback
       const mentors = await mentorshipsAPI.getMentors();
 
-      // Validate response is an array
       if (!Array.isArray(mentors)) {
-        console.error("Invalid API response:", mentors);
         throw new Error("Invalid response from server: expected array");
       }
 
-      // Ensure we only use real data - filter out any invalid entries
-      const validMentors = mentors.filter((a: BackendAlumni) => {
-        return a && a._id && typeof a._id === "string" && a.name;
-      });
-
-      // Filter out current user
+      const validMentors = mentors.filter(
+        (a: BackendAlumni) => a && a._id && typeof a._id === "string" && a.name
+      );
       const filtered = validMentors.filter(
         (a: BackendAlumni) => a._id !== user?.id
       );
 
-      // Only set data if we have valid results
       setAlumni(filtered);
     } catch (err) {
-      console.error("Error loading alumni:", err);
       setError(err instanceof Error ? err.message : "Failed to load alumni");
-      // Set empty array on error - no mock data, no fallback
       setAlumni([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter alumni based on search criteria
   const filteredAlumni = alumni.filter((alumni) => {
-    // Name search (case-insensitive)
     const matchesName =
-      nameSearch === "" ||
+      debouncedNameSearch === "" ||
       (alumni.name &&
-        alumni.name.toLowerCase().includes(nameSearch.toLowerCase()));
+        alumni.name.toLowerCase().includes(debouncedNameSearch.toLowerCase()));
 
     const matchesSkill =
-      skillSearch === "" ||
+      debouncedSkillSearch === "" ||
       (alumni.skills &&
         alumni.skills.some((skill) =>
-          skill.toLowerCase().includes(skillSearch.toLowerCase())
+          skill.toLowerCase().includes(debouncedSkillSearch.toLowerCase())
         ));
 
     const matchesCompany =
-      companySearch === "" ||
+      debouncedCompanySearch === "" ||
       (alumni.currentEmployer &&
         alumni.currentEmployer
           .toLowerCase()
-          .includes(companySearch.toLowerCase()));
+          .includes(debouncedCompanySearch.toLowerCase()));
 
     return matchesName && matchesSkill && matchesCompany;
   });
 
-  // Transform BackendAlumni to Alumni for the component
-  const transformAlumni = (backendAlumni: BackendAlumni): Alumni => {
-    return {
-      id: backendAlumni._id,
-      name: backendAlumni.name,
-      email: backendAlumni.email,
-      avatar: backendAlumni.profilePictureUrl || "",
-      role: UserRole.Alumni,
-      isVerified: backendAlumni.isVerified,
-      designation: backendAlumni.currentDesignation || "",
-      currentEmployer: backendAlumni.currentEmployer || "",
-      graduationYear: backendAlumni.graduationYear,
-      degree: backendAlumni.degree,
-      department:
-        backendAlumni.department as unknown as import("../../types").Department,
-      skills: backendAlumni.skills || [],
-      mentorshipAvailable: true, // Default to true for available mentors
-    };
-  };
+  const transformAlumni = useCallback(
+    (backendAlumni: BackendAlumni): Alumni => {
+      return {
+        id: backendAlumni._id,
+        name: backendAlumni.name,
+        email: backendAlumni.email,
+        avatar: backendAlumni.profilePictureUrl || "",
+        role: UserRole.Alumni,
+        isVerified: backendAlumni.isVerified,
+        designation: backendAlumni.currentDesignation || "",
+        currentEmployer: backendAlumni.currentEmployer || "",
+        graduationYear: backendAlumni.graduationYear,
+        degree: backendAlumni.degree,
+        department:
+          backendAlumni.department as unknown as import("../../types").Department,
+        skills: backendAlumni.skills || [],
+        mentorshipAvailable: true,
+      };
+    },
+    []
+  );
 
-  const handleConnect = (alumni: Alumni) => {
-    // Find the backend alumni by matching id
-    const backendAlumni = filteredAlumni.find((a) => a._id === alumni.id);
-    if (backendAlumni) {
-      setSelectedAlumni(backendAlumni);
-      setIsConnectDialogOpen(true);
-    }
-  };
+  const handleConnect = useCallback(
+    (alumni: Alumni) => {
+      const backendAlumni = filteredAlumni.find((a) => a._id === alumni.id);
+      if (backendAlumni) {
+        setSelectedAlumni(backendAlumni);
+        setIsConnectDialogOpen(true);
+      }
+    },
+    [filteredAlumni]
+  );
 
-  const handleSubmitConnect = () => {
-    // Alumni-to-alumni connection feature is not yet implemented in the backend
-    // This would require a separate connection/network request system
+  const handleSubmitConnect = useCallback(() => {
     if (selectedAlumni) {
       alert("Alumni-to-alumni connection feature is coming soon!");
       setIsConnectDialogOpen(false);
       setSelectedAlumni(null);
     }
-  };
+  }, [selectedAlumni]);
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setNameSearch("");
     setSkillSearch("");
     setCompanySearch("");
-  };
+  }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-indigo-950 dark:to-purple-900">
-        <div className="container py-8">
-          <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Loading alumni network...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <AlumniNetworkSkeleton />;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-indigo-950 dark:to-purple-900">
-      <div className="container py-8">
-        <div className="flex flex-col gap-2 mb-8">
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+    <div className="bg-stone-50 min-h-screen">
+      <div className="container mx-auto py-8">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
             Alumni Network
           </h1>
-          <p className="text-muted-foreground">
-            Connect with fellow alumni from your institution and expand your
-            professional network.
+          <p className="text-gray-500 mt-2">
+            Connect with fellow alumni, find mentors, and expand your
+            professional circle.
           </p>
-        </div>
+        </motion.div>
 
         {error && (
-          <div className="mb-4 p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          <div className="mb-4 p-4 border border-red-200 bg-red-50 rounded-md text-red-700">
             {error}
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <aside className="lg:col-span-1">
-            <div className="sticky top-20">
+            <div className="sticky top-24">
               <AlumniSearchFilters
                 nameSearch={nameSearch}
                 onNameSearchChange={setNameSearch}
@@ -185,9 +181,20 @@ const AlumniNetworkPage = () => {
             </div>
           </aside>
 
-          <div className="lg:col-span-3">
+          <main className="lg:col-span-3">
             {filteredAlumni.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.05,
+                    },
+                  },
+                }}
+              >
                 {filteredAlumni.map((backendAlumni) => {
                   const alumni = transformAlumni(backendAlumni);
                   return (
@@ -199,45 +206,31 @@ const AlumniNetworkPage = () => {
                     />
                   );
                 })}
-              </div>
+              </motion.div>
             ) : (
-              <div className="text-center py-12 text-muted-foreground">
-                <p className="text-lg font-medium mb-2">No alumni found</p>
-                <p className="text-sm">
-                  Try adjusting your search criteria or filters.
+              <div className="text-center py-16 rounded-lg border-2 border-dashed border-gray-300">
+                <p className="text-lg font-medium mb-2">No Alumni Found</p>
+                <p className="text-sm text-gray-500">
+                  Try adjusting your search filters.
                 </p>
               </div>
             )}
-          </div>
+          </main>
         </div>
 
         <Dialog
           open={isConnectDialogOpen}
           onOpenChange={setIsConnectDialogOpen}
         >
-          <DialogContent>
+          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Connect with Alumni</DialogTitle>
+              <DialogTitle>Connect with {selectedAlumni?.name}</DialogTitle>
               <DialogDescription>
-                {selectedAlumni && (
-                  <>
-                    Send a connection request to{" "}
-                    <strong>{selectedAlumni.name}</strong>{" "}
-                    {selectedAlumni.currentEmployer
-                      ? `at ${selectedAlumni.currentEmployer}`
-                      : ""}
-                    .
-                  </>
-                )}
+                A connection request will be sent. They will be notified and can
+                accept your request.
               </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
-              <p className="text-sm text-muted-foreground">
-                Your connection request will be sent. They will be notified and
-                can accept your request.
-              </p>
-            </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 pt-4">
               <Button
                 variant="outline"
                 onClick={() => setIsConnectDialogOpen(false)}

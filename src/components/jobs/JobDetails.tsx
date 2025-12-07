@@ -22,10 +22,13 @@ import {
   Building2,
   Upload,
   FileText,
+  Star,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { UserRole } from "../../types";
 import { jobsAPI, uploadAPI } from "../../lib/api";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface JobDetailsProps {
   job: Job | null;
@@ -41,7 +44,6 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
   const [applicationData, setApplicationData] = useState({
     message: "",
     resumeFile: null as File | null,
-    resumeFileName: "",
   });
 
   if (!job) return null;
@@ -57,11 +59,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setApplicationData((prev) => ({
-        ...prev,
-        resumeFile: file,
-        resumeFileName: file.name,
-      }));
+      setApplicationData((prev) => ({ ...prev, resumeFile: file }));
     }
   };
 
@@ -74,25 +72,19 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
 
       let resumeUrl: string | undefined = undefined;
 
-      // Upload resume file if provided
       if (applicationData.resumeFile) {
-        try {
-          const uploadResult = await uploadAPI.uploadResume(
-            applicationData.resumeFile
-          );
-          resumeUrl = uploadResult.url;
-        } catch (uploadErr) {
-          setError(
-            uploadErr instanceof Error
-              ? `Failed to upload resume: ${uploadErr.message}`
-              : "Failed to upload resume"
-          );
-          setLoading(false);
-          return;
-        }
+        const uploadResult = await uploadAPI.uploadResume(
+          applicationData.resumeFile
+        );
+        resumeUrl = uploadResult.url;
       } else if (user.resumeUrl) {
-        // Use existing resume URL if no new file is uploaded
         resumeUrl = user.resumeUrl;
+      }
+
+      if (!resumeUrl) {
+        setError("A resume is required to apply.");
+        setLoading(false);
+        return;
       }
 
       const applicationDataToSend = {
@@ -103,9 +95,8 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
       await jobsAPI.apply(job.id, applicationDataToSend);
 
       setShowApplicationForm(false);
-      setApplicationData({ message: "", resumeFile: null, resumeFileName: "" });
+      setApplicationData({ message: "", resumeFile: null });
       onOpenChange(false);
-
       alert("Application submitted successfully!");
     } catch (err) {
       setError(
@@ -123,53 +114,49 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
         onOpenChange(isOpen);
         if (!isOpen) {
           setShowApplicationForm(false);
-          setApplicationData({
-            message: "",
-            resumeFile: null,
-            resumeFileName: "",
-          });
+          setApplicationData({ message: "", resumeFile: null });
         }
       }}
     >
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto p-0">
         {!showApplicationForm ? (
           <>
-            <DialogHeader>
+            <DialogHeader className="p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <DialogTitle className="text-2xl">{job.title}</DialogTitle>
+                  <DialogTitle className="text-2xl font-bold">
+                    {job.title}
+                  </DialogTitle>
                   <DialogDescription className="text-base mt-1 flex items-center gap-2">
                     <Building2 className="h-4 w-4" /> {job.company}
                   </DialogDescription>
                 </div>
                 {job.referralAvailable && (
-                  <Badge
-                    variant="secondary"
-                    className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
-                  >
-                    Referral Available
+                  <Badge className="bg-green-100 text-green-800">
+                    <Star className="h-3 w-3 mr-1" />
+                    Alumni Referral
                   </Badge>
                 )}
               </div>
             </DialogHeader>
 
-            <div className="grid gap-6 py-4">
-              <div className="flex flex-wrap gap-4 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="px-6 pb-6 grid gap-6">
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4" />
                   {job.type}
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
                   {job.location}
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
                   {job.salaryMin
-                    ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax?.toLocaleString()}`
+                    ? `$${job.salaryMin / 1000}k - $${job.salaryMax / 1000}k`
                     : "Competitive"}
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   Posted: {new Date(job.postedDate).toLocaleDateString()}
                 </div>
@@ -177,26 +164,27 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
 
               <Separator />
 
-              <div className="space-y-3">
-                <h3 className="font-semibold text-lg">Job Description</h3>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+              <div className="prose prose-stone max-w-none">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {job.description}
-                </p>
+                </ReactMarkdown>
               </div>
 
-              <div className="space-y-3">
-                <h3 className="font-semibold text-lg">Target Departments</h3>
-                <div className="flex flex-wrap gap-2">
-                  {job.department.map((dept) => (
-                    <Badge key={dept} variant="outline">
-                      {dept}
-                    </Badge>
-                  ))}
+              {job.department.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-lg">Target Departments</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {job.department.map((dept) => (
+                      <Badge key={dept} variant="outline">
+                        {dept}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="p-6 bg-stone-50 border-t">
               {user && user.role === UserRole.Student ? (
                 <Button className="w-full sm:w-auto" onClick={handleApply}>
                   Apply Now
@@ -208,29 +196,44 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Apply Now
+                    Apply on company site
                   </a>
                 </Button>
               ) : (
                 <Button className="w-full sm:w-auto" disabled>
-                  Apply Now
+                  Applications closed
                 </Button>
               )}
             </DialogFooter>
           </>
         ) : (
           <>
-            <DialogHeader>
-              <DialogTitle>Apply for {job.title}</DialogTitle>
+            <DialogHeader className="p-6">
+              <DialogTitle className="text-2xl font-bold">
+                Apply for {job.title}
+              </DialogTitle>
               <DialogDescription>
-                Submit your application for this position at {job.company}
+                Submit your application to {job.company}
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-6 py-4">
+            <div className="px-6 space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="resume">Resume / CV *</Label>
-                <div className="flex items-center gap-2">
+                <Label htmlFor="resume">Resume/CV *</Label>
+                <div className="flex items-center gap-4">
+                  <Label htmlFor="resume" className="flex-1">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:bg-stone-50 hover:border-gray-400 transition-colors">
+                      <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm font-medium">
+                        {applicationData.resumeFile
+                          ? "File selected"
+                          : "Click to upload"}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        PDF, DOC, DOCX up to 5MB
+                      </p>
+                    </div>
+                  </Label>
                   <Input
                     id="resume"
                     type="file"
@@ -238,36 +241,34 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <Label
-                    htmlFor="resume"
-                    className="flex items-center gap-2 px-4 py-2 border rounded-md cursor-pointer hover:bg-accent"
-                  >
-                    <Upload className="h-4 w-4" />
-                    {applicationData.resumeFileName || "Upload Resume"}
-                  </Label>
-                  {applicationData.resumeFileName && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <FileText className="h-4 w-4" />
-                      {applicationData.resumeFileName}
+                  {applicationData.resumeFile && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 bg-stone-100 p-3 rounded-md">
+                      <FileText className="h-5 w-5 text-gray-500" />
+                      <span className="font-medium truncate">
+                        {applicationData.resumeFile.name}
+                      </span>
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Accepted formats: PDF, DOC, DOCX (Max 5MB)
-                </p>
+                {!applicationData.resumeFile && user && user.resumeUrl && (
+                  <p className="text-xs text-gray-500">
+                    Your saved resume will be used if you don't upload a new
+                    one.
+                  </p>
+                )}
               </div>
 
               {error && (
-                <div className="p-3 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300 text-sm">
+                <div className="p-3 border border-red-200 bg-red-50 rounded-md text-red-700 text-sm">
                   {error}
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="message">Message / Cover Letter</Label>
+                <Label htmlFor="message">Cover Letter (Optional)</Label>
                 <Textarea
                   id="message"
-                  placeholder="Tell us why you're interested in this position and what makes you a great fit..."
+                  placeholder="Introduce yourself and explain why you're a great fit for this role..."
                   value={applicationData.message}
                   onChange={(e) =>
                     setApplicationData((prev) => ({
@@ -275,40 +276,26 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                       message: e.target.value,
                     }))
                   }
-                  rows={6}
+                  rows={5}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Optional: Add a personalized message to stand out
-                </p>
               </div>
-
-              {job.referralAvailable && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-md border border-blue-200 dark:border-blue-800">
-                  <p className="text-sm text-blue-900 dark:text-blue-100">
-                    <strong>Referral Available:</strong> This position has an
-                    alumni referral. Your application will be highlighted.
-                  </p>
-                </div>
-              )}
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="p-6 bg-stone-50 border-t">
               <Button
                 variant="outline"
                 onClick={() => {
                   setShowApplicationForm(false);
-                  setApplicationData({
-                    message: "",
-                    resumeFile: null,
-                    resumeFileName: "",
-                  });
+                  setApplicationData({ message: "", resumeFile: null });
                 }}
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSubmitApplication}
-                disabled={loading || !applicationData.resumeFile}
+                disabled={
+                  loading || (!applicationData.resumeFile && !user?.resumeUrl)
+                }
               >
                 {loading ? "Submitting..." : "Submit Application"}
               </Button>
