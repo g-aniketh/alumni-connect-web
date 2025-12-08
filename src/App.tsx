@@ -3,7 +3,6 @@ import {
   Routes,
   Route,
   Outlet,
-  Navigate,
   useLocation,
 } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
@@ -60,42 +59,20 @@ import DomainExplorerPage from "./pages/DomainExplorerPage";
 import SkillRadarPage from "./pages/SkillRadarPage";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { UserRole, type Alumni, type Student } from "./types";
+import { UserRole } from "./types";
 import PendingVerificationPage from "./pages/PendingVerificationPage";
-import { tokenService } from "./lib/api";
 import "./App.css";
 
 // Global app shell to enforce pending-verification redirect and navbar visibility
 const AppShell = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
 
-  // Check verification both from in-memory user and from cookie so that
-  // direct URL access / hard refreshes are still locked down.
-  const isUnverifiedByUser =
-    isAuthenticated &&
-    user &&
-    (user.role === UserRole.Alumni || user.role === UserRole.Student) &&
-    !(user as Alumni | Student).isVerified;
-
-  const cookieVerified = tokenService.getVerificationStatus();
-  const isUnverifiedByCookie = cookieVerified === false;
-
-  const isUnverifiedUser = isUnverifiedByUser || isUnverifiedByCookie;
-
-  // If unverified alumni/student tries to access anything except pending-verification and onboarding,
-  // force redirect to the pending verification page.
+  // Email verification check removed - users can login without verification
   const isOnboardingPage = location.pathname.startsWith("/onboarding");
-  if (
-    isUnverifiedUser &&
-    location.pathname !== "/pending-verification" &&
-    !isOnboardingPage
-  ) {
-    return <Navigate to="/pending-verification" replace />;
-  }
 
-  // Hide navbar entirely for unverified users on the pending verification flow and onboarding
-  const showNavbar = !isUnverifiedUser && !isOnboardingPage;
+  // Show navbar for all authenticated users (verification not required)
+  const showNavbar = isAuthenticated && !isOnboardingPage;
 
   return (
     <div className="min-h-screen bg-background font-sans antialiased">
@@ -489,7 +466,7 @@ function App() {
 
             {/* Domain Explorer */}
             <Route path="/domain-explorer" element={<DomainExplorerPage />} />
-            
+
             {/* Skill Radar */}
             <Route path="/skill-radar" element={<SkillRadarPage />} />
 

@@ -253,21 +253,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (userResponse.user) {
-        // Check email verification status before allowing login (for Alumni and Student)
-        if (role === UserRole.Alumni || role === UserRole.Student) {
-          const backendUser = userResponse.user as
-            | BackendAlumni
-            | BackendStudent;
-          // Check emailVerified field - this is the email verification status
-          if (!backendUser.emailVerified) {
-            // Clear tokens that were stored
-            tokenService.clearTokens();
-            throw new Error(
-              "Please verify your email before logging in. Check your inbox for the verification link."
-            );
-          }
-        }
-
         // role is already UserRole enum from login function parameter
         // But we should use the role from the response to be safe
         const transformedUser = transformUser(
