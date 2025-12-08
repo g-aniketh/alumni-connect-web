@@ -57,6 +57,7 @@ import AlumniProfileCompletionPage from "./pages/onboarding/AlumniProfileComplet
 import StudentProfileCompletionPage from "./pages/onboarding/StudentProfileCompletionPage";
 import CollegeProfileCompletionPage from "./pages/onboarding/CollegeProfileCompletionPage";
 import DomainExplorerPage from "./pages/DomainExplorerPage";
+import SkillRadarPage from "./pages/SkillRadarPage";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { UserRole, type Alumni, type Student } from "./types";
@@ -488,6 +489,9 @@ function App() {
 
             {/* Domain Explorer */}
             <Route path="/domain-explorer" element={<DomainExplorerPage />} />
+            
+            {/* Skill Radar */}
+            <Route path="/skill-radar" element={<SkillRadarPage />} />
 
             {/* Legacy route for alumni directory (public) */}
             <Route path="/alumni" element={<AlumniDirectoryPage />} />

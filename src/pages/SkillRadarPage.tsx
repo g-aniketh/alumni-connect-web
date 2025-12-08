@@ -1,0 +1,257 @@
+import { useState, useMemo } from "react";
+import {
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { AlertTriangle, CheckCircle2, TrendingUp, ArrowRight } from "lucide-react";
+import { skillData, type RoleSkillData, type SkillMetric } from "@/lib/skillData";
+import { Link } from "react-router-dom";
+
+const SkillRadarPage = () => {
+  const [selectedRole, setSelectedRole] = useState<string>(skillData[0].roleId);
+
+  const currentData = useMemo(() => {
+    return skillData.find((d: RoleSkillData) => d.roleId === selectedRole) || skillData[0];
+  }, [selectedRole]);
+
+  // Calculate gaps
+  const gaps = currentData.skills.map((skill: SkillMetric) => ({
+    ...skill,
+    gap: skill.industryAverage - skill.studentScore,
+  })).sort((a: { gap: number }, b: { gap: number }) => b.gap - a.gap);
+
+  const laggingSkills = gaps.filter((s: { gap: number }) => s.gap > 15);
+  const strongSkills = gaps.filter((s: { gap: number }) => s.gap <= 5);
+
+  return (
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">
+          Skill Radar Analysis
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          Compare your skills with industry standards to identify gaps and growth opportunities.
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* Left Column: Controls & Chart */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <CardTitle>Skill Comparison</CardTitle>
+                  <CardDescription>
+                    You vs. Industry Average for {currentData.roleName}
+                  </CardDescription>
+                </div>
+                <Select
+                  value={selectedRole}
+                  onValueChange={setSelectedRole}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {skillData.map((role: RoleSkillData) => (
+                      <SelectItem key={role.roleId} value={role.roleId}>
+                        {role.roleName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px] w-full flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={currentData.skills}>
+                    <PolarGrid stroke="#e5e7eb" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 12 }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                    <Radar
+                      name="My Skills"
+                      dataKey="studentScore"
+                      stroke="#2563eb"
+                      fill="#2563eb"
+                      fillOpacity={0.3}
+                    />
+                    <Radar
+                      name="Industry Avg"
+                      dataKey="industryAverage"
+                      stroke="#16a34a"
+                      fill="#16a34a"
+                      fillOpacity={0.3}
+                    />
+                    <Legend />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Detailed Breakdown */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Detailed Breakdown</CardTitle>
+              <CardDescription>
+                Skill-by-skill comparison
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {currentData.skills.map((skill: SkillMetric) => (
+                <div key={skill.subject} className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">{skill.subject}</span>
+                    <span className="text-muted-foreground">
+                      {skill.studentScore} / {skill.industryAverage} (Target)
+                    </span>
+                  </div>
+                  <div className="relative h-2 w-full bg-secondary rounded-full overflow-hidden">
+                    {/* Industry Marker */}
+                    <div 
+                      className="absolute top-0 bottom-0 w-1 bg-green-500 z-10"
+                      style={{ left: `${skill.industryAverage}%` }}
+                    />
+                    {/* Student Progress */}
+                    <div 
+                      className="h-full bg-primary transition-all duration-500"
+                      style={{ width: `${skill.studentScore}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column: Insights & Actions */}
+        <div className="space-y-6">
+          {/* Lagging Skills Alert */}
+          <Card className="border-l-4 border-l-yellow-500">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-yellow-600">
+                <AlertTriangle className="h-5 w-5" />
+                Attention Needed
+              </CardTitle>
+              <CardDescription>
+                Skills where you are significantly behind the industry average.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {laggingSkills.length > 0 ? (
+                laggingSkills.map((skill: SkillMetric & { gap: number }) => (
+                  <div key={skill.subject} className="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-semibold text-yellow-900">{skill.subject}</span>
+                      <Badge variant="outline" className="bg-white text-yellow-700 border-yellow-200">
+                        -{skill.gap} pts
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-yellow-700">
+                      Industry expects proficiency of {skill.industryAverage}, but you are at {skill.studentScore}.
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Great job! You are keeping up with industry standards in all areas.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Strong Skills */}
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-600">
+                <CheckCircle2 className="h-5 w-5" />
+                Your Strengths
+              </CardTitle>
+              <CardDescription>
+                Skills where you meet or exceed industry standards.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {strongSkills.length > 0 ? (
+                  strongSkills.map((skill: SkillMetric & { gap: number }) => (
+                    <Badge key={skill.subject} className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+                      {skill.subject}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Keep learning to build your strengths!
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recommendations */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Recommendations
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Based on your skill gaps in <strong>{currentData.roleName}</strong>, we recommend:
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2 text-sm">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5" />
+                  <span>Focus on <strong>{laggingSkills[0]?.subject || "core skills"}</strong> projects to build practical experience.</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5" />
+                  <span>Connect with alumni mentors specializing in {currentData.roleName}.</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5" />
+                  <span>Check out the Domain Explorer for a detailed roadmap.</span>
+                </li>
+              </ul>
+              <Button className="w-full mt-2" asChild>
+                <Link to="/domain-explorer">
+                  Go to Domain Explorer <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SkillRadarPage;

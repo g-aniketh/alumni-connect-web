@@ -70,6 +70,7 @@ const Navbar = () => {
           { name: "Jobs", path: "/jobs" },
           { name: "Events", path: "/events" },
           { name: "Explorer", path: "/domain-explorer" },
+          { name: "Skill Radar", path: "/skill-radar" },
         ];
       case UserRole.Alumni:
         return [
