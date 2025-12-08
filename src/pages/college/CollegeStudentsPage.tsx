@@ -36,6 +36,7 @@ import { Department } from "../../types";
 import { Search, CheckCircle2, GraduationCap } from "lucide-react";
 import { motion } from "motion/react";
 import CollegeStudentsPageSkeleton from "./CollegeStudentsPageSkeleton";
+const PAGE_SIZE = 10;
 
 const CollegeStudentsPage = () => {
   const [loading, setLoading] = useState(true);
@@ -44,10 +45,15 @@ const CollegeStudentsPage = () => {
   const [pendingStudents, setPendingStudents] = useState<BackendStudent[]>([]);
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     loadStudents();
   }, []);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, departmentFilter]);
 
   const loadStudents = async () => {
     try {
@@ -85,6 +91,12 @@ const CollegeStudentsPage = () => {
 
     return matchesSearch && matchesDept;
   });
+
+  const pageCount = Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE));
+  const paginatedStudents = filteredStudents.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
 
   if (loading) {
     return <CollegeStudentsPageSkeleton />;
@@ -196,7 +208,7 @@ const CollegeStudentsPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredStudents.map((student) => (
+                    {paginatedStudents.map((student) => (
                       <TableRow key={student._id}>
                         <TableCell>
                           <div className="flex items-center gap-3">
@@ -246,6 +258,11 @@ const CollegeStudentsPage = () => {
                   </TableBody>
                 </Table>
               </div>
+              <PaginationControls
+                page={page}
+                pageCount={pageCount}
+                onPageChange={setPage}
+              />
             </CardContent>
           </Card>
         </motion.div>
@@ -310,5 +327,43 @@ const EmptyState = ({ message }: EmptyStateProps) => (
     {message}
   </div>
 );
+
+type PaginationControlsProps = {
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+};
+
+const PaginationControls = ({
+  page,
+  pageCount,
+  onPageChange,
+}: PaginationControlsProps) => {
+  const canPrev = page > 1;
+  const canNext = page < pageCount;
+  return (
+    <div className="flex items-center justify-end gap-2 pt-4">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canPrev}
+        onClick={() => canPrev && onPageChange(page - 1)}
+      >
+        Previous
+      </Button>
+      <span className="text-sm text-gray-600">
+        Page {page} of {pageCount}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canNext}
+        onClick={() => canNext && onPageChange(page + 1)}
+      >
+        Next
+      </Button>
+    </div>
+  );
+};
 
 export default CollegeStudentsPage;

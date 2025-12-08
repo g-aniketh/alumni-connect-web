@@ -75,6 +75,7 @@ const Navbar = () => {
         return [
           { name: "Dashboard", path: "/alumni/dashboard" },
           { name: "Network", path: "/alumni/network" },
+          { name: "Events", path: "/events" },
           { name: "Jobs", path: "/jobs" },
           { name: "Mentorships", path: "/alumni/mentorships" },
         ];

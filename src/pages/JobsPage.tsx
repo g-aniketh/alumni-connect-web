@@ -31,6 +31,9 @@ import { motion } from "motion/react";
 import JobsPageSkeleton from "./JobsPageSkeleton";
 import type React from "react";
 
+const PAGE_SIZE = 6;
+const MY_JOBS_PAGE_SIZE = 5;
+
 const JobsPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -47,6 +50,8 @@ const JobsPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const [myJobsPage, setMyJobsPage] = useState(1);
 
   useEffect(() => {
     loadJobs();
@@ -63,6 +68,10 @@ const JobsPage = () => {
       loadMyApplications();
     }
   }, [user]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, locationFilter, typeFilter]);
 
   const loadMyApplications = async () => {
     try {
@@ -132,6 +141,21 @@ const JobsPage = () => {
         : true)
     );
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
+  const paginatedJobs = filteredJobs.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
+
+  const totalMyJobPages = Math.max(
+    1,
+    Math.ceil(myJobs.length / MY_JOBS_PAGE_SIZE)
+  );
+  const paginatedMyJobs = myJobs.slice(
+    (myJobsPage - 1) * MY_JOBS_PAGE_SIZE,
+    myJobsPage * MY_JOBS_PAGE_SIZE
+  );
 
   const handleViewDetails = (job: BackendJob) => {
     setSelectedJob(job);
@@ -256,14 +280,21 @@ const JobsPage = () => {
               }}
             >
               {filteredJobs.length > 0 ? (
-                filteredJobs.map((job) => (
-                  <JobListItem
-                    key={job._id}
-                    job={job}
-                    onSelect={handleViewDetails}
-                    hasApplied={hasApplied(job._id)}
+                <>
+                  {paginatedJobs.map((job) => (
+                    <JobListItem
+                      key={job._id}
+                      job={job}
+                      onSelect={handleViewDetails}
+                      hasApplied={hasApplied(job._id)}
+                    />
+                  ))}
+                  <PaginationControls
+                    page={page}
+                    pageCount={totalPages}
+                    onPageChange={setPage}
                   />
-                ))
+                </>
               ) : (
                 <EmptyState
                   message="No jobs found matching your criteria."
@@ -283,13 +314,20 @@ const JobsPage = () => {
               }}
             >
               {myJobs.length > 0 ? (
-                myJobs.map((job) => (
-                  <MyJobListItem
-                    key={job._id}
-                    job={job}
-                    userRole={user?.role}
+                <>
+                  {paginatedMyJobs.map((job) => (
+                    <MyJobListItem
+                      key={job._id}
+                      job={job}
+                      userRole={user?.role}
+                    />
+                  ))}
+                  <PaginationControls
+                    page={myJobsPage}
+                    pageCount={totalMyJobPages}
+                    onPageChange={setMyJobsPage}
                   />
-                ))
+                </>
               ) : (
                 <EmptyState
                   message="You haven't posted any jobs yet."
@@ -432,5 +470,43 @@ const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
     )}
   </div>
 );
+
+type PaginationControlsProps = {
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+};
+
+const PaginationControls = ({
+  page,
+  pageCount,
+  onPageChange,
+}: PaginationControlsProps) => {
+  const canPrev = page > 1;
+  const canNext = page < pageCount;
+  return (
+    <div className="flex items-center justify-end gap-2 pt-2">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canPrev}
+        onClick={() => canPrev && onPageChange(page - 1)}
+      >
+        Previous
+      </Button>
+      <span className="text-sm text-gray-600">
+        Page {page} of {pageCount}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canNext}
+        onClick={() => canNext && onPageChange(page + 1)}
+      >
+        Next
+      </Button>
+    </div>
+  );
+};
 
 export default JobsPage;

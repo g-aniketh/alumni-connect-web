@@ -17,6 +17,8 @@ import { motion } from "motion/react";
 import AlumniNetworkSkeleton from "./AlumniNetworkSkeleton";
 import { useDebounce } from "../../hooks/useDebounce";
 
+const PAGE_SIZE = 9;
+
 const AlumniNetworkPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -35,10 +37,15 @@ const AlumniNetworkPage = () => {
     null
   );
   const [isConnectDialogOpen, setIsConnectDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     loadAlumni();
   }, []);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedNameSearch, debouncedSkillSearch, debouncedCompanySearch]);
 
   const loadAlumni = async () => {
     try {
@@ -90,6 +97,12 @@ const AlumniNetworkPage = () => {
 
     return matchesName && matchesSkill && matchesCompany;
   });
+
+  const pageCount = Math.max(1, Math.ceil(filteredAlumni.length / PAGE_SIZE));
+  const paginatedAlumni = filteredAlumni.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
 
   const transformAlumni = useCallback(
     (backendAlumni: BackendAlumni): Alumni => {
@@ -181,32 +194,39 @@ const AlumniNetworkPage = () => {
             </div>
           </aside>
 
-          <main className="lg:col-span-3">
+          <main className="lg:col-span-3 space-y-4">
             {filteredAlumni.length > 0 ? (
-              <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.05,
+              <>
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.05,
+                      },
                     },
-                  },
-                }}
-              >
-                {filteredAlumni.map((backendAlumni) => {
-                  const alumni = transformAlumni(backendAlumni);
-                  return (
-                    <AlumniProfileCard
-                      key={backendAlumni._id}
-                      alumni={alumni}
-                      onConnect={handleConnect}
-                      viewerRole={user?.role}
-                    />
-                  );
-                })}
-              </motion.div>
+                  }}
+                >
+                  {paginatedAlumni.map((backendAlumni) => {
+                    const alumni = transformAlumni(backendAlumni);
+                    return (
+                      <AlumniProfileCard
+                        key={backendAlumni._id}
+                        alumni={alumni}
+                        onConnect={handleConnect}
+                        viewerRole={user?.role}
+                      />
+                    );
+                  })}
+                </motion.div>
+                <PaginationControls
+                  page={page}
+                  pageCount={pageCount}
+                  onPageChange={setPage}
+                />
+              </>
             ) : (
               <div className="text-center py-16 rounded-lg border-2 border-dashed border-gray-300">
                 <p className="text-lg font-medium mb-2">No Alumni Found</p>
@@ -242,6 +262,44 @@ const AlumniNetworkPage = () => {
           </DialogContent>
         </Dialog>
       </div>
+    </div>
+  );
+};
+
+type PaginationControlsProps = {
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+};
+
+const PaginationControls = ({
+  page,
+  pageCount,
+  onPageChange,
+}: PaginationControlsProps) => {
+  const canPrev = page > 1;
+  const canNext = page < pageCount;
+  return (
+    <div className="flex items-center justify-end gap-2 pt-2">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canPrev}
+        onClick={() => canPrev && onPageChange(page - 1)}
+      >
+        Previous
+      </Button>
+      <span className="text-sm text-gray-600">
+        Page {page} of {pageCount}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canNext}
+        onClick={() => canNext && onPageChange(page + 1)}
+      >
+        Next
+      </Button>
     </div>
   );
 };

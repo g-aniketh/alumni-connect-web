@@ -36,6 +36,7 @@ import { Department } from "../../types";
 import { Search, CheckCircle2, Users } from "lucide-react";
 import { motion } from "motion/react";
 import CollegeAlumniPageSkeleton from "./CollegeAlumniPageSkeleton";
+const PAGE_SIZE = 10;
 
 const CollegeAlumniPage = () => {
   const [loading, setLoading] = useState(true);
@@ -45,10 +46,15 @@ const CollegeAlumniPage = () => {
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     loadAlumni();
   }, []);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, departmentFilter, yearFilter]);
 
   const loadAlumni = async () => {
     try {
@@ -109,6 +115,12 @@ const CollegeAlumniPage = () => {
       yearFilter === "all" || alumnus.graduationYear.toString() === yearFilter;
     return matchesSearch && matchesDept && matchesYear;
   });
+
+  const pageCount = Math.max(1, Math.ceil(filteredAlumni.length / PAGE_SIZE));
+  const paginatedAlumni = filteredAlumni.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
 
   if (loading) {
     return <CollegeAlumniPageSkeleton />;
@@ -233,7 +245,7 @@ const CollegeAlumniPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredAlumni.map((alumnus) => (
+                    {paginatedAlumni.map((alumnus) => (
                       <TableRow key={alumnus._id}>
                         <TableCell>
                           <div className="flex items-center gap-3">
@@ -286,6 +298,11 @@ const CollegeAlumniPage = () => {
                   </TableBody>
                 </Table>
               </div>
+              <PaginationControls
+                page={page}
+                pageCount={pageCount}
+                onPageChange={setPage}
+              />
             </CardContent>
           </Card>
         </motion.div>
@@ -345,5 +362,43 @@ const EmptyState = ({ message }: EmptyStateProps) => (
     {message}
   </div>
 );
+
+type PaginationControlsProps = {
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+};
+
+const PaginationControls = ({
+  page,
+  pageCount,
+  onPageChange,
+}: PaginationControlsProps) => {
+  const canPrev = page > 1;
+  const canNext = page < pageCount;
+  return (
+    <div className="flex items-center justify-end gap-2 pt-4">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canPrev}
+        onClick={() => canPrev && onPageChange(page - 1)}
+      >
+        Previous
+      </Button>
+      <span className="text-sm text-gray-600">
+        Page {page} of {pageCount}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canNext}
+        onClick={() => canNext && onPageChange(page + 1)}
+      >
+        Next
+      </Button>
+    </div>
+  );
+};
 
 export default CollegeAlumniPage;

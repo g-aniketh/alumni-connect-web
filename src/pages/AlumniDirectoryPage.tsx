@@ -15,6 +15,7 @@ import { Label } from "../components/ui/label";
 import { mentorshipsAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import type { BackendAlumni } from "../types/api";
+const PAGE_SIZE = 9;
 
 const AlumniDirectoryPage = () => {
   const { user } = useAuth();
@@ -31,10 +32,15 @@ const AlumniDirectoryPage = () => {
   const [requestMessage, setRequestMessage] = useState("");
   const [areasOfInterest, setAreasOfInterest] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     loadAlumni();
   }, []);
+
+  useEffect(() => {
+    setPage(1);
+  }, [nameSearch, skillSearch, companySearch]);
 
   const loadAlumni = async () => {
     try {
@@ -216,21 +222,33 @@ const AlumniDirectoryPage = () => {
           </aside>
 
           {/* Alumni Cards Grid */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 space-y-4">
             {filteredAlumni.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredAlumni.map((backendAlumni) => {
-                  const alumni = transformAlumni(backendAlumni);
-                  return (
-                    <AlumniProfileCard
-                      key={backendAlumni._id}
-                      alumni={alumni}
-                      onRequestMentorship={handleRequestMentorship}
-                      viewerRole={user?.role}
-                    />
-                  );
-                })}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredAlumni
+                    .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+                    .map((backendAlumni) => {
+                      const alumni = transformAlumni(backendAlumni);
+                      return (
+                        <AlumniProfileCard
+                          key={backendAlumni._id}
+                          alumni={alumni}
+                          onRequestMentorship={handleRequestMentorship}
+                          viewerRole={user?.role}
+                        />
+                      );
+                    })}
+                </div>
+                <PaginationControls
+                  page={page}
+                  pageCount={Math.max(
+                    1,
+                    Math.ceil(filteredAlumni.length / PAGE_SIZE)
+                  )}
+                  onPageChange={setPage}
+                />
+              </>
             ) : (
               <div className="text-center py-12">
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-2 border-blue-200 dark:border-gray-700 rounded-lg p-12">
@@ -359,6 +377,44 @@ const AlumniDirectoryPage = () => {
           </DialogContent>
         </Dialog>
       </div>
+    </div>
+  );
+};
+
+type PaginationControlsProps = {
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+};
+
+const PaginationControls = ({
+  page,
+  pageCount,
+  onPageChange,
+}: PaginationControlsProps) => {
+  const canPrev = page > 1;
+  const canNext = page < pageCount;
+  return (
+    <div className="flex items-center justify-end gap-2 pt-2">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canPrev}
+        onClick={() => canPrev && onPageChange(page - 1)}
+      >
+        Previous
+      </Button>
+      <span className="text-sm text-gray-600">
+        Page {page} of {pageCount}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={!canNext}
+        onClick={() => canNext && onPageChange(page + 1)}
+      >
+        Next
+      </Button>
     </div>
   );
 };
