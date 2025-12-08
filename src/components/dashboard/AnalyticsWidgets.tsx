@@ -28,19 +28,25 @@ import {
   PolarGrid,
   PolarRadiusAxis,
 } from "recharts";
-import type { TooltipProps } from "recharts";
+import type { NameType, Payload, ValueType } from "recharts";
 
-const palettes = {
+type ChartPaletteKey = "student" | "college" | "alumni";
+
+const palettes: Record<ChartPaletteKey, string[]> = {
   student: ["#7C3AED", "#EC4899", "#22D3EE", "#F59E0B", "#10B981"],
   college: ["#2563EB", "#22C55E", "#F97316", "#0EA5E9", "#D946EF"],
   alumni: ["#14B8A6", "#F59E0B", "#8B5CF6", "#F43F5E", "#0EA5E9"],
 };
 
-const ChartTooltip = ({
-  active,
-  payload,
-  label,
-}: TooltipProps<number, string>) => {
+type ChartTooltipPayload = Payload<ValueType, NameType>;
+
+type ChartTooltipProps = {
+  active?: boolean;
+  payload?: ChartTooltipPayload[];
+  label?: string;
+};
+
+const ChartTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null;
 
   return (
@@ -49,7 +55,7 @@ const ChartTooltip = ({
         <p className="text-xs font-semibold text-muted-foreground">{label}</p>
       )}
       <div className="space-y-1">
-        {payload.map((item) => (
+        {payload.map((item: ChartTooltipPayload) => (
           <p key={item.name} className="text-sm flex items-center gap-2">
             <span
               className="inline-block h-2 w-2 rounded-full"
@@ -64,17 +70,19 @@ const ChartTooltip = ({
   );
 };
 
+type ChartCardProps = {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+  className?: string;
+};
+
 const ChartCard = ({
   title,
   description,
   children,
   className = "",
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-  className?: string;
-}) => (
+}: ChartCardProps) => (
   <Card
     className={`bg-linear-to-b from-white to-stone-50 border-stone-100 shadow-sm ${className}`}
   >
@@ -90,9 +98,30 @@ const ChartCard = ({
   </Card>
 );
 
+type SkillProgressPoint = {
+  month: string;
+  skills: number;
+  certifications: number;
+};
+
+type ApplicationStage = { stage: string; count: number };
+type EventSlice = { name: string; value: number };
+type MentorshipImpactPoint = { month: string; confidence: number; network: number };
+
+type PlacementTrendPoint = { year: string; placements: number; offers: number };
+type DepartmentOutcome = { dept: string; employed: number };
+type GeoSlice = { name: string; value: number };
+type VerificationHealth = { label: string; verified: number; pending: number };
+
+type MentorshipHealthPoint = { month: string; active: number; new: number; completed: number };
+type JobImpactSlice = { label: string; value: number };
+type EngagementBar = { channel: string; score: number };
+type GivingBackPoint = { quarter: string; donations: number; volunteerHours: number };
+type RelationshipRadar = { metric: string; score: number };
+
 export const StudentAnalytics = () => {
   const palette = palettes.student;
-  const skillProgress = [
+  const skillProgress: SkillProgressPoint[] = [
     { month: "Jan", skills: 1, certifications: 0 },
     { month: "Feb", skills: 3, certifications: 1 },
     { month: "Mar", skills: 5, certifications: 2 },
@@ -101,21 +130,21 @@ export const StudentAnalytics = () => {
     { month: "Jun", skills: 15, certifications: 6 },
   ];
 
-  const applicationStages = [
+  const applicationStages: ApplicationStage[] = [
     { stage: "Applied", count: 24 },
     { stage: "Under Review", count: 16 },
     { stage: "Interview", count: 9 },
     { stage: "Offer", count: 4 },
   ];
 
-  const eventEngagement = [
+  const eventEngagement: EventSlice[] = [
     { name: "Workshops", value: 38 },
     { name: "Hackathons", value: 24 },
     { name: "Alumni Talks", value: 29 },
     { name: "Hiring Drives", value: 17 },
   ];
 
-  const mentorshipImpact = [
+  const mentorshipImpact: MentorshipImpactPoint[] = [
     { month: "Jan", confidence: 52, network: 10 },
     { month: "Feb", confidence: 59, network: 14 },
     { month: "Mar", confidence: 66, network: 18 },
@@ -241,7 +270,7 @@ export const StudentAnalytics = () => {
 
 export const CollegeAnalytics = () => {
   const palette = palettes.college;
-  const placementTrend = [
+  const placementTrend: PlacementTrendPoint[] = [
     { year: "2020", placements: 64, offers: 78 },
     { year: "2021", placements: 69, offers: 89 },
     { year: "2022", placements: 76, offers: 98 },
@@ -249,7 +278,7 @@ export const CollegeAnalytics = () => {
     { year: "2024", placements: 89, offers: 132 },
   ];
 
-  const departmentOutcomes = [
+  const departmentOutcomes: DepartmentOutcome[] = [
     { dept: "CSE", employed: 93 },
     { dept: "ECE", employed: 79 },
     { dept: "ME", employed: 66 },
@@ -257,7 +286,7 @@ export const CollegeAnalytics = () => {
     { dept: "MBA", employed: 85 },
   ];
 
-  const alumniGeo = [
+  const alumniGeo: GeoSlice[] = [
     { name: "India", value: 52 },
     { name: "North America", value: 18 },
     { name: "Europe", value: 12 },
@@ -265,7 +294,7 @@ export const CollegeAnalytics = () => {
     { name: "Middle East", value: 7 },
   ];
 
-  const verificationHealth = [
+  const verificationHealth: VerificationHealth[] = [
     { label: "Students", verified: 78, pending: 22 },
     { label: "Alumni", verified: 84, pending: 16 },
   ];
@@ -386,7 +415,7 @@ export const CollegeAnalytics = () => {
 
 export const AlumniAnalytics = () => {
   const palette = palettes.alumni;
-  const mentorshipHealth = [
+  const mentorshipHealth: MentorshipHealthPoint[] = [
     { month: "Jan", active: 14, new: 6, completed: 2 },
     { month: "Feb", active: 15, new: 7, completed: 3 },
     { month: "Mar", active: 17, new: 8, completed: 4 },
@@ -395,27 +424,27 @@ export const AlumniAnalytics = () => {
     { month: "Jun", active: 23, new: 12, completed: 8 },
   ];
 
-  const jobImpact = [
+  const jobImpact: JobImpactSlice[] = [
     { label: "Interviews", value: 44 },
     { label: "Shortlisted", value: 27 },
     { label: "Offers", value: 13 },
   ];
 
-  const engagement = [
+  const engagement: EngagementBar[] = [
     { channel: "Mentorship", score: 89 },
     { channel: "Events", score: 74 },
     { channel: "Jobs", score: 82 },
     { channel: "Donations", score: 67 },
   ];
 
-  const givingBack = [
+  const givingBack: GivingBackPoint[] = [
     { quarter: "Q1", donations: 48, volunteerHours: 62 },
     { quarter: "Q2", donations: 55, volunteerHours: 69 },
     { quarter: "Q3", donations: 53, volunteerHours: 73 },
     { quarter: "Q4", donations: 61, volunteerHours: 80 },
   ];
 
-  const relationshipDepth = [
+  const relationshipDepth: RelationshipRadar[] = [
     { metric: "Career", score: 82 },
     { metric: "Mentorship", score: 91 },
     { metric: "Events", score: 74 },
