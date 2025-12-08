@@ -69,6 +69,7 @@ const Navbar = () => {
           { name: "Alumni", path: "/student/alumni" },
           { name: "Jobs", path: "/jobs" },
           { name: "Events", path: "/events" },
+          { name: "Explorer", path: "/domain-explorer" },
         ];
       case UserRole.Alumni:
         return [

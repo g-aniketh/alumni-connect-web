@@ -55,6 +55,7 @@ import CollegeBulkImportPage from "./pages/college/CollegeBulkImportPage";
 import AlumniProfileCompletionPage from "./pages/onboarding/AlumniProfileCompletionPage";
 import StudentProfileCompletionPage from "./pages/onboarding/StudentProfileCompletionPage";
 import CollegeProfileCompletionPage from "./pages/onboarding/CollegeProfileCompletionPage";
+import DomainExplorerPage from "./pages/DomainExplorerPage";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { UserRole, type Alumni, type Student } from "./types";
@@ -473,6 +474,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Domain Explorer */}
+            <Route path="/domain-explorer" element={<DomainExplorerPage />} />
 
             {/* Legacy route for alumni directory (public) */}
             <Route path="/alumni" element={<AlumniDirectoryPage />} />
