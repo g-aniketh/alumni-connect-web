@@ -102,7 +102,7 @@ const Navbar = () => {
       <div className="container mx-auto flex h-16 items-center">
         <Link to="/" className="mr-8 flex items-center space-x-2">
           <GraduationCap className="h-7 w-7" />
-          <span className="font-bold text-lg">AluminiConnect</span>
+          <span className="font-bold text-lg">AlumniConnect</span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
@@ -178,7 +178,7 @@ const Navbar = () => {
             <SheetContent side="right">
               <Link to="/" className="flex items-center space-x-2 mb-8">
                 <GraduationCap className="h-7 w-7" />
-                <span className="font-bold text-lg">AluminiConnect</span>
+                <span className="font-bold text-lg">AlumniConnect</span>
               </Link>
               <nav className="grid gap-4">
                 {navigationItems.map((item) => (
