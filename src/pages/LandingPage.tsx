@@ -29,7 +29,7 @@ const LandingPage = () => {
         <div className="container mx-auto flex h-16 items-center">
           <Link to="/" className="mr-6 flex items-center space-x-2">
             <GraduationCap className="h-7 w-7 text-black" />
-            <span className="font-bold text-lg">AluminiConnect</span>
+            <span className="font-bold text-lg">AlumniConnect</span>
           </Link>
           <div className="flex flex-1 items-center justify-end space-x-2">
             <Button variant="ghost" asChild>
@@ -63,7 +63,7 @@ const LandingPage = () => {
                 Where Your Future Finds Its Voice.
               </h1>
               <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-                Go beyond the classroom. AluminiConnect is your personal bridge
+                Go beyond the classroom. AlumniConnect is your personal bridge
                 to a powerful network of mentors, career-defining opportunities,
                 and lifelong connections with your institution.
               </p>
@@ -170,7 +170,7 @@ const LandingPage = () => {
                 avatar="S"
               />
               <Testimonial
-                quote="As an alumnus, it’s incredibly fulfilling to give back. I’ve hired two talented interns from my alma mater through AluminiConnect."
+                quote="As an alumnus, it’s incredibly fulfilling to give back. I’ve hired two talented interns from my alma mater through AlumniConnect."
                 author="Michael, Class of '12"
                 avatar="M"
               />
@@ -205,10 +205,10 @@ const LandingPage = () => {
         <div className="container mx-auto py-8 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <GraduationCap className="h-6 w-6 text-black" />
-            <span className="font-semibold">AluminiConnect</span>
+            <span className="font-semibold">AlumniConnect</span>
           </div>
           <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} AluminiConnect. All Rights Reserved.
+            © {new Date().getFullYear()} AlumniConnect. All Rights Reserved.
           </p>
         </div>
       </footer>
