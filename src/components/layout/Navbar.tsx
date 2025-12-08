@@ -76,6 +76,7 @@ const Navbar = () => {
           { name: "Dashboard", path: "/alumni/dashboard" },
           { name: "Network", path: "/alumni/network" },
           { name: "Events", path: "/events" },
+          { name: "LinkedIn Feed", path: "/alumni/linkedin-feed" },
           { name: "Jobs", path: "/jobs" },
           { name: "Mentorships", path: "/alumni/mentorships" },
         ];

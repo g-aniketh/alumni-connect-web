@@ -204,22 +204,22 @@ const StudentDashboardPage = () => {
             <DashboardSection title="Quick Actions">
               <div className="grid grid-cols-2 gap-4">
                 <QuickActionButton
-                  icon={Briefcase}
+              icon={Briefcase}
                   title="Browse Jobs"
-                  link="/jobs"
-                />
+              link="/jobs"
+            />
                 <QuickActionButton
-                  icon={Users}
+              icon={Users}
                   title="Find Mentors"
                   link="/student/alumni"
                 />
                 <QuickActionButton
-                  icon={Calendar}
+              icon={Calendar}
                   title="My Events"
                   link="/student/events"
                 />
                 <QuickActionButton
-                  icon={FileText}
+              icon={FileText}
                   title="My Applications"
                   link="/student/applications"
                 />

@@ -47,6 +47,7 @@ import AlumniJobManagementPage from "./pages/alumni/AlumniJobManagementPage";
 import AlumniJobEditPage from "./pages/alumni/AlumniJobEditPage";
 import AlumniEventManagementPage from "./pages/alumni/AlumniEventManagementPage";
 import AlumniEventEditPage from "./pages/alumni/AlumniEventEditPage";
+import AlumniLinkedInFeedPage from "./pages/alumni/AlumniLinkedInFeedPage";
 import ProfilePage from "./pages/ProfilePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -159,6 +160,16 @@ function App() {
             <Route
               path="/pending-verification"
               element={<PendingVerificationPage />}
+            />
+
+            {/* Alumni LinkedIn Feed */}
+            <Route
+              path="/alumni/linkedin-feed"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniLinkedInFeedPage />
+                </ProtectedRoute>
+              }
             />
 
             {/* Jobs & Events - require authentication (no public access) */}
