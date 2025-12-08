@@ -1,0 +1,573 @@
+import type React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+} from "recharts";
+import type { TooltipProps } from "recharts";
+
+const palettes = {
+  student: ["#7C3AED", "#EC4899", "#22D3EE", "#F59E0B", "#10B981"],
+  college: ["#2563EB", "#22C55E", "#F97316", "#0EA5E9", "#D946EF"],
+  alumni: ["#14B8A6", "#F59E0B", "#8B5CF6", "#F43F5E", "#0EA5E9"],
+};
+
+const ChartTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<number, string>) => {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="rounded-lg border bg-white/90 px-3 py-2 shadow-sm backdrop-blur-sm">
+      {label && (
+        <p className="text-xs font-semibold text-muted-foreground">{label}</p>
+      )}
+      <div className="space-y-1">
+        {payload.map((item) => (
+          <p key={item.name} className="text-sm flex items-center gap-2">
+            <span
+              className="inline-block h-2 w-2 rounded-full"
+              style={{ background: item.color }}
+            />
+            <span className="font-medium">{item.name}</span>
+            <span className="text-muted-foreground">• {item.value}</span>
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ChartCard = ({
+  title,
+  description,
+  children,
+  className = "",
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <Card
+    className={`bg-linear-to-b from-white to-stone-50 border-stone-100 shadow-sm ${className}`}
+  >
+    <CardHeader className="space-y-1">
+      <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+      {description && (
+        <CardDescription className="text-sm text-muted-foreground">
+          {description}
+        </CardDescription>
+      )}
+    </CardHeader>
+    <CardContent className="h-[260px]">{children}</CardContent>
+  </Card>
+);
+
+export const StudentAnalytics = () => {
+  const palette = palettes.student;
+  const skillProgress = [
+    { month: "Jan", skills: 1, certifications: 0 },
+    { month: "Feb", skills: 3, certifications: 1 },
+    { month: "Mar", skills: 5, certifications: 2 },
+    { month: "Apr", skills: 8, certifications: 3 },
+    { month: "May", skills: 11, certifications: 4 },
+    { month: "Jun", skills: 15, certifications: 6 },
+  ];
+
+  const applicationStages = [
+    { stage: "Applied", count: 24 },
+    { stage: "Under Review", count: 16 },
+    { stage: "Interview", count: 9 },
+    { stage: "Offer", count: 4 },
+  ];
+
+  const eventEngagement = [
+    { name: "Workshops", value: 38 },
+    { name: "Hackathons", value: 24 },
+    { name: "Alumni Talks", value: 29 },
+    { name: "Hiring Drives", value: 17 },
+  ];
+
+  const mentorshipImpact = [
+    { month: "Jan", confidence: 52, network: 10 },
+    { month: "Feb", confidence: 59, network: 14 },
+    { month: "Mar", confidence: 66, network: 18 },
+    { month: "Apr", confidence: 72, network: 23 },
+    { month: "May", confidence: 77, network: 28 },
+    { month: "Jun", confidence: 82, network: 33 },
+  ];
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <ChartCard
+        title="Skill Growth"
+        description="New skills and certifications added over time."
+        className="md:col-span-2 xl:col-span-2"
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={skillProgress}>
+            <defs>
+              <linearGradient id="skills" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="5%" stopColor={palette[0]} stopOpacity={0.4} />
+                <stop offset="95%" stopColor={palette[0]} stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="month" tickLine={false} axisLine={false} />
+            <YAxis tickLine={false} axisLine={false} />
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Area
+              type="monotone"
+              dataKey="skills"
+              stroke={palette[0]}
+              fill="url(#skills)"
+              strokeWidth={2}
+            />
+            <Area
+              type="monotone"
+              dataKey="certifications"
+              stroke={palette[2]}
+              fill={palette[2]}
+              fillOpacity={0.08}
+              strokeWidth={2}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Application Pipeline"
+        description="Snapshot of current application journey."
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={applicationStages}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="stage" tickLine={false} axisLine={false} />
+            <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
+            <Tooltip content={<ChartTooltip />} />
+            <Bar dataKey="count" radius={[8, 8, 4, 4]}>
+              {applicationStages.map((_, idx) => (
+                <Cell key={idx} fill={palette[idx % palette.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Event Participation"
+        description="Engagement across event types."
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Pie
+              data={eventEngagement}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={55}
+              outerRadius={85}
+              paddingAngle={6}
+            >
+              {eventEngagement.map((_, idx) => (
+                <Cell key={idx} fill={palette[idx % palette.length]} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Mentorship Impact"
+        description="Confidence and network growth after mentorship."
+        className="md:col-span-2 xl:col-span-1"
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={mentorshipImpact}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="month" tickLine={false} axisLine={false} />
+            <YAxis tickLine={false} axisLine={false} />
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="confidence"
+              stroke={palette[1]}
+              strokeWidth={2.5}
+              dot={false}
+            />
+            <Line
+              type="monotone"
+              dataKey="network"
+              stroke={palette[3]}
+              strokeWidth={2.5}
+              dot={{ r: 4 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartCard>
+    </div>
+  );
+};
+
+export const CollegeAnalytics = () => {
+  const palette = palettes.college;
+  const placementTrend = [
+    { year: "2020", placements: 64, offers: 78 },
+    { year: "2021", placements: 69, offers: 89 },
+    { year: "2022", placements: 76, offers: 98 },
+    { year: "2023", placements: 83, offers: 115 },
+    { year: "2024", placements: 89, offers: 132 },
+  ];
+
+  const departmentOutcomes = [
+    { dept: "CSE", employed: 93 },
+    { dept: "ECE", employed: 79 },
+    { dept: "ME", employed: 66 },
+    { dept: "CE", employed: 59 },
+    { dept: "MBA", employed: 85 },
+  ];
+
+  const alumniGeo = [
+    { name: "India", value: 52 },
+    { name: "North America", value: 18 },
+    { name: "Europe", value: 12 },
+    { name: "APAC", value: 11 },
+    { name: "Middle East", value: 7 },
+  ];
+
+  const verificationHealth = [
+    { label: "Students", verified: 78, pending: 22 },
+    { label: "Alumni", verified: 84, pending: 16 },
+  ];
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <ChartCard
+        title="Placement Momentum"
+        description="Offers vs accepted placements."
+        className="md:col-span-2 xl:col-span-2"
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={placementTrend}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="year" tickLine={false} axisLine={false} />
+            <YAxis tickLine={false} axisLine={false} />
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="offers"
+              stroke={palette[0]}
+              strokeWidth={2.5}
+              dot={false}
+            />
+            <Line
+              type="monotone"
+              dataKey="placements"
+              stroke={palette[4]}
+              strokeWidth={2.5}
+              dot={{ r: 4 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Department Outcomes"
+        description="Employment rate by department."
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={departmentOutcomes}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="dept" tickLine={false} axisLine={false} />
+            <YAxis
+              tickFormatter={(v) => `${v}%`}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip content={<ChartTooltip />} />
+            <Bar dataKey="employed" radius={[10, 10, 6, 6]}>
+              {departmentOutcomes.map((_, idx) => (
+                <Cell key={idx} fill={palette[idx % palette.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Alumni Footprint"
+        description="Where alumni are located globally."
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Pie
+              data={alumniGeo}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={52}
+              outerRadius={82}
+              paddingAngle={5}
+              label
+            >
+              {alumniGeo.map((_, idx) => (
+                <Cell key={idx} fill={palette[idx % palette.length]} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Verification Health"
+        description="Verified vs pending profiles."
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={verificationHealth} stackOffset="sign">
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="label" tickLine={false} axisLine={false} />
+            <YAxis
+              tickFormatter={(v) => `${v}%`}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Bar
+              dataKey="verified"
+              stackId="a"
+              fill={palette[1]}
+              radius={[10, 10, 0, 0]}
+            />
+            <Bar
+              dataKey="pending"
+              stackId="a"
+              fill={palette[2]}
+              radius={[0, 0, 10, 10]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+    </div>
+  );
+};
+
+export const AlumniAnalytics = () => {
+  const palette = palettes.alumni;
+  const mentorshipHealth = [
+    { month: "Jan", active: 14, new: 6, completed: 2 },
+    { month: "Feb", active: 15, new: 7, completed: 3 },
+    { month: "Mar", active: 17, new: 8, completed: 4 },
+    { month: "Apr", active: 18, new: 9, completed: 5 },
+    { month: "May", active: 20, new: 10, completed: 6 },
+    { month: "Jun", active: 23, new: 12, completed: 8 },
+  ];
+
+  const jobImpact = [
+    { label: "Interviews", value: 44 },
+    { label: "Shortlisted", value: 27 },
+    { label: "Offers", value: 13 },
+  ];
+
+  const engagement = [
+    { channel: "Mentorship", score: 89 },
+    { channel: "Events", score: 74 },
+    { channel: "Jobs", score: 82 },
+    { channel: "Donations", score: 67 },
+  ];
+
+  const givingBack = [
+    { quarter: "Q1", donations: 48, volunteerHours: 62 },
+    { quarter: "Q2", donations: 55, volunteerHours: 69 },
+    { quarter: "Q3", donations: 53, volunteerHours: 73 },
+    { quarter: "Q4", donations: 61, volunteerHours: 80 },
+  ];
+
+  const relationshipDepth = [
+    { metric: "Career", score: 82 },
+    { metric: "Mentorship", score: 91 },
+    { metric: "Events", score: 74 },
+    { metric: "Philanthropy", score: 63 },
+    { metric: "Recruiting", score: 79 },
+  ];
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <ChartCard
+        title="Mentorship Pipeline"
+        description="Active, new, and completed mentorships."
+        className="md:col-span-2 xl:col-span-2"
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={mentorshipHealth}>
+            <defs>
+              <linearGradient id="mentorship" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="5%" stopColor={palette[0]} stopOpacity={0.35} />
+                <stop offset="95%" stopColor={palette[0]} stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="month" tickLine={false} axisLine={false} />
+            <YAxis tickLine={false} axisLine={false} />
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Area
+              type="monotone"
+              dataKey="active"
+              stroke={palette[0]}
+              fill="url(#mentorship)"
+              strokeWidth={2}
+            />
+            <Area
+              type="monotone"
+              dataKey="new"
+              stroke={palette[3]}
+              fill={palette[3]}
+              fillOpacity={0.08}
+              strokeWidth={2}
+            />
+            <Area
+              type="monotone"
+              dataKey="completed"
+              stroke={palette[4]}
+              fill={palette[4]}
+              fillOpacity={0.08}
+              strokeWidth={2}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Job Outcomes"
+        description="Impact of your posted roles."
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Pie
+              data={jobImpact}
+              dataKey="value"
+              nameKey="label"
+              innerRadius={55}
+              outerRadius={85}
+              paddingAngle={6}
+            >
+              {jobImpact.map((_, idx) => (
+                <Cell key={idx} fill={palette[idx % palette.length]} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Engagement Score"
+        description="How the community interacts with you."
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={engagement}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="channel" tickLine={false} axisLine={false} />
+            <YAxis
+              tickFormatter={(v) => `${v}%`}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip content={<ChartTooltip />} />
+            <Bar dataKey="score" radius={[10, 10, 6, 6]}>
+              {engagement.map((_, idx) => (
+                <Cell key={idx} fill={palette[idx % palette.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Giving Back"
+        description="Donations and volunteer hours per quarter."
+        className="md:col-span-2 xl:col-span-1"
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={givingBack}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="quarter" tickLine={false} axisLine={false} />
+            <YAxis tickLine={false} axisLine={false} />
+            <Tooltip content={<ChartTooltip />} />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="donations"
+              stroke={palette[2]}
+              strokeWidth={2.5}
+              dot={{ r: 4 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="volunteerHours"
+              stroke={palette[1]}
+              strokeWidth={2.5}
+              dot={{ r: 4 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      <ChartCard
+        title="Relationship Strength"
+        description="How alumni engage across dimensions."
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart data={relationshipDepth}>
+            <PolarGrid />
+            <PolarAngleAxis dataKey="metric" />
+            <PolarRadiusAxis angle={30} domain={[0, 100]} />
+            <Tooltip content={<ChartTooltip />} />
+            <Radar
+              name="Score"
+              dataKey="score"
+              stroke={palette[0]}
+              fill={palette[0]}
+              fillOpacity={0.25}
+            />
+          </RadarChart>
+        </ResponsiveContainer>
+      </ChartCard>
+    </div>
+  );
+};
+

@@ -37,6 +37,7 @@ import type {
 } from "../../types/api";
 import { motion } from "motion/react";
 import AlumniDashboardSkeleton from "./AlumniDashboardSkeleton";
+import { AlumniAnalytics } from "../../components/dashboard/AnalyticsWidgets";
 
 const AlumniDashboardPage = () => {
   const { user } = useAuth();
@@ -175,6 +176,16 @@ const AlumniDashboardPage = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
+          <div className="rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur">
+            <AlumniAnalytics />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
@@ -210,7 +221,7 @@ const AlumniDashboardPage = () => {
             className="lg:col-span-2"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">

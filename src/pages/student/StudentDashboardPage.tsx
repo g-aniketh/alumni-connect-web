@@ -37,6 +37,7 @@ import type {
 import { UserRole, type Student } from "../../types";
 import { motion } from "motion/react";
 import StudentDashboardSkeleton from "./StudentDashboardSkeleton";
+import { StudentAnalytics } from "../../components/dashboard/AnalyticsWidgets";
 
 const StudentDashboardPage = () => {
   const { user } = useAuth();
@@ -138,6 +139,16 @@ const StudentDashboardPage = () => {
           </div>
         )}
 
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+        >
+          <div className="rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur">
+            <StudentAnalytics />
+          </div>
+        </motion.div>
+
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-8">
             <DashboardSection
@@ -149,7 +160,7 @@ const StudentDashboardPage = () => {
                 <div className="space-y-4">
                   {activeApplications.slice(0, 3).map((app, i) => (
                     <ApplicationCard
-                      key={app._id}
+                      key={app._id ?? `app-${i}`}
                       application={app}
                       delay={i * 0.1}
                     />
@@ -172,7 +183,7 @@ const StudentDashboardPage = () => {
                 <div className="space-y-4">
                   {activeMentorships.slice(0, 3).map((m, i) => (
                     <MentorshipCard
-                      key={m._id}
+                      key={m._id ?? `mentorship-${i}`}
                       mentorship={m}
                       delay={i * 0.1}
                     />
@@ -191,22 +202,22 @@ const StudentDashboardPage = () => {
             <DashboardSection title="Quick Actions">
               <div className="grid grid-cols-2 gap-4">
                 <QuickActionButton
-                  icon={<Briefcase />}
+              icon={Briefcase}
                   title="Browse Jobs"
-                  link="/jobs"
-                />
+              link="/jobs"
+            />
                 <QuickActionButton
-                  icon={<Users />}
+              icon={Users}
                   title="Find Mentors"
                   link="/student/alumni"
                 />
                 <QuickActionButton
-                  icon={<Calendar />}
+              icon={Calendar}
                   title="My Events"
                   link="/student/events"
                 />
                 <QuickActionButton
-                  icon={<FileText />}
+              icon={FileText}
                   title="My Applications"
                   link="/student/applications"
                 />
@@ -221,7 +232,7 @@ const StudentDashboardPage = () => {
                 <div className="space-y-4">
                   {eventRegistrations.slice(0, 3).map((reg, i) => (
                     <EventCard
-                      key={reg._id}
+                      key={reg._id ?? `event-${reg.eventId ?? i}-${i}`}
                       registration={reg}
                       delay={i * 0.1}
                     />
@@ -288,6 +299,13 @@ const ApplicationCard = ({ application, delay }) => {
       : null;
   if (!job) return null;
 
+  const posterName =
+    job.postedBy && typeof job.postedBy.posterId === "object"
+      ? job.postedBy.posterId.name
+      : job.postedBy?.posterType
+      ? job.postedBy.posterType
+      : "Company";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -298,9 +316,7 @@ const ApplicationCard = ({ application, delay }) => {
         <div className="flex-1">
           <p className="font-semibold">{job.title}</p>
           <p className="text-sm text-gray-500">
-            {typeof job.postedBy.posterId === "object"
-              ? job.postedBy.posterId.name
-              : "Company"}
+            {posterName}
           </p>
         </div>
         <Badge variant="outline">{application.status.replace("_", " ")}</Badge>

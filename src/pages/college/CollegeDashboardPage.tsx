@@ -8,19 +8,13 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import {
-  Users,
-  GraduationCap,
-  Briefcase,
-  Plus,
-  ArrowRight,
-  Upload,
-} from "lucide-react";
+import { Users, GraduationCap, Briefcase, Plus, Upload } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { collegeAPI, jobsAPI, eventsAPI } from "../../lib/api";
-import { EmploymentChart } from "../../components/dashboard/EmploymentChart";
+import { collegeAPI, jobsAPI } from "../../lib/api";
 import { motion } from "motion/react";
 import CollegeDashboardSkeleton from "./CollegeDashboardSkeleton";
+import { CollegeAnalytics } from "../../components/dashboard/AnalyticsWidgets";
 
 const CollegeDashboardPage = () => {
   const { user } = useAuth();
@@ -140,6 +134,16 @@ const CollegeDashboardPage = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
+          <div className="rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur">
+            <CollegeAnalytics />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
@@ -171,32 +175,32 @@ const CollegeDashboardPage = () => {
             </CardContent>
           </Card>
         </motion.div>
-
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle>Alumni Employment</CardTitle>
-              <CardDescription>
-                A summary of where your alumni are currently working.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <EmploymentChart />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
       </div>
     </div>
   );
 };
 
-const StatCard = ({ title, value, description, icon: Icon, link }) => (
+type StatCardProps = {
+  title: string;
+  value: number;
+  description: string;
+  icon: LucideIcon;
+  link: string;
+};
+
+type QuickActionButtonProps = {
+  icon: LucideIcon;
+  title: string;
+  link: string;
+};
+
+const StatCard = ({
+  title,
+  value,
+  description,
+  icon: Icon,
+  link,
+}: StatCardProps) => (
   <Link to={link}>
     <Card className="p-6 flex items-start gap-4 transition-all bg-white hover:shadow-md">
       <div className="p-3 bg-stone-100 rounded-lg">
@@ -211,7 +215,11 @@ const StatCard = ({ title, value, description, icon: Icon, link }) => (
   </Link>
 );
 
-const QuickActionButton = ({ icon: Icon, title, link }) => (
+const QuickActionButton = ({
+  icon: Icon,
+  title,
+  link,
+}: QuickActionButtonProps) => (
   <Button
     asChild
     variant="outline"
