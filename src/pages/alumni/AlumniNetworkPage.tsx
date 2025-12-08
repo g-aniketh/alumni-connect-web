@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AlumniProfileCard } from "../../components/alumni/AlumniProfileCard";
 import { AlumniSearchFilters } from "../../components/alumni/AlumniSearchFilters";
 import { type Alumni, UserRole } from "../../types";

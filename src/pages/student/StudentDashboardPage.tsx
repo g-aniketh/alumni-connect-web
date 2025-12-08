@@ -23,6 +23,7 @@ import {
   MessageSquare,
   CheckCircle2,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { jobsAPI, mentorshipsAPI, eventsAPI } from "../../lib/api";
 import type {
@@ -38,6 +39,7 @@ import { UserRole, type Student } from "../../types";
 import { motion } from "motion/react";
 import StudentDashboardSkeleton from "./StudentDashboardSkeleton";
 import { StudentAnalytics } from "../../components/dashboard/AnalyticsWidgets";
+import type React from "react";
 
 const StudentDashboardPage = () => {
   const { user } = useAuth();
@@ -202,22 +204,22 @@ const StudentDashboardPage = () => {
             <DashboardSection title="Quick Actions">
               <div className="grid grid-cols-2 gap-4">
                 <QuickActionButton
-              icon={Briefcase}
+                  icon={Briefcase}
                   title="Browse Jobs"
-              link="/jobs"
-            />
+                  link="/jobs"
+                />
                 <QuickActionButton
-              icon={Users}
+                  icon={Users}
                   title="Find Mentors"
                   link="/student/alumni"
                 />
                 <QuickActionButton
-              icon={Calendar}
+                  icon={Calendar}
                   title="My Events"
                   link="/student/events"
                 />
                 <QuickActionButton
-              icon={FileText}
+                  icon={FileText}
                   title="My Applications"
                   link="/student/applications"
                 />
@@ -252,7 +254,19 @@ const StudentDashboardPage = () => {
   );
 };
 
-const DashboardSection = ({ title, description, linkTo, children }) => (
+type DashboardSectionProps = {
+  title: string;
+  description?: string;
+  linkTo?: string;
+  children: React.ReactNode;
+};
+
+const DashboardSection = ({
+  title,
+  description,
+  linkTo,
+  children,
+}: DashboardSectionProps) => (
   <motion.div
     initial={{ y: 20, opacity: 0 }}
     whileInView={{ y: 0, opacity: 1 }}
@@ -279,7 +293,13 @@ const DashboardSection = ({ title, description, linkTo, children }) => (
   </motion.div>
 );
 
-const QuickActionButton = ({ icon: Icon, title, link }) => (
+type QuickActionButtonProps = {
+  icon: LucideIcon;
+  title: string;
+  link: string;
+};
+
+const QuickActionButton = ({ icon: Icon, title, link }: QuickActionButtonProps) => (
   <Button
     asChild
     variant="outline"
@@ -292,7 +312,12 @@ const QuickActionButton = ({ icon: Icon, title, link }) => (
   </Button>
 );
 
-const ApplicationCard = ({ application, delay }) => {
+type ApplicationCardProps = {
+  application: BackendJobApplication;
+  delay: number;
+};
+
+const ApplicationCard = ({ application, delay }: ApplicationCardProps) => {
   const job =
     typeof application.jobId === "object"
       ? (application.jobId as BackendJob)
@@ -325,7 +350,12 @@ const ApplicationCard = ({ application, delay }) => {
   );
 };
 
-const MentorshipCard = ({ mentorship, delay }) => {
+type MentorshipCardProps = {
+  mentorship: BackendMentorship;
+  delay: number;
+};
+
+const MentorshipCard = ({ mentorship, delay }: MentorshipCardProps) => {
   const mentor =
     typeof mentorship.mentorId === "object"
       ? (mentorship.mentorId as BackendAlumni)
@@ -357,7 +387,12 @@ const MentorshipCard = ({ mentorship, delay }) => {
   );
 };
 
-const EventCard = ({ registration, delay }) => {
+type EventCardProps = {
+  registration: BackendEventRegistration;
+  delay: number;
+};
+
+const EventCard = ({ registration, delay }: EventCardProps) => {
   const event =
     typeof registration.eventId === "object"
       ? (registration.eventId as BackendEvent)
@@ -390,7 +425,13 @@ const EventCard = ({ registration, delay }) => {
   );
 };
 
-const EmptyState = ({ message, cta, icon }) => (
+type EmptyStateProps = {
+  message: string;
+  cta?: { text: string; link: string };
+  icon?: React.ReactNode;
+};
+
+const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
   <div className="text-center py-12 flex flex-col items-center">
     <div className="p-3 bg-stone-100 rounded-full mb-4">
       {icon && <div className="w-8 h-8 text-gray-400">{icon}</div>}

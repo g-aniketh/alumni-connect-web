@@ -47,6 +47,10 @@ import type {
 } from "../../types/api";
 import { motion } from "motion/react";
 import AlumniMentorshipsSkeleton from "./AlumniMentorshipsSkeleton";
+import type React from "react";
+
+type ActionType = "accept" | "reject" | "end";
+type StatusKey = "pending" | "active" | "completed" | "declined";
 
 const AlumniMentorshipsPage = () => {
   const { user } = useAuth();
@@ -54,9 +58,7 @@ const AlumniMentorshipsPage = () => {
   const [error, setError] = useState<string>("");
   const [selectedMentorship, setSelectedMentorship] =
     useState<BackendMentorship | null>(null);
-  const [actionType, setActionType] = useState<
-    "accept" | "reject" | "end" | null
-  >(null);
+  const [actionType, setActionType] = useState<ActionType | null>(null);
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
 
@@ -112,7 +114,7 @@ const AlumniMentorshipsPage = () => {
 
   const handleAction = (
     mentorship: BackendMentorship,
-    type: "accept" | "reject" | "end"
+    type: ActionType
   ) => {
     setSelectedMentorship(mentorship);
     setActionType(type);
@@ -135,9 +137,7 @@ const AlumniMentorshipsPage = () => {
           status: "declined",
         });
       } else if (actionType === "end") {
-        await mentorshipsAPI.end(selectedMentorship._id, {
-          feedback: feedback || undefined,
-        });
+        await mentorshipsAPI.end(selectedMentorship._id);
       }
 
       await loadMentorships();
@@ -274,10 +274,29 @@ const AlumniMentorshipsPage = () => {
   );
 };
 
-const MentorshipCard = ({ mentorship, student, onAction }) => {
+type MentorshipCardProps = {
+  mentorship: BackendMentorship;
+  student: BackendStudent | null;
+  onAction: (mentorship: BackendMentorship, type: ActionType) => void;
+};
+
+const MentorshipCard = ({
+  mentorship,
+  student,
+  onAction,
+}: MentorshipCardProps) => {
   if (!student) return null;
 
-  const status = mentorship.status.toLowerCase();
+  const normalized = mentorship.status.toLowerCase();
+  const allowedStatuses: StatusKey[] = [
+    "pending",
+    "active",
+    "completed",
+    "declined",
+  ];
+  const status: StatusKey =
+    (allowedStatuses.find((s) => s === normalized) as StatusKey | undefined) ||
+    "pending";
 
   return (
     <Card className="flex flex-col h-full bg-white hover:shadow-md transition-shadow">
@@ -352,8 +371,15 @@ const MentorshipCard = ({ mentorship, student, onAction }) => {
   );
 };
 
-const StatusBadge = ({ status }) => {
-  const statusMap = {
+type StatusBadgeProps = { status: StatusKey | string };
+type StatusMapEntry = {
+  icon: React.ReactNode;
+  label: string;
+  className: string;
+};
+
+const StatusBadge = ({ status }: StatusBadgeProps) => {
+  const statusMap: Record<StatusKey, StatusMapEntry> = {
     pending: {
       icon: <Clock className="h-3 w-3 mr-1.5" />,
       label: "Pending",
@@ -375,17 +401,28 @@ const StatusBadge = ({ status }) => {
       className: "bg-red-100 text-red-800",
     },
   };
-  const { icon, label, className } = statusMap[status] || {
-    icon: null,
-    label: status,
-    className: "",
-  };
+  const { icon, label, className } =
+    statusMap[status as StatusKey] ?? {
+      icon: null,
+      label: status,
+      className: "",
+    };
   return (
     <Badge className={className}>
       {icon}
       {label}
     </Badge>
   );
+};
+
+type ActionDialogProps = {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  actionType: ActionType | null;
+  mentorship: BackendMentorship | null;
+  onSubmit: () => void;
+  feedback: string;
+  setFeedback: (value: string) => void;
 };
 
 const ActionDialog = ({
@@ -396,8 +433,8 @@ const ActionDialog = ({
   onSubmit,
   feedback,
   setFeedback,
-}) => {
-  if (!mentorship) return null;
+}: ActionDialogProps) => {
+  if (!mentorship || !actionType) return null;
 
   const titles = {
     accept: "Accept Mentorship Request",
@@ -445,7 +482,12 @@ const ActionDialog = ({
   );
 };
 
-const EmptyState = ({ message, icon }) => (
+type EmptyStateProps = {
+  message: string;
+  icon?: React.ReactNode;
+};
+
+const EmptyState = ({ message, icon }: EmptyStateProps) => (
   <Card>
     <CardContent className="flex flex-col items-center justify-center py-16 text-center">
       {icon}

@@ -28,8 +28,6 @@ import {
   PolarGrid,
   PolarRadiusAxis,
 } from "recharts";
-import type { NameType, Payload, ValueType } from "recharts";
-
 type ChartPaletteKey = "student" | "college" | "alumni";
 
 const palettes: Record<ChartPaletteKey, string[]> = {
@@ -38,7 +36,11 @@ const palettes: Record<ChartPaletteKey, string[]> = {
   alumni: ["#14B8A6", "#F59E0B", "#8B5CF6", "#F43F5E", "#0EA5E9"],
 };
 
-type ChartTooltipPayload = Payload<ValueType, NameType>;
+type ChartTooltipPayload = {
+  name?: string | number;
+  color?: string;
+  value?: number | string;
+};
 
 type ChartTooltipProps = {
   active?: boolean;

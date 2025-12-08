@@ -24,8 +24,8 @@ import {
   Clock,
   ArrowRight,
   Plus,
-  MapPin,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { mentorshipsAPI, jobsAPI, eventsAPI } from "../../lib/api";
 import type {
@@ -38,6 +38,7 @@ import type {
 import { motion } from "motion/react";
 import AlumniDashboardSkeleton from "./AlumniDashboardSkeleton";
 import { AlumniAnalytics } from "../../components/dashboard/AnalyticsWidgets";
+import type React from "react";
 
 const AlumniDashboardPage = () => {
   const { user } = useAuth();
@@ -193,22 +194,22 @@ const AlumniDashboardPage = () => {
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <QuickActionButton
-                icon={<MessageSquare />}
+                icon={MessageSquare}
                 title="Mentorships"
                 link="/alumni/mentorships"
               />
               <QuickActionButton
-                icon={<Plus />}
+                icon={Plus}
                 title="Post a Job"
                 link="/alumni/jobs/create"
               />
               <QuickActionButton
-                icon={<GraduationCap />}
+                icon={GraduationCap}
                 title="View Students"
                 link="/alumni/students"
               />
               <QuickActionButton
-                icon={<Users />}
+                icon={Users}
                 title="Alumni Network"
                 link="/alumni/network"
               />
@@ -375,7 +376,19 @@ const AlumniDashboardPage = () => {
   );
 };
 
-const StatCard = ({ title, value, icon, isHighlighted = false }) => (
+type StatCardProps = {
+  title: string;
+  value: number | string;
+  icon: React.ReactNode;
+  isHighlighted?: boolean;
+};
+
+const StatCard = ({
+  title,
+  value,
+  icon,
+  isHighlighted = false,
+}: StatCardProps) => (
   <Card
     className={`p-6 transition-all ${isHighlighted ? "bg-black text-white" : "bg-white"}`}
   >
@@ -389,20 +402,36 @@ const StatCard = ({ title, value, icon, isHighlighted = false }) => (
   </Card>
 );
 
-const QuickActionButton = ({ icon, title, link }) => (
+type QuickActionButtonProps = {
+  icon: LucideIcon;
+  title: string;
+  link: string;
+};
+
+const QuickActionButton = ({ icon: Icon, title, link }: QuickActionButtonProps) => (
   <Button
     asChild
     variant="outline"
     className="h-auto flex-col items-start p-4 justify-start hover:bg-stone-100 transition-colors"
   >
     <Link to={link}>
-      {icon}
+      <Icon className="w-5 h-5" />
       <span className="font-semibold mt-2">{title}</span>
     </Link>
   </Button>
 );
 
-const MentorshipRequestCard = ({ request, student, delay }) => (
+type MentorshipRequestCardProps = {
+  request: BackendMentorship;
+  student: BackendStudent;
+  delay: number;
+};
+
+const MentorshipRequestCard = ({
+  request,
+  student,
+  delay,
+}: MentorshipRequestCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -435,7 +464,12 @@ const MentorshipRequestCard = ({ request, student, delay }) => (
   </motion.div>
 );
 
-const JobCard = ({ job, delay }) => (
+type JobCardProps = {
+  job: BackendJob;
+  delay: number;
+};
+
+const JobCard = ({ job, delay }: JobCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -457,7 +491,12 @@ const JobCard = ({ job, delay }) => (
   </motion.div>
 );
 
-const EventCard = ({ event, delay }) => (
+type EventCardProps = {
+  event: BackendEvent;
+  delay: number;
+};
+
+const EventCard = ({ event, delay }: EventCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -479,7 +518,13 @@ const EventCard = ({ event, delay }) => (
   </motion.div>
 );
 
-const EmptyState = ({ message, cta, icon }) => (
+type EmptyStateProps = {
+  message: string;
+  cta?: { text: string; link: string };
+  icon?: React.ReactNode;
+};
+
+const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
   <div className="text-center py-12">
     {icon && (
       <div className="inline-block p-4 bg-stone-100 rounded-full">{icon}</div>

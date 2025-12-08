@@ -19,10 +19,6 @@ import {
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
 } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { jobsAPI } from "../lib/api";
@@ -33,6 +29,7 @@ import { JobType } from "../types";
 import { Plus, Search, Star, Briefcase, Users, Building2 } from "lucide-react";
 import { motion } from "motion/react";
 import JobsPageSkeleton from "./JobsPageSkeleton";
+import type React from "react";
 
 const JobsPage = () => {
   const { user } = useAuth();
@@ -314,7 +311,13 @@ const JobsPage = () => {
   );
 };
 
-const JobListItem = ({ job, onSelect, hasApplied }) => (
+type JobListItemProps = {
+  job: BackendJob;
+  onSelect: (job: BackendJob) => void;
+  hasApplied: boolean;
+};
+
+const JobListItem = ({ job, onSelect, hasApplied }: JobListItemProps) => (
   <motion.div
     variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
   >
@@ -358,7 +361,12 @@ const JobListItem = ({ job, onSelect, hasApplied }) => (
   </motion.div>
 );
 
-const MyJobListItem = ({ job, userRole }) => (
+type MyJobListItemProps = {
+  job: BackendJob;
+  userRole?: string;
+};
+
+const MyJobListItem = ({ job, userRole }: MyJobListItemProps) => (
   <motion.div
     variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
   >
@@ -407,7 +415,13 @@ const MyJobListItem = ({ job, userRole }) => (
   </motion.div>
 );
 
-const EmptyState = ({ message, cta, icon }) => (
+type EmptyStateProps = {
+  message: string;
+  cta?: { text: string; link: string };
+  icon?: React.ReactNode;
+};
+
+const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
   <div className="text-center py-16 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center">
     {icon}
     <p className="mt-4 font-medium">{message}</p>

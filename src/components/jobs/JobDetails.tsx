@@ -41,9 +41,12 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const [applicationData, setApplicationData] = useState({
+  const [applicationData, setApplicationData] = useState<{
+    message: string;
+    resumeFile: File | null;
+  }>({
     message: "",
-    resumeFile: null as File | null,
+    resumeFile: null,
   });
 
   if (!job) return null;
@@ -152,8 +155,10 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
-                  {job.salaryMin
+                  {job.salaryMin && job.salaryMax
                     ? `$${job.salaryMin / 1000}k - $${job.salaryMax / 1000}k`
+                    : job.salaryMin
+                    ? `$${job.salaryMin / 1000}k+`
                     : "Competitive"}
                 </div>
                 <div className="flex items-center gap-2">
@@ -250,12 +255,15 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                     </div>
                   )}
                 </div>
-                {!applicationData.resumeFile && user && user.resumeUrl && (
+                {!applicationData.resumeFile &&
+                  user &&
+                  user.role === UserRole.Student &&
+                  user.resumeUrl && (
                   <p className="text-xs text-gray-500">
                     Your saved resume will be used if you don't upload a new
                     one.
                   </p>
-                )}
+                  )}
               </div>
 
               {error && (
@@ -294,7 +302,13 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
               <Button
                 onClick={handleSubmitApplication}
                 disabled={
-                  loading || (!applicationData.resumeFile && !user?.resumeUrl)
+                  loading ||
+                  (!applicationData.resumeFile &&
+                    !(
+                      user &&
+                      user.role === UserRole.Student &&
+                      user.resumeUrl
+                    ))
                 }
               >
                 {loading ? "Submitting..." : "Submit Application"}

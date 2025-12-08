@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/card";
+import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import {
@@ -27,9 +21,10 @@ import {
 } from "../../components/ui/dialog";
 import { eventsAPI } from "../../lib/api";
 import type { BackendEvent } from "../../types/api";
-import { Edit, Trash2, Calendar, MapPin, Plus, Users } from "lucide-react";
+import { Edit, Trash2, Calendar, Plus, Users } from "lucide-react";
 import { motion } from "motion/react";
 import CollegeEventManagementPageSkeleton from "./CollegeEventManagementPageSkeleton";
+import type React from "react";
 
 const CollegeEventManagementPage = () => {
   const navigate = useNavigate();
@@ -237,7 +232,13 @@ const CollegeEventManagementPage = () => {
   );
 };
 
-const EmptyState = ({ message, cta, icon }) => (
+type EmptyStateProps = {
+  message: string;
+  cta?: { text: string; link: string };
+  icon?: React.ReactNode;
+};
+
+const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
   <div className="text-center py-16 rounded-lg flex flex-col items-center">
     {icon}
     <p className="mt-4 font-medium">{message}</p>

@@ -294,7 +294,12 @@ const CollegeAlumniPage = () => {
   );
 };
 
-const PendingAlumniCard = ({ alumnus, onVerify }) => (
+type PendingAlumniCardProps = {
+  alumnus: BackendAlumni;
+  onVerify: (id: string) => void;
+};
+
+const PendingAlumniCard = ({ alumnus, onVerify }: PendingAlumniCardProps) => (
   <Card>
     <CardHeader>
       <div className="flex items-center gap-4">
@@ -332,7 +337,9 @@ const PendingAlumniCard = ({ alumnus, onVerify }) => (
   </Card>
 );
 
-const EmptyState = ({ message }) => (
+type EmptyStateProps = { message: string };
+
+const EmptyState = ({ message }: EmptyStateProps) => (
   <div className="text-center py-12 text-gray-500">
     <Users className="h-10 w-10 mx-auto text-gray-400 mb-2" />
     {message}

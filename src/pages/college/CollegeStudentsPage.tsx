@@ -254,7 +254,12 @@ const CollegeStudentsPage = () => {
   );
 };
 
-const PendingStudentCard = ({ student, onVerify }) => (
+type PendingStudentCardProps = {
+  student: BackendStudent;
+  onVerify: (id: string) => void;
+};
+
+const PendingStudentCard = ({ student, onVerify }: PendingStudentCardProps) => (
   <Card>
     <CardHeader>
       <div className="flex items-center gap-4">
@@ -283,7 +288,12 @@ const PendingStudentCard = ({ student, onVerify }) => (
       <Button
         size="sm"
         className="w-full"
-        onClick={() => onVerify(student._id)}
+        disabled={!student._id}
+        onClick={() => {
+          if (student._id) {
+            onVerify(student._id);
+          }
+        }}
       >
         <CheckCircle2 className="h-4 w-4 mr-2" />
         Verify
@@ -292,7 +302,9 @@ const PendingStudentCard = ({ student, onVerify }) => (
   </Card>
 );
 
-const EmptyState = ({ message }) => (
+type EmptyStateProps = { message: string };
+
+const EmptyState = ({ message }: EmptyStateProps) => (
   <div className="text-center py-12 text-gray-500">
     <GraduationCap className="h-10 w-10 mx-auto text-gray-400 mb-2" />
     {message}

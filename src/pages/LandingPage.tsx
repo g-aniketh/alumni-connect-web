@@ -10,6 +10,7 @@ import {
   Milestone,
   Search,
 } from "lucide-react";
+import type React from "react";
 
 const LandingPage = () => {
   const { scrollYProgress } = useScroll();
@@ -216,7 +217,14 @@ const LandingPage = () => {
   );
 };
 
-const FeatureCard = ({ icon, title, description, delay }) => (
+type FeatureCardProps = {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  delay: number;
+};
+
+const FeatureCard = ({ icon, title, description, delay }: FeatureCardProps) => (
   <motion.div
     initial={{ y: 50, opacity: 0 }}
     whileInView={{ y: 0, opacity: 1 }}
@@ -232,7 +240,21 @@ const FeatureCard = ({ icon, title, description, delay }) => (
   </motion.div>
 );
 
-const HowItWorksStep = ({ step, icon, title, description, align }) => {
+type HowItWorksStepProps = {
+  step: string | number;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  align: "left" | "right";
+};
+
+const HowItWorksStep = ({
+  step,
+  icon,
+  title,
+  description,
+  align,
+}: HowItWorksStepProps) => {
   const isLeft = align === "left";
   return (
     <div className="flex flex-col md:flex-row items-center justify-center gap-8">
@@ -258,7 +280,13 @@ const HowItWorksStep = ({ step, icon, title, description, align }) => {
   );
 };
 
-const Testimonial = ({ quote, author, avatar }) => (
+type TestimonialProps = {
+  quote: string;
+  author: string;
+  avatar: string;
+};
+
+const Testimonial = ({ quote, author, avatar }: TestimonialProps) => (
   <motion.div
     initial={{ y: 30, opacity: 0 }}
     whileInView={{ y: 0, opacity: 1 }}
