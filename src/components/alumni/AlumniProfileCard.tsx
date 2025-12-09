@@ -12,6 +12,8 @@ interface AlumniProfileCardProps {
   onRequestMentorship?: (alumni: Alumni) => void;
   onConnect?: (alumni: Alumni) => void;
   viewerRole?: UserRole;
+  mentorshipStatus?: string; // e.g., "pending", "active"
+  isRequesting?: boolean;
 }
 
 export const AlumniProfileCard = React.memo(
@@ -20,10 +22,24 @@ export const AlumniProfileCard = React.memo(
     onRequestMentorship,
     onConnect,
     viewerRole,
+    mentorshipStatus,
+    isRequesting = false,
   }: AlumniProfileCardProps) => {
     const isAvailable = alumni.mentorshipAvailable === true;
     const isAlumniViewer = viewerRole === UserRole.Alumni;
     const isStudentViewer = viewerRole === UserRole.Student;
+    const status = (mentorshipStatus || "").toLowerCase();
+    const isPending = status === "pending";
+    const isActive = status === "active";
+    const requestDisabled =
+      isRequesting || isPending || isActive || !isAvailable;
+    const requestLabel = isActive
+      ? "Already mentoring you"
+      : isPending
+        ? "Request pending"
+        : isAvailable
+          ? "Request Mentorship"
+          : "Currently Busy";
 
     return (
       <motion.div
@@ -113,11 +129,11 @@ export const AlumniProfileCard = React.memo(
               <Button
                 className="w-full"
                 variant={isAvailable ? "default" : "outline"}
-                disabled={!isAvailable}
+                disabled={requestDisabled}
                 onClick={() => onRequestMentorship(alumni)}
               >
                 <UserPlus className="w-4 h-4 mr-2" />
-                {isAvailable ? "Request Mentorship" : "Currently Busy"}
+                {isRequesting ? "Sending..." : requestLabel}
               </Button>
             ) : null}
           </CardFooter>

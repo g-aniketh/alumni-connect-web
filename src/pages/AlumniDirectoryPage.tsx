@@ -15,7 +15,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { mentorshipsAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
-import type { BackendAlumni } from "../types/api";
+import type { BackendAlumni, BackendStudent } from "../types/api";
 import { domains, type Domain, type Role } from "../lib/domainData";
 const PAGE_SIZE = 9;
 
@@ -35,7 +35,35 @@ const AlumniDirectoryPage = () => {
   const [requestMessage, setRequestMessage] = useState("");
   const [areasOfInterest, setAreasOfInterest] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [mentorStatuses, setMentorStatuses] = useState<Record<string, string>>(
+    {}
+  );
   const [page, setPage] = useState(1);
+
+  const normalizeStatus = (
+    status: string | undefined
+  ): "active" | "pending" | "" => {
+    if (!status) return "";
+    const s = status.trim().toLowerCase();
+    if (
+      [
+        "active",
+        "accepted",
+        "approved",
+        "ongoing",
+        "on-going",
+        "in-progress",
+        "in_progress",
+        "mentoring",
+      ].includes(s)
+    ) {
+      return "active";
+    }
+    if (["pending", "requested", "request", "submitted"].includes(s)) {
+      return "pending";
+    }
+    return "";
+  };
 
   // Get domain and role from URL params
   const domainId = searchParams.get("domain");
@@ -43,7 +71,39 @@ const AlumniDirectoryPage = () => {
 
   useEffect(() => {
     loadAlumni();
+    loadExistingMentorships();
   }, []);
+  const loadExistingMentorships = async () => {
+    if (!user) return;
+    try {
+      const response = await mentorshipsAPI.getMy();
+      const statusMap: Record<string, string> = {};
+      response.mentorships.forEach((m) => {
+        const menteeId =
+          typeof m.menteeId === "object"
+            ? (m.menteeId as BackendStudent | { _id?: string })._id
+            : (m.menteeId as string | undefined);
+        const mentorId =
+          typeof m.mentorId === "object"
+            ? (m.mentorId as BackendAlumni | { _id?: string })._id
+            : (m.mentorId as string | undefined);
+        const status = normalizeStatus(
+          typeof m.status === "string" ? m.status : undefined
+        );
+        if (menteeId === user.id && mentorId && status) {
+          const current = statusMap[mentorId];
+          // prefer active over pending
+          if (current !== "active" || status === "active") {
+            statusMap[mentorId] = status;
+          }
+        }
+      });
+      setMentorStatuses(statusMap);
+    } catch {
+      // Non-blocking; keep UI functional even if this fails
+    }
+  };
+
 
   useEffect(() => {
     setPage(1);
@@ -286,6 +346,12 @@ const AlumniDirectoryPage = () => {
         })
       : filteredAlumni;
 
+  // Hide mentors where the student already has an active or pending mentorship
+  const visibleAlumni = displayAlumni.filter((alumniItem) => {
+    const status = normalizeStatus(mentorStatuses[alumniItem._id]);
+    return status !== "active" && status !== "pending";
+  });
+
   // Transform BackendAlumni to Alumni for the component
   const transformAlumni = (backendAlumni: BackendAlumni): Alumni => {
     return {
@@ -312,11 +378,28 @@ const AlumniDirectoryPage = () => {
     if (backendAlumni) {
       setSelectedAlumni(backendAlumni);
       setIsRequestDialogOpen(true);
+      const status = normalizeStatus(mentorStatuses[backendAlumni._id]);
+      if (status === "pending") {
+        setError("You already have a pending mentorship request with this mentor.");
+      } else if (status === "active") {
+        setError("This mentor is already mentoring you (mentorship is ongoing).");
+      } else {
+        setError("");
+      }
     }
   };
 
   const handleSubmitRequest = async () => {
     if (!selectedAlumni || !user) return;
+    const existingStatus = normalizeStatus(mentorStatuses[selectedAlumni._id]);
+    if (existingStatus === "pending" || existingStatus === "active") {
+      setError(
+        existingStatus === "active"
+          ? "This mentor is already mentoring you (mentorship is ongoing)."
+          : "You already have a pending mentorship request with this mentor."
+      );
+      return;
+    }
 
     try {
       setSubmitting(true);
@@ -337,6 +420,10 @@ const AlumniDirectoryPage = () => {
       setRequestMessage("");
       setAreasOfInterest("");
       alert("Mentorship request sent successfully!");
+      setMentorStatuses((prev) => ({
+        ...prev,
+        [requestData.mentorId]: "pending",
+      }));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to send mentorship request"
@@ -409,7 +496,7 @@ const AlumniDirectoryPage = () => {
 
           {/* Alumni Cards Grid */}
           <div className="lg:col-span-3 space-y-4">
-            {displayAlumni.length > 0 ? (
+            {visibleAlumni.length > 0 ? (
               <>
                 {filteredAlumni.length === 0 && domainId && roleId && (
                   <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-800 dark:text-amber-200">
@@ -420,7 +507,7 @@ const AlumniDirectoryPage = () => {
                   </div>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {displayAlumni
+                  {visibleAlumni
                     .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
                     .map((backendAlumni) => {
                       const alumni = transformAlumni(backendAlumni);
@@ -430,6 +517,10 @@ const AlumniDirectoryPage = () => {
                           alumni={alumni}
                           onRequestMentorship={handleRequestMentorship}
                           viewerRole={user?.role}
+                          mentorshipStatus={mentorStatuses[backendAlumni._id]}
+                          isRequesting={
+                            submitting && selectedAlumni?._id === backendAlumni._id
+                          }
                         />
                       );
                     })}
@@ -438,7 +529,7 @@ const AlumniDirectoryPage = () => {
                   page={page}
                   pageCount={Math.max(
                     1,
-                    Math.ceil(displayAlumni.length / PAGE_SIZE)
+                    Math.ceil(visibleAlumni.length / PAGE_SIZE)
                   )}
                   onPageChange={setPage}
                 />
