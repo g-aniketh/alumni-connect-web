@@ -34,7 +34,7 @@ const LoginPage = () => {
     setIsLoginSuccess(true);
     setTimeout(() => {
       navigate("/dashboard");
-    }, 3000);
+    }, 2200);
   };
 
   return (
@@ -42,88 +42,90 @@ const LoginPage = () => {
       <LoginBackground />
       <div className="container py-10 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* Left Side - Eye Animation */}
-        <div className="hidden lg:block sticky top-24 h-[600px]">
-          <EyeAnimation isSad={isLoginFailed} isSuccess={isLoginSuccess} />
-        </div>
-
-        {/* Right Side - Login Form */}
-        <div className="w-full max-w-md mx-auto space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold">Welcome to Alumni Connect</h1>
-            <p className="text-gray-500 dark:text-gray-400">Log in to continue</p>
+          {/* Left Side - Eye Animation */}
+          <div className="hidden lg:block sticky top-24 h-[600px]">
+            <EyeAnimation isSad={isLoginFailed} isSuccess={isLoginSuccess} />
           </div>
 
-          <Tabs
-            value={defaultTab}
-            onValueChange={handleTabChange}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="student">Student</TabsTrigger>
-              <TabsTrigger value="alumni">Alumni</TabsTrigger>
-              <TabsTrigger value="college">College</TabsTrigger>
-            </TabsList>
+          {/* Right Side - Login Form */}
+          <div className="w-full max-w-md mx-auto space-y-6">
+            <div className="text-center space-y-2">
+              <h1 className="text-3xl font-bold">Welcome to Alumni Connect</h1>
+              <p className="text-gray-500 dark:text-gray-400">
+                Log in to continue
+              </p>
+            </div>
 
-            <TabsContent value="student">
-              <LoginForm 
-                role={UserRole.Student} 
-                onLoginError={setIsLoginFailed} 
-                onLoginSuccess={handleLoginSuccess}
-              />
-              <div className="mt-4 text-center text-sm">
-                <span className="text-muted-foreground">
-                  Don't have an account?{" "}
-                </span>
-                <Link
-                  to="/signup?role=student"
-                  className="underline hover:text-primary font-medium"
-                >
-                  Sign up
-                </Link>
-              </div>
-            </TabsContent>
+            <Tabs
+              value={defaultTab}
+              onValueChange={handleTabChange}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="student">Student</TabsTrigger>
+                <TabsTrigger value="alumni">Alumni</TabsTrigger>
+                <TabsTrigger value="college">College</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="alumni">
-              <LoginForm 
-                role={UserRole.Alumni} 
-                onLoginError={setIsLoginFailed} 
-                onLoginSuccess={handleLoginSuccess}
-              />
-              <div className="mt-4 text-center text-sm">
-                <span className="text-muted-foreground">
-                  Don't have an account?{" "}
-                </span>
-                <Link
-                  to="/signup?role=alumni"
-                  className="underline hover:text-primary font-medium"
-                >
-                  Sign up
-                </Link>
-              </div>
-            </TabsContent>
+              <TabsContent value="student">
+                <LoginForm
+                  role={UserRole.Student}
+                  onLoginError={setIsLoginFailed}
+                  onLoginSuccess={handleLoginSuccess}
+                />
+                <div className="mt-4 text-center text-sm">
+                  <span className="text-muted-foreground">
+                    Don't have an account?{" "}
+                  </span>
+                  <Link
+                    to="/signup?role=student"
+                    className="underline hover:text-primary font-medium"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              </TabsContent>
 
-            <TabsContent value="college">
-              <LoginForm 
-                role={UserRole.College} 
-                onLoginError={setIsLoginFailed} 
-                onLoginSuccess={handleLoginSuccess}
-              />
-              <div className="mt-4 text-center text-sm">
-                <span className="text-muted-foreground">
-                  Don't have an account?{" "}
-                </span>
-                <Link
-                  to="/signup?role=college"
-                  className="underline hover:text-primary font-medium"
-                >
-                  Sign up
-                </Link>
-              </div>
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="alumni">
+                <LoginForm
+                  role={UserRole.Alumni}
+                  onLoginError={setIsLoginFailed}
+                  onLoginSuccess={handleLoginSuccess}
+                />
+                <div className="mt-4 text-center text-sm">
+                  <span className="text-muted-foreground">
+                    Don't have an account?{" "}
+                  </span>
+                  <Link
+                    to="/signup?role=alumni"
+                    className="underline hover:text-primary font-medium"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="college">
+                <LoginForm
+                  role={UserRole.College}
+                  onLoginError={setIsLoginFailed}
+                  onLoginSuccess={handleLoginSuccess}
+                />
+                <div className="mt-4 text-center text-sm">
+                  <span className="text-muted-foreground">
+                    Don't have an account?{" "}
+                  </span>
+                  <Link
+                    to="/signup?role=college"
+                    className="underline hover:text-primary font-medium"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

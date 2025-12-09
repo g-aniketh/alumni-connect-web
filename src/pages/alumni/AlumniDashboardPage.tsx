@@ -38,6 +38,8 @@ import type {
 import { motion } from "motion/react";
 import AlumniDashboardSkeleton from "./AlumniDashboardSkeleton";
 import { AlumniAnalytics } from "../../components/dashboard/AnalyticsWidgets";
+import { JobDetails } from "../../components/jobs/JobDetails";
+import { JobType } from "../../types";
 import type React from "react";
 
 const AlumniDashboardPage = () => {
@@ -53,6 +55,8 @@ const AlumniDashboardPage = () => {
   const [totalMentorships, setTotalMentorships] = useState(0);
   const [myJobs, setMyJobs] = useState<BackendJob[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<BackendEvent[]>([]);
+  const [selectedJob, setSelectedJob] = useState<BackendJob | null>(null);
+  const [isJobDetailsOpen, setIsJobDetailsOpen] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -124,6 +128,33 @@ const AlumniDashboardPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const transformJob = (backendJob: BackendJob) => {
+    const posterName =
+      typeof backendJob.postedBy.posterId === "object"
+        ? backendJob.postedBy.posterId.name
+        : "Company";
+    return {
+      id: backendJob._id,
+      title: backendJob.title,
+      description: backendJob.description,
+      company: posterName,
+      location: backendJob.location,
+      type: backendJob.jobType as JobType,
+      salaryMin: backendJob.salaryMin,
+      salaryMax: backendJob.salaryMax,
+      department: [],
+      referralAvailable: backendJob.referral || false,
+      postedDate: backendJob.createdAt,
+      postedBy: backendJob.postedBy.posterType,
+      applyLink: undefined,
+    };
+  };
+
+  const handleViewJobDetails = (job: BackendJob) => {
+    setSelectedJob(job);
+    setIsJobDetailsOpen(true);
   };
 
   const getStudentInfo = (
@@ -344,7 +375,7 @@ const AlumniDashboardPage = () => {
               {myJobs.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {myJobs.map((job, i) => (
-                    <JobCard key={job._id} job={job} delay={i * 0.1} />
+                    <JobCard key={job._id} job={job} delay={i * 0.1} onViewDetails={handleViewJobDetails} />
                   ))}
                 </div>
               ) : (
@@ -394,6 +425,12 @@ const AlumniDashboardPage = () => {
             </CardContent>
           </Card>
         </motion.div>
+
+        <JobDetails
+          job={selectedJob ? transformJob(selectedJob) : null}
+          open={isJobDetailsOpen}
+          onOpenChange={setIsJobDetailsOpen}
+        />
       </div>
     </div>
   );
@@ -492,15 +529,19 @@ const MentorshipRequestCard = ({
 type JobCardProps = {
   job: BackendJob;
   delay: number;
+  onViewDetails: (job: BackendJob) => void;
 };
 
-const JobCard = ({ job, delay }: JobCardProps) => (
+const JobCard = ({ job, delay, onViewDetails }: JobCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.5 }}
   >
-    <Card className="h-full flex flex-col bg-white border-[#1E88E5]/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+    <Card 
+      className="h-full flex flex-col bg-white border-[#1E88E5]/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
+      onClick={() => onViewDetails(job)}
+    >
       <CardHeader>
         <CardTitle className="text-base text-[#1565C0]">{job.title}</CardTitle>
         <CardDescription className="text-[#333333]/80">
@@ -508,8 +549,16 @@ const JobCard = ({ job, delay }: JobCardProps) => (
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-end">
-        <Button variant="outline" size="sm" className="w-full bg-[#E3F2FD] hover:bg-[#1E88E5] text-[#1565C0] hover:text-white border-[#1E88E5]/30" asChild>
-          <Link to={`/jobs/${job._id}`}>View Details</Link>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full bg-[#E3F2FD] hover:bg-[#1E88E5] text-[#1565C0] hover:text-white border-[#1E88E5]/30"
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewDetails(job);
+          }}
+        >
+          View Details
         </Button>
       </CardContent>
     </Card>

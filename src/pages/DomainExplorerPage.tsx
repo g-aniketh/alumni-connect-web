@@ -309,8 +309,8 @@ const DomainExplorerPage = () => {
                             Connect with <strong>{role.alumniCount}+ alumni</strong> working in this role to get guidance and mentorship.
                           </p>
                           <Button size="sm" className={`w-full ${theme.button} text-white`} asChild>
-                            <Link to="/alumni-directory">
-                              Find Mentors
+                            <Link to={`/student/alumni?domain=${selectedDomain.id}&role=${role.id}`}>
+                              Find Members
                             </Link>
                           </Button>
                         </div>

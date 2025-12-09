@@ -22,6 +22,7 @@ import {
 import { jobsAPI } from "../../lib/api";
 import type { BackendJob } from "../../types/api";
 import { JobType } from "../../types";
+import { JobDetails } from "../../components/jobs/JobDetails";
 import {
   Edit2,
   Trash2,
@@ -41,6 +42,8 @@ const CollegeJobManagementPage = () => {
   const [jobToDelete, setJobToDelete] = useState<BackendJob | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<BackendJob | null>(null);
+  const [isJobDetailsOpen, setIsJobDetailsOpen] = useState(false);
 
   useEffect(() => {
     loadJobs();
@@ -77,6 +80,33 @@ const CollegeJobManagementPage = () => {
     } finally {
       setDeleting(false);
     }
+  };
+
+  const transformJob = (backendJob: BackendJob) => {
+    const posterName =
+      typeof backendJob.postedBy.posterId === "object"
+        ? backendJob.postedBy.posterId.name
+        : "Company";
+    return {
+      id: backendJob._id,
+      title: backendJob.title,
+      description: backendJob.description,
+      company: posterName,
+      location: backendJob.location,
+      type: backendJob.jobType as JobType,
+      salaryMin: backendJob.salaryMin,
+      salaryMax: backendJob.salaryMax,
+      department: [],
+      referralAvailable: backendJob.referral || false,
+      postedDate: backendJob.createdAt,
+      postedBy: backendJob.postedBy.posterType,
+      applyLink: undefined,
+    };
+  };
+
+  const handleViewJobDetails = (job: BackendJob) => {
+    setSelectedJob(job);
+    setIsJobDetailsOpen(true);
   };
 
   const mapBackendJobType = (backendType: string): JobType => {
@@ -168,7 +198,11 @@ const CollegeJobManagementPage = () => {
                       : "Company";
 
                   return (
-                    <TableRow key={job._id} className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30">
+                    <TableRow 
+                      key={job._id} 
+                      className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30 cursor-pointer"
+                      onClick={() => handleViewJobDetails(job)}
+                    >
                       <TableCell>
                         <div>
                           <div className="font-medium text-[#1565C0]">{job.title}</div>
@@ -203,7 +237,7 @@ const CollegeJobManagementPage = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -225,10 +259,13 @@ const CollegeJobManagementPage = () => {
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" asChild className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]">
-                            <Link to={`/jobs?jobId=${job._id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
+                            onClick={() => handleViewJobDetails(job)}
+                          >
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -272,6 +309,12 @@ const CollegeJobManagementPage = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <JobDetails
+          job={selectedJob ? transformJob(selectedJob) : null}
+          open={isJobDetailsOpen}
+          onOpenChange={setIsJobDetailsOpen}
+        />
       </div>
     </div>
   );

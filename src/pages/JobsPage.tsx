@@ -320,6 +320,7 @@ const JobsPage = () => {
                       key={job._id}
                       job={job}
                       userRole={user?.role}
+                      onSelect={handleViewDetails}
                     />
                   ))}
                   <PaginationControls
@@ -402,13 +403,17 @@ const JobListItem = ({ job, onSelect, hasApplied }: JobListItemProps) => (
 type MyJobListItemProps = {
   job: BackendJob;
   userRole?: string;
+  onSelect: (job: BackendJob) => void;
 };
 
-const MyJobListItem = ({ job, userRole }: MyJobListItemProps) => (
+const MyJobListItem = ({ job, userRole, onSelect }: MyJobListItemProps) => (
   <motion.div
     variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
   >
-    <Card className="bg-white border-[#1E88E5]/30 hover:shadow-md transition-shadow">
+    <Card 
+      className="bg-white border-[#1E88E5]/30 hover:shadow-md transition-shadow cursor-pointer hover:scale-[1.02]"
+      onClick={() => onSelect(job)}
+    >
       <CardContent className="p-4 flex items-center gap-4">
         <div className="w-12 h-12 rounded-lg bg-[#E3F2FD] flex items-center justify-center flex-shrink-0 border border-[#1E88E5]/20">
           <Briefcase className="h-6 w-6 text-[#1E88E5]" />

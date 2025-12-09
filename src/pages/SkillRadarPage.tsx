@@ -25,7 +25,7 @@ import {
 } from "../components/ui/select";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { AlertTriangle, CheckCircle2, TrendingUp, ArrowRight } from "lucide-react";
+import { CheckCircle2, TrendingUp, ArrowRight } from "lucide-react";
 import { skillData, type RoleSkillData, type SkillMetric } from "@/lib/skillData";
 import { Link } from "react-router-dom";
 
@@ -263,40 +263,6 @@ const SkillRadarPage = () => {
 
         {/* Right Column: Insights & Actions */}
         <div className="space-y-6">
-          {/* Lagging Skills Alert */}
-          <Card className="border-l-4 border-l-yellow-500">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-yellow-600">
-                <AlertTriangle className="h-5 w-5" />
-                Attention Needed
-              </CardTitle>
-              <CardDescription>
-                Skills where you are significantly behind the industry average.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {laggingSkills.length > 0 ? (
-                laggingSkills.map((skill: SkillMetric & { gap: number }) => (
-                  <div key={skill.subject} className="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-semibold text-yellow-900">{skill.subject}</span>
-                      <Badge variant="outline" className="bg-white text-yellow-700 border-yellow-200">
-                        -{skill.gap} pts
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-yellow-700">
-                      Industry expects proficiency of {skill.industryAverage}, but you are at {skill.studentScore}.
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Great job! You are keeping up with industry standards in all areas.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Strong Skills */}
           <Card className="border-l-4 border-l-green-500">
             <CardHeader>

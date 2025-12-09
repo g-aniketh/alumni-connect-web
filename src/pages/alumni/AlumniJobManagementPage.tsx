@@ -23,6 +23,7 @@ import { jobsAPI } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
 import type { BackendJob } from "../../types/api";
 import { JobType } from "../../types";
+import { JobDetails } from "../../components/jobs/JobDetails";
 import { Edit2, Trash2, Briefcase, Calendar, MapPin, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -35,6 +36,8 @@ const AlumniJobManagementPage = () => {
   const [jobToDelete, setJobToDelete] = useState<BackendJob | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<BackendJob | null>(null);
+  const [isJobDetailsOpen, setIsJobDetailsOpen] = useState(false);
 
   useEffect(() => {
     loadJobs();
@@ -78,6 +81,33 @@ const AlumniJobManagementPage = () => {
       internship: JobType.Internship,
     };
     return typeMap[backendType] || JobType.FullTime;
+  };
+
+  const transformJob = (backendJob: BackendJob) => {
+    const posterName =
+      typeof backendJob.postedBy.posterId === "object"
+        ? backendJob.postedBy.posterId.name
+        : "Company";
+    return {
+      id: backendJob._id,
+      title: backendJob.title,
+      description: backendJob.description,
+      company: posterName,
+      location: backendJob.location,
+      type: backendJob.jobType as JobType,
+      salaryMin: backendJob.salaryMin,
+      salaryMax: backendJob.salaryMax,
+      department: [],
+      referralAvailable: backendJob.referral || false,
+      postedDate: backendJob.createdAt,
+      postedBy: backendJob.postedBy.posterType,
+      applyLink: undefined,
+    };
+  };
+
+  const handleViewJobDetails = (job: BackendJob) => {
+    setSelectedJob(job);
+    setIsJobDetailsOpen(true);
   };
 
   if (loading) {
@@ -164,7 +194,11 @@ const AlumniJobManagementPage = () => {
                       : "Company";
 
                   return (
-                    <TableRow key={job._id}>
+                    <TableRow 
+                      key={job._id}
+                      className="cursor-pointer"
+                      onClick={() => handleViewJobDetails(job)}
+                    >
                       <TableCell>
                         <div>
                           <div className="font-medium">{job.title}</div>
@@ -199,7 +233,7 @@ const AlumniJobManagementPage = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -219,10 +253,12 @@ const AlumniJobManagementPage = () => {
                           >
                             <Trash2 className="h-4 w-4 text-red-600" />
                           </Button>
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link to={`/jobs?jobId=${job._id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleViewJobDetails(job)}
+                          >
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -266,6 +302,12 @@ const AlumniJobManagementPage = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <JobDetails
+          job={selectedJob ? transformJob(selectedJob) : null}
+          open={isJobDetailsOpen}
+          onOpenChange={setIsJobDetailsOpen}
+        />
       </div>
     </div>
   );
