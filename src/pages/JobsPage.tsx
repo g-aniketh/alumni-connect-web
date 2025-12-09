@@ -465,6 +465,9 @@ const JobsPage = () => {
           job={selectedJob ? transformJob(selectedJob) : null}
           open={isDetailsOpen}
           onOpenChange={setIsDetailsOpen}
+          hasApplied={
+            selectedJob ? hasApplied(selectedJob._id) : false
+          }
         />
       </div>
     </div>
@@ -540,15 +543,11 @@ const JobListItem = ({
               </Badge>
             )}
           </div>
-          <div className="w-24 text-right">
+          <div className="w-28 text-right">
             {hasApplied ? (
-              <Button
-                variant="outline"
-                disabled
-                className="bg-[#F5F5F5] text-[#333333]"
-              >
+              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 px-3 py-1">
                 Applied
-              </Button>
+              </Badge>
             ) : (
               <Button className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
                 Apply
