@@ -62,26 +62,43 @@ const StudentDashboardPage = () => {
       setLoading(true);
       setError("");
 
-      const [myApplications, mentorshipsResponse, registrations] =
-        await Promise.all([
-          jobsAPI.getMyApplications(),
-          mentorshipsAPI.getMy(),
-          eventsAPI.getMyRegistrations(),
-        ]);
+      const [myApplications, registrations] = await Promise.all([
+        jobsAPI.getMyApplications(),
+        eventsAPI.getMyRegistrations(),
+      ]);
 
       setApplications(myApplications);
       setEventRegistrations(registrations);
 
-      const allMentorships = mentorshipsResponse.mentorships.filter(
-        (m: BackendMentorship) => {
-          const menteeId =
-            typeof m.menteeId === "object"
-              ? ((m.menteeId as BackendStudent)._id ?? "")
-              : m.menteeId;
-          return menteeId === user?.id;
+      // Handle mentorships separately - gracefully handle 403 errors for unverified users
+      try {
+        const mentorshipsResponse = await mentorshipsAPI.getMy();
+        const allMentorships = mentorshipsResponse.mentorships.filter(
+          (m: BackendMentorship) => {
+            const menteeId =
+              typeof m.menteeId === "object"
+                ? ((m.menteeId as BackendStudent)._id ?? "")
+                : m.menteeId;
+            return menteeId === user?.id;
+          }
+        );
+        setMyMentorships(allMentorships);
+      } catch (mentorshipErr) {
+        // Silently handle 403 errors for unverified users (allow them to use the app)
+        const errorMessage = mentorshipErr instanceof Error ? mentorshipErr.message : "";
+        const isVerificationError = 
+          errorMessage.includes("403") || 
+          errorMessage.includes("Forbidden") || 
+          errorMessage.includes("Access denied") ||
+          errorMessage.includes("not verified");
+        
+        if (!isVerificationError) {
+          // Only log non-verification errors
+          console.warn("Failed to load mentorships:", mentorshipErr);
         }
-      );
-      setMyMentorships(allMentorships);
+        // Set empty defaults for unverified users
+        setMyMentorships([]);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load dashboard data"

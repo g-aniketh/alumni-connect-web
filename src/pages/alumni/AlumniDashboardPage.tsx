@@ -64,30 +64,50 @@ const AlumniDashboardPage = () => {
       setLoading(true);
       setError("");
 
-      const mentorshipsResponse = await mentorshipsAPI.getMy();
-      const allMentorships = mentorshipsResponse.mentorships.filter(
-        (m: BackendMentorship) => {
-          const mentorId =
-            typeof m.mentorId === "object"
-              ? ((m.mentorId as BackendAlumni)._id ?? "")
-              : m.mentorId;
-          return mentorId === user.id;
-        }
-      );
+      // Handle mentorships - gracefully handle 403 errors for unverified users
+      try {
+        const mentorshipsResponse = await mentorshipsAPI.getMy();
+        const allMentorships = mentorshipsResponse.mentorships.filter(
+          (m: BackendMentorship) => {
+            const mentorId =
+              typeof m.mentorId === "object"
+                ? ((m.mentorId as BackendAlumni)._id ?? "")
+                : m.mentorId;
+            return mentorId === user.id;
+          }
+        );
 
-      setPendingMentorshipRequests(
-        allMentorships
-          .filter(
-            (m: BackendMentorship) => m.status.toLowerCase() === "pending"
+        setPendingMentorshipRequests(
+          allMentorships
+            .filter(
+              (m: BackendMentorship) => m.status.toLowerCase() === "pending"
+            )
+            .slice(0, 3)
+        );
+        setActiveMentorships(
+          allMentorships.filter(
+            (m: BackendMentorship) => m.status.toLowerCase() === "active"
           )
-          .slice(0, 3)
-      );
-      setActiveMentorships(
-        allMentorships.filter(
-          (m: BackendMentorship) => m.status.toLowerCase() === "active"
-        )
-      );
-      setTotalMentorships(allMentorships.length);
+        );
+        setTotalMentorships(allMentorships.length);
+      } catch (mentorshipErr) {
+        // Silently handle 403 errors for unverified users (allow them to use the app)
+        const errorMessage = mentorshipErr instanceof Error ? mentorshipErr.message : "";
+        const isVerificationError = 
+          errorMessage.includes("403") || 
+          errorMessage.includes("Forbidden") || 
+          errorMessage.includes("Access denied") ||
+          errorMessage.includes("not verified");
+        
+        if (!isVerificationError) {
+          // Only log non-verification errors
+          console.warn("Failed to load mentorships:", mentorshipErr);
+        }
+        // Set empty defaults for unverified users
+        setPendingMentorshipRequests([]);
+        setActiveMentorships([]);
+        setTotalMentorships(0);
+      }
 
       const jobs = await jobsAPI.getMyPosted();
       setMyJobs(jobs.slice(0, 3));

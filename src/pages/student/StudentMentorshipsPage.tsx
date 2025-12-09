@@ -72,9 +72,22 @@ const StudentMentorshipsPage = () => {
       );
       setMyMentorships(allMentorships);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load mentorships"
-      );
+      // Silently handle 403 errors for unverified users (allow them to use the app)
+      const errorMessage = err instanceof Error ? err.message : "";
+      const isVerificationError = 
+        errorMessage.includes("403") || 
+        errorMessage.includes("Forbidden") || 
+        errorMessage.includes("Access denied") ||
+        errorMessage.includes("not verified");
+      
+      if (isVerificationError) {
+        // Set empty defaults for unverified users, don't show error
+        setMyMentorships([]);
+      } else {
+        setError(
+          err instanceof Error ? err.message : "Failed to load mentorships"
+        );
+      }
     } finally {
       setLoading(false);
     }
