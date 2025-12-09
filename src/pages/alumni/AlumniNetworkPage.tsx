@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { AlumniProfileCard } from "../../components/alumni/AlumniProfileCard";
 import { AlumniSearchFilters } from "../../components/alumni/AlumniSearchFilters";
 import { type Alumni, UserRole } from "../../types";
@@ -43,20 +43,10 @@ const AlumniNetworkPage = () => {
     () => new Set()
   );
 
-  useEffect(() => {
-    loadAlumni();
-  }, []);
-
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedNameSearch, debouncedSkillSearch, debouncedCompanySearch]);
-
-  const loadAlumni = async () => {
+  const loadAlumni = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
-      setAlumni([]);
-
       const mentors = await mentorshipsAPI.getMentors();
 
       if (!Array.isArray(mentors)) {
@@ -77,36 +67,62 @@ const AlumniNetworkPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
-  const filteredAlumni = alumni.filter((alumni) => {
-    const matchesName =
-      debouncedNameSearch === "" ||
-      (alumni.name &&
-        alumni.name.toLowerCase().includes(debouncedNameSearch.toLowerCase()));
+  useEffect(() => {
+    loadAlumni();
+  }, [loadAlumni]);
 
-    const matchesSkill =
-      debouncedSkillSearch === "" ||
-      (alumni.skills &&
-        alumni.skills.some((skill) =>
-          skill.toLowerCase().includes(debouncedSkillSearch.toLowerCase())
-        ));
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedNameSearch, debouncedSkillSearch, debouncedCompanySearch]);
 
-    const matchesCompany =
-      debouncedCompanySearch === "" ||
-      (alumni.currentEmployer &&
-        alumni.currentEmployer
-          .toLowerCase()
-          .includes(debouncedCompanySearch.toLowerCase()));
+  const filteredAlumni = useMemo(() => {
+    return alumni.filter((alumniItem) => {
+      const matchesName =
+        debouncedNameSearch === "" ||
+        (alumniItem.name &&
+          alumniItem.name
+            .toLowerCase()
+            .includes(debouncedNameSearch.toLowerCase()));
 
-    return matchesName && matchesSkill && matchesCompany;
-  });
+      const matchesSkill =
+        debouncedSkillSearch === "" ||
+        (alumniItem.skills &&
+          alumniItem.skills.some((skill) =>
+            skill.toLowerCase().includes(debouncedSkillSearch.toLowerCase())
+          ));
 
-  const pageCount = Math.max(1, Math.ceil(filteredAlumni.length / PAGE_SIZE));
-  const paginatedAlumni = filteredAlumni.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE
-  );
+      const matchesCompany =
+        debouncedCompanySearch === "" ||
+        (alumniItem.currentEmployer &&
+          alumniItem.currentEmployer
+            .toLowerCase()
+            .includes(debouncedCompanySearch.toLowerCase()));
+
+      return matchesName && matchesSkill && matchesCompany;
+    });
+  }, [alumni, debouncedNameSearch, debouncedSkillSearch, debouncedCompanySearch]);
+
+  const { paginatedAlumni, pageCount, currentPage } = useMemo(() => {
+    const totalItems = filteredAlumni.length;
+    const safePageCount = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+    const safePage = Math.min(Math.max(page, 1), safePageCount);
+    const start = (safePage - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    return {
+      paginatedAlumni: filteredAlumni.slice(start, end),
+      pageCount: safePageCount,
+      currentPage: safePage,
+    };
+  }, [filteredAlumni, page]);
+
+  // Keep page in range and avoid empty slices when filters change
+  useEffect(() => {
+    if (page !== currentPage) {
+      setPage(currentPage);
+    }
+  }, [currentPage, page]);
 
   const transformAlumni = useCallback(
     (backendAlumni: BackendAlumni): Alumni => {
@@ -158,9 +174,7 @@ const AlumniNetworkPage = () => {
       setSelectedAlumni(null);
     } catch (err) {
       alert(
-        err instanceof Error
-          ? err.message
-          : "Failed to send connection request"
+        err instanceof Error ? err.message : "Failed to send connection request"
       );
     } finally {
       setConnectingId(null);
@@ -239,17 +253,23 @@ const AlumniNetworkPage = () => {
                         alumni={alumni}
                         onConnect={handleConnect}
                         viewerRole={user?.role}
-                        connectPending={sentConnectionIds.has(backendAlumni._id)}
+                        connectPending={sentConnectionIds.has(
+                          backendAlumni._id
+                        )}
                         connectInFlight={connectingId === backendAlumni._id}
                       />
                     );
                   })}
                 </motion.div>
-                <PaginationControls
-                  page={page}
-                  pageCount={pageCount}
-                  onPageChange={setPage}
-                />
+                {pageCount > 1 && (
+                  <div className="flex justify-center pt-4">
+                    <PaginationControls
+                      page={currentPage}
+                      pageCount={pageCount}
+                      onPageChange={setPage}
+                    />
+                  </div>
+                )}
               </>
             ) : (
               <div className="text-center py-16 rounded-lg border-2 border-dashed border-gray-300">
@@ -304,7 +324,7 @@ const PaginationControls = ({
   const canPrev = page > 1;
   const canNext = page < pageCount;
   return (
-    <div className="flex items-center justify-end gap-2 pt-2">
+    <div className="flex items-center justify-center gap-3 pt-4">
       <Button
         variant="outline"
         size="sm"
@@ -313,7 +333,7 @@ const PaginationControls = ({
       >
         Previous
       </Button>
-      <span className="text-sm text-gray-600">
+      <span className="text-sm text-muted-foreground">
         Page {page} of {pageCount}
       </span>
       <Button
