@@ -20,7 +20,7 @@ type User = Alumni | Student | College;
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (role: UserRole, email: string, password: string) => Promise<void>;
+  login: (role: UserRole, emailOrRollNumber: string, password: string) => Promise<void>;
   signup: (role: UserRole, data: SignupRequest) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -213,7 +213,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (
     role: UserRole,
-    email: string,
+    emailOrRollNumber: string,
     password: string
   ): Promise<void> => {
     try {
@@ -221,13 +221,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       switch (role) {
         case UserRole.Alumni:
-          response = await authAPI.loginAlumni(email, password);
+          response = await authAPI.loginAlumni(emailOrRollNumber, password);
           break;
         case UserRole.Student:
-          response = await authAPI.loginStudent(email, password);
+          // loginStudent handles both email and rollNumber
+          response = await authAPI.loginStudent(emailOrRollNumber, password);
           break;
         case UserRole.College:
-          response = await authAPI.loginCollege(email, password);
+          response = await authAPI.loginCollege(emailOrRollNumber, password);
           break;
         default:
           throw new Error("Invalid role");

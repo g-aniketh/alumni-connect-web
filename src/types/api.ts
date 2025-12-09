@@ -81,6 +81,9 @@ export interface BackendStudent {
   department: string;
   degree: string;
   graduationYear: number;
+  credits?: number; // Earned credits
+  isAlumni?: boolean; // Whether student has graduated and converted to alumni
+  alumniId?: string; // Created alumni account ID
   personalWebsite?: string;
   skills?: string[];
   resumeUrl?: string;
@@ -103,6 +106,8 @@ export interface BackendCollege {
   contactPhone?: string;
   departments: string[];
   degreesOffered: string[];
+  degreeCredits?: Record<string, number>; // Required credits for each degree (Map<Degree, number>)
+  dbUrl?: string; // College database URL for credit synchronization
   linkedInProfile?: string;
   collegeLogoUrl?: string;
   collegeLogoUrlHD?: string;
@@ -361,4 +366,73 @@ export interface BackendContribution {
   notes?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// Credit System Types
+export interface CreditEligibilityResponse {
+  eligible: boolean;
+  credits: number;
+  requiredCredits: number;
+  message: string;
+}
+
+export interface EligibleStudent {
+  rollNumber: string;
+  name: string;
+  email: string;
+  secondaryEmail?: string;
+  credits: number;
+  requiredCredits: number;
+  degree: string;
+  department: string;
+  graduationYear: number;
+}
+
+export interface GraduationProcessResponse {
+  message: string;
+  eligible: number;
+  converted: number;
+  failed?: number;
+  total: number;
+  results?: Array<{
+    rollNumber: string;
+    name: string;
+    success: boolean;
+    message: string;
+    alumniId?: string;
+  }>;
+}
+
+export interface EligibleStudentsResponse {
+  message: string;
+  eligible: EligibleStudent[];
+  total: number;
+}
+
+export interface CreditUpdateResult {
+  rollNumber: string;
+  name: string;
+  success: boolean;
+  previousCredits: number;
+  newCredits?: number;
+  message: string;
+  converted?: boolean;
+  alumniId?: string;
+}
+
+export interface CreditSyncResponse {
+  message: string;
+  processed: number;
+  updated: number;
+  converted: number;
+  failed: number;
+  results: CreditUpdateResult[];
+}
+
+export interface CreditSyncFilters {
+  departments?: string[];
+  degree?: string;
+  rollNumbers?: string[];
+  enrollmentYear?: number;
+  graduationYear?: number;
 }

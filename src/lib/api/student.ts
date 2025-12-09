@@ -1,5 +1,5 @@
 import { api } from "./base";
-import type { BackendStudent } from "../../types/api";
+import type { BackendStudent, CreditEligibilityResponse } from "../../types/api";
 
 // Student API endpoints
 export const studentAPI = {
@@ -25,5 +25,10 @@ export const studentAPI = {
 
   deleteProfile: async (id: string): Promise<{ message: string }> => {
     return api.delete<{ message: string }>(`/students/profile/${id}`);
+  },
+
+  // Credit Eligibility
+  checkEligibility: async (): Promise<CreditEligibilityResponse> => {
+    return api.get<CreditEligibilityResponse>("/students/credits/eligibility");
   },
 };

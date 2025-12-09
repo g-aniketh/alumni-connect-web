@@ -3,6 +3,9 @@ import type {
   BackendCollege,
   BackendAlumni,
   BackendStudent,
+  CreditUpdateResult,
+  EligibleStudent,
+  GraduationProcessResponse,
 } from "../../types/api";
 
 // College API endpoints
@@ -225,5 +228,115 @@ export const collegeAPI = {
       alumni: response.pendingAlumni ?? [],
       students: response.pendingStudents ?? [],
     };
+  },
+
+  // Credit System & Graduation Management
+  updateDegreeCredits: async (
+    degreeCredits: Record<string, number>
+  ): Promise<{
+    message: string;
+    college: BackendCollege;
+  }> => {
+    return api.put<{
+      message: string;
+      college: BackendCollege;
+    }>("/colleges/profile", { degreeCredits });
+  },
+
+  updateStudentCredits: async (data: {
+    rollNumber: string;
+    credits: number;
+  }): Promise<{
+    message: string;
+    creditsUpdated: boolean;
+    converted: boolean;
+    previousCredits: number;
+    currentCredits: number;
+    requiredCredits: number;
+    creditsRemaining?: number;
+    alumniId?: string;
+    conversionError?: string;
+  }> => {
+    return api.post<{
+      message: string;
+      creditsUpdated: boolean;
+      converted: boolean;
+      previousCredits: number;
+      currentCredits: number;
+      requiredCredits: number;
+      creditsRemaining?: number;
+      alumniId?: string;
+      conversionError?: string;
+    }>("/colleges/students/updateCredits", data);
+  },
+
+  syncCreditsFromDB: async (filters?: {
+    departments?: string[];
+    degree?: string;
+    rollNumbers?: string[];
+    enrollmentYear?: number;
+    graduationYear?: number;
+  }): Promise<{
+    message: string;
+    processed: number;
+    updated: number;
+    converted: number;
+    failed: number;
+    results: CreditUpdateResult[];
+  }> => {
+    return api.post<{
+      message: string;
+      processed: number;
+      updated: number;
+      converted: number;
+      failed: number;
+      results: CreditUpdateResult[];
+    }>("/colleges/updateCredits", filters || {});
+  },
+
+  getEligibleStudents: async (): Promise<{
+    message: string;
+    eligible: EligibleStudent[];
+    total: number;
+  }> => {
+    return api.get<{
+      message: string;
+      eligible: EligibleStudent[];
+      total: number;
+    }>("/colleges/graduations/eligible");
+  },
+
+  processEligibleGraduations: async (): Promise<GraduationProcessResponse> => {
+    return api.post<GraduationProcessResponse>("/colleges/graduations/process");
+  },
+
+  checkStudentEligibility: async (
+    rollNumber: string
+  ): Promise<{
+    eligible: boolean;
+    credits: number;
+    requiredCredits: number;
+    message: string;
+  }> => {
+    return api.get<{
+      eligible: boolean;
+      credits: number;
+      requiredCredits: number;
+      message: string;
+    }>(`/students/credits/eligibility/${rollNumber}`);
+  },
+
+  convertStudentToAlumni: async (data: {
+    rollNumber: string;
+  }): Promise<{
+    message: string;
+    success: boolean;
+    alumniId: string;
+  }> => {
+    return api.post<{
+      message: string;
+      success: boolean;
+      alumniId: string;
+    }>("/students/credits/convert", data);
   },
 };

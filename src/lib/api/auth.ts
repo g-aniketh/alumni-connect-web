@@ -36,10 +36,15 @@ export const authAPI = {
   },
 
   loginStudent: async (
-    email: string,
+    emailOrRollNumber: string,
     password: string
   ): Promise<LoginResponse> => {
-    return api.post<LoginResponse>("/students/login", { email, password });
+    // Backend supports both email and rollNumber
+    // If it contains @, treat as email, otherwise as rollNumber
+    const payload = emailOrRollNumber.includes("@")
+      ? { email: emailOrRollNumber, password }
+      : { rollNumber: emailOrRollNumber, password };
+    return api.post<LoginResponse>("/students/login", payload);
   },
 
   loginCollege: async (

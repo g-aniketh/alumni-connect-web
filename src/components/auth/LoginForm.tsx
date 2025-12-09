@@ -62,15 +62,26 @@ export const LoginForm = ({ role, onLoginError, onLoginSuccess }: LoginFormProps
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">
+              {role === UserRole.Student ? "Email or Roll Number" : "Email"}
+            </Label>
             <Input
               id="email"
-              type="email"
-              placeholder="m@example.com"
+              type={role === UserRole.Student ? "text" : "email"}
+              placeholder={
+                role === UserRole.Student
+                  ? "email@example.com or rollnumber"
+                  : "m@example.com"
+              }
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            {role === UserRole.Student && (
+              <p className="text-xs text-muted-foreground">
+                You can login using your email or roll number
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

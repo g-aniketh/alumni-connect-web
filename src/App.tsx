@@ -52,6 +52,8 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
 import CollegeBulkImportPage from "./pages/college/CollegeBulkImportPage";
+import CollegeDegreeCreditsPage from "./pages/college/CollegeDegreeCreditsPage";
+import CollegeCreditsSyncPage from "./pages/college/CollegeCreditsSyncPage";
 import AlumniProfileCompletionPage from "./pages/onboarding/AlumniProfileCompletionPage";
 import StudentProfileCompletionPage from "./pages/onboarding/StudentProfileCompletionPage";
 import CollegeProfileCompletionPage from "./pages/onboarding/CollegeProfileCompletionPage";
@@ -460,6 +462,22 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeBulkImportPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/college/degree-credits"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeDegreeCreditsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/college/credits-sync"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeCreditsSyncPage />
                 </ProtectedRoute>
               }
             />

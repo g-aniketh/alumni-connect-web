@@ -8,7 +8,15 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import { Users, GraduationCap, Briefcase, Plus, Upload } from "lucide-react";
+import {
+  Users,
+  GraduationCap,
+  Briefcase,
+  Plus,
+  Upload,
+  BookOpen,
+  RefreshCw,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { collegeAPI, jobsAPI } from "../../lib/api";
@@ -188,6 +196,16 @@ const CollegeDashboardPage = () => {
                 link="/college/bulk-import"
                 className="border-amber-200 text-amber-700 hover:bg-amber-50"
                 iconColor="text-amber-600"
+              />
+              <QuickActionButton
+                icon={BookOpen}
+                title="Degree Credits"
+                link="/college/degree-credits"
+              />
+              <QuickActionButton
+                icon={RefreshCw}
+                title="Sync Credits"
+                link="/college/credits-sync"
               />
             </CardContent>
           </Card>
