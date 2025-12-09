@@ -20,11 +20,23 @@ import LanguageBar from "../components/layout/LanguageBar";
 const LandingPage = () => {
   const { scrollYProgress } = useScroll();
   const location = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001,
   });
+
+  // Detect scroll to hide/show language bar
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-800 grid-pattern">
@@ -35,7 +47,8 @@ const LandingPage = () => {
         className="fixed top-0 left-0 right-0 h-1 bg-black origin-left z-50"
         style={{ scaleX }}
       />
-      <header className="fixed top-12 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl">
+      <header className={`fixed left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-7xl transition-all duration-300 ${isScrolled ? 'top-4' : 'top-12'
+        }`}>
         <div className="bg-white/95 backdrop-blur-md rounded-full border border-gray-200 shadow-lg px-6 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <img
