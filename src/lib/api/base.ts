@@ -137,6 +137,7 @@ export class ApiClient {
       const response = await fetch(url, {
         ...options,
         headers,
+        credentials: "include", // Include credentials for CORS
       });
 
       // Handle token refresh on 401
@@ -154,6 +155,7 @@ export class ApiClient {
             const retryResponse = await fetch(url, {
               ...options,
               headers: retryHeaders,
+              credentials: "include",
             });
             if (!retryResponse.ok) {
               throw await this.handleError(retryResponse);
