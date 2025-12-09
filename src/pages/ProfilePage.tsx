@@ -50,39 +50,49 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="container py-8 max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
-          <p className="text-muted-foreground">
-            Manage your profile information and preferences.
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <div className="container py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div className="text-center sm:text-left">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                My Profile
+              </h1>
+              <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+                Manage your profile information and preferences
+              </p>
+            </div>
+            <div className="flex justify-center sm:justify-end">
+              {!isEditing ? (
+                <Button onClick={() => setIsEditing(true)} size="lg" className="shadow-md">
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Edit Profile
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleCancel} size="lg">
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSave} disabled={loading} size="lg" className="shadow-md">
+                    <Save className="h-4 w-4 mr-2" />
+                    {loading ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {error && (
+            <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950/50 rounded-lg text-red-700 dark:text-red-300 shadow-sm">
+              {error}
+            </div>
+          )}
         </div>
-        {error && (
-          <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
-            {error}
-          </div>
-        )}
-        {!isEditing ? (
-          <Button onClick={() => setIsEditing(true)}>
-            <Edit2 className="h-4 w-4 mr-2" />
-            Edit Profile
-          </Button>
-        ) : (
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleCancel}>
-              <X className="h-4 w-4 mr-2" />
-              Cancel
-            </Button>
-            <Button onClick={handleSave} disabled={loading}>
-              <Save className="h-4 w-4 mr-2" />
-              {loading ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
-        )}
-      </div>
 
-      <div className="grid gap-6">
+        {/* Profile Content */}
+        <div className="space-y-6">
         <ProfileHeader
           user={user}
           isEditing={isEditing}
@@ -124,12 +134,13 @@ const ProfilePage = () => {
           />
         )}
 
-        {/* Account Actions */}
-        <ChangePasswordForm
-          onSuccess={() => {
-            // Optionally refresh user data or show success message
-          }}
-        />
+          {/* Account Actions */}
+          <ChangePasswordForm
+            onSuccess={() => {
+              // Optionally refresh user data or show success message
+            }}
+          />
+        </div>
       </div>
     </div>
   );

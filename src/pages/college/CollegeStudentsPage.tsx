@@ -239,11 +239,11 @@ const CollegeStudentsPage = () => {
                                 {student.name.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
-                            <div>
+                            <div className="min-w-0 flex-1">
                               <div className="font-medium text-[#1565C0]">
                                 {student.name}
                               </div>
-                              <div className="text-sm text-[#333333]/70">
+                              <div className="text-sm text-[#333333]/70 break-all break-words overflow-wrap-anywhere">
                                 {student.email}
                               </div>
                             </div>
@@ -315,11 +315,11 @@ const PendingStudentCard = ({ student, onVerify }: PendingStudentCardProps) => (
             {student.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
-        <div>
+        <div className="min-w-0 flex-1">
           <CardTitle className="text-base text-[#1565C0]">
             {student.name}
           </CardTitle>
-          <CardDescription className="text-[#333333]/80">
+          <CardDescription className="text-[#333333]/80 break-all break-words overflow-wrap-anywhere">
             {student.email}
           </CardDescription>
         </div>

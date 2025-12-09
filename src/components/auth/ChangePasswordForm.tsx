@@ -82,9 +82,9 @@ export const ChangePasswordForm = ({ onSuccess }: ChangePasswordFormProps) => {
   }
 
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader>
-        <CardTitle>Change Password</CardTitle>
+        <CardTitle className="text-xl">Change Password</CardTitle>
         <CardDescription>
           Update your password to keep your account secure.
         </CardDescription>

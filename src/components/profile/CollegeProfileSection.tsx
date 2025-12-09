@@ -75,12 +75,12 @@ export const CollegeProfileSection = ({
   };
 
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader>
-        <CardTitle>Institution Information</CardTitle>
+        <CardTitle className="text-xl">Institution Information</CardTitle>
         <CardDescription>Your college or university details</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {isEditing && (
           <FileUpload
             type="profile-picture"
@@ -91,9 +91,11 @@ export const CollegeProfileSection = ({
             description="Upload your college logo (JPEG, PNG, GIF, WebP - Max 5MB)"
           />
         )}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="website">Website</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label htmlFor="website" className="text-sm font-semibold">
+              Website
+            </Label>
             {isEditing ? (
               <Input
                 id="website"
@@ -102,16 +104,25 @@ export const CollegeProfileSection = ({
                 onChange={(e) =>
                   onFormDataChange({ ...formData, website: e.target.value })
                 }
+                className="h-11"
               />
             ) : (
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                {user.website || "Not specified"}
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border/50">
+                <div className="flex-shrink-0 p-2 rounded-full bg-primary/10">
+                  <MapPin className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium break-all">
+                  {user.website || (
+                    <span className="text-muted-foreground italic">Not specified</span>
+                  )}
+                </span>
               </div>
             )}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
+          <div className="space-y-3">
+            <Label htmlFor="location" className="text-sm font-semibold">
+              Location
+            </Label>
             {isEditing ? (
               <Input
                 id="location"
@@ -119,17 +130,26 @@ export const CollegeProfileSection = ({
                 onChange={(e) =>
                   onFormDataChange({ ...formData, location: e.target.value })
                 }
+                className="h-11"
               />
             ) : (
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                {user.location || "Not specified"}
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border/50">
+                <div className="flex-shrink-0 p-2 rounded-full bg-primary/10">
+                  <MapPin className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium">
+                  {user.location || (
+                    <span className="text-muted-foreground italic">Not specified</span>
+                  )}
+                </span>
               </div>
             )}
           </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="establishedYear">Established Year</Label>
+        <div className="space-y-3">
+          <Label htmlFor="establishedYear" className="text-sm font-semibold">
+            Established Year
+          </Label>
           {isEditing ? (
             <Input
               id="establishedYear"
@@ -141,10 +161,13 @@ export const CollegeProfileSection = ({
                   establishedYear: e.target.value,
                 })
               }
+              className="h-11"
             />
           ) : (
-            <div className="text-sm">
-              {user.establishedYear || "Not specified"}
+            <div className="p-3 rounded-lg bg-muted/50 border border-border/50 text-sm font-medium">
+              {user.establishedYear || (
+                <span className="text-muted-foreground italic">Not specified</span>
+              )}
             </div>
           )}
         </div>

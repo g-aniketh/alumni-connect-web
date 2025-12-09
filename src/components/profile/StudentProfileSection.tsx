@@ -88,17 +88,19 @@ export const StudentProfileSection = ({
 }: StudentProfileSectionProps) => {
   return (
     <>
-      <Card>
+      <Card className="shadow-md">
         <CardHeader>
-          <CardTitle>Academic Information</CardTitle>
+          <CardTitle className="text-xl">Academic Information</CardTitle>
           <CardDescription>
             Your academic and enrollment details
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="rollNumber">Roll Number</Label>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <Label htmlFor="rollNumber" className="text-sm font-semibold">
+                Roll Number
+              </Label>
               {isEditing ? (
                 <Input
                   id="rollNumber"
@@ -109,15 +111,20 @@ export const StudentProfileSection = ({
                       rollNumber: e.target.value,
                     })
                   }
+                  className="h-11"
                 />
               ) : (
-                <div className="text-sm">
-                  {user.rollNumber || "Not specified"}
+                <div className="p-3 rounded-lg bg-muted/50 border border-border/50 text-sm font-medium">
+                  {user.rollNumber || (
+                    <span className="text-muted-foreground italic">Not specified</span>
+                  )}
                 </div>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="enrollmentYear">Enrollment Year</Label>
+            <div className="space-y-3">
+              <Label htmlFor="enrollmentYear" className="text-sm font-semibold">
+                Enrollment Year
+              </Label>
               {isEditing ? (
                 <Input
                   id="enrollmentYear"
@@ -129,17 +136,22 @@ export const StudentProfileSection = ({
                       enrollmentYear: e.target.value,
                     })
                   }
+                  className="h-11"
                 />
               ) : (
-                <div className="text-sm">
-                  {user.enrollmentYear || "Not specified"}
+                <div className="p-3 rounded-lg bg-muted/50 border border-border/50 text-sm font-medium">
+                  {user.enrollmentYear || (
+                    <span className="text-muted-foreground italic">Not specified</span>
+                  )}
                 </div>
               )}
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="degree">Degree</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <Label htmlFor="degree" className="text-sm font-semibold">
+                Degree
+              </Label>
               {isEditing ? (
                 <Input
                   id="degree"
@@ -147,13 +159,20 @@ export const StudentProfileSection = ({
                   onChange={(e) =>
                     onFormDataChange({ ...formData, degree: e.target.value })
                   }
+                  className="h-11"
                 />
               ) : (
-                <div className="text-sm">{user.degree || "Not specified"}</div>
+                <div className="p-3 rounded-lg bg-muted/50 border border-border/50 text-sm font-medium">
+                  {user.degree || (
+                    <span className="text-muted-foreground italic">Not specified</span>
+                  )}
+                </div>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="department">Department</Label>
+            <div className="space-y-3">
+              <Label htmlFor="department" className="text-sm font-semibold">
+                Department
+              </Label>
               {isEditing ? (
                 <Select
                   value={formData.department || ""}
@@ -161,7 +180,7 @@ export const StudentProfileSection = ({
                     onFormDataChange({ ...formData, department: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -173,13 +192,15 @@ export const StudentProfileSection = ({
                   </SelectContent>
                 </Select>
               ) : (
-                <div className="text-sm">
-                  {user.department || "Not specified"}
+                <div className="p-3 rounded-lg bg-muted/50 border border-border/50 text-sm font-medium">
+                  {user.department || (
+                    <span className="text-muted-foreground italic">Not specified</span>
+                  )}
                 </div>
               )}
             </div>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {isEditing ? (
               <SkillsAutocomplete
                 skills={AVAILABLE_SKILLS}
@@ -197,16 +218,16 @@ export const StudentProfileSection = ({
               />
             ) : (
               <div>
-                <Label>Skills</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <Label className="text-sm font-semibold mb-3 block">Skills</Label>
+                <div className="flex flex-wrap gap-2 p-3 rounded-lg bg-muted/50 border border-border/50 min-h-[3rem]">
                   {(user.skills || []).length > 0 ? (
                     (user.skills || []).map((skill: string) => (
-                      <Badge key={skill} variant="outline">
+                      <Badge key={skill} variant="outline" className="text-xs py-1 px-2">
                         {skill}
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-sm text-muted-foreground italic">
                       No skills added yet
                     </span>
                   )}
@@ -214,8 +235,10 @@ export const StudentProfileSection = ({
               </div>
             )}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="bio">Bio</Label>
+          <div className="space-y-3">
+            <Label htmlFor="bio" className="text-sm font-semibold">
+              Bio
+            </Label>
             {isEditing ? (
               <Textarea
                 id="bio"
@@ -224,10 +247,15 @@ export const StudentProfileSection = ({
                   onFormDataChange({ ...formData, bio: e.target.value })
                 }
                 placeholder="Tell us about yourself..."
-                rows={3}
+                rows={4}
+                className="resize-none"
               />
             ) : (
-              <div className="text-sm">{user.bio || "Not specified"}</div>
+              <div className="p-4 rounded-lg bg-muted/50 border border-border/50 text-sm leading-relaxed min-h-[4rem]">
+                {user.bio || (
+                  <span className="text-muted-foreground italic">Not specified</span>
+                )}
+              </div>
             )}
           </div>
         </CardContent>
