@@ -12,8 +12,9 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Department } from "../../types";
-import { degrees } from "./formConstants";
+import { degrees, departmentMap, degreeMap } from "./formConstants";
 import { Eye, EyeOff } from "lucide-react";
+import { SuccessModal } from "../ui/SuccessModal";
 
 export const CollegeSignupForm = () => {
   const { signup } = useAuth();
@@ -29,6 +30,7 @@ export const CollegeSignupForm = () => {
   const [website, setWebsite] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const toggleDepartment = (dept: string) => {
     setSelectedDepartments((prev) =>
@@ -65,15 +67,16 @@ export const CollegeSignupForm = () => {
         password,
         address,
         establishedYear: parseInt(establishedYear),
-        departments: selectedDepartments,
-        degreesOffered: selectedDegrees,
+        departments: selectedDepartments.map(dept => departmentMap[dept] || dept),
+        degreesOffered: selectedDegrees.map(deg => degreeMap[deg] || deg),
         website: website.trim() || undefined,
       };
       await signup("College", signupData);
-      alert(
-        "Account created successfully! Please log in to complete your profile."
-      );
-      navigate("/login?role=college");
+      setShowSuccessModal(true);
+      // Navigate after a delay to let user see the success message
+      setTimeout(() => {
+        navigate("/login?role=college");
+      }, 2500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
@@ -242,6 +245,13 @@ export const CollegeSignupForm = () => {
           </Button>
         </form>
       </CardContent>
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title="Account Created Successfully!"
+        message="Your college account has been created. Please log in to complete your profile and start connecting with alumni and students."
+      />
     </Card>
   );
 };

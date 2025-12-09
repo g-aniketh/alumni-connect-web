@@ -50,6 +50,14 @@ const LoginPage = () => {
           {/* Right Side - Login Form */}
           <div className="w-full max-w-md mx-auto space-y-6">
             <div className="text-center space-y-2">
+              {/* Logo */}
+              <div className="flex justify-center mb-4">
+                <img
+                  src="https://res.cloudinary.com/dj6i0b4q2/image/upload/v1765264961/image-removebg-preview_4_rc5dsk.png"
+                  alt="Alumni Connect Logo"
+                  className="h-20 w-auto object-contain"
+                />
+              </div>
               <h1 className="text-3xl font-bold">Welcome to Alumni Connect</h1>
               <p className="text-gray-500 dark:text-gray-400">
                 Log in to continue

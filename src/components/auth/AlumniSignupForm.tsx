@@ -21,6 +21,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { collegeAPI } from "../../lib/api";
 import { degreeMap, degrees, departmentMap } from "./formConstants";
+import { SuccessModal } from "../ui/SuccessModal";
 
 export const AlumniSignupForm = () => {
   const { signup } = useAuth();
@@ -38,6 +39,7 @@ export const AlumniSignupForm = () => {
   const [loadingColleges, setLoadingColleges] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     loadColleges();
@@ -93,10 +95,11 @@ export const AlumniSignupForm = () => {
         linkedInProfile: linkedInProfile.trim() || undefined,
       };
       await signup("Alumni", signupData);
-      alert(
-        "Account created successfully! Please check your email to verify your account, then log in to complete your profile."
-      );
-      navigate("/login?role=alumni");
+      setShowSuccessModal(true);
+      // Navigate after a delay to let user see the success message
+      setTimeout(() => {
+        navigate("/login?role=alumni");
+      }, 2500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
@@ -289,6 +292,13 @@ export const AlumniSignupForm = () => {
           </Button>
         </form>
       </CardContent>
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title="Account Created Successfully!"
+        message="Your alumni account has been created. Please log in to complete your profile and start connecting with students and fellow alumni."
+      />
     </Card>
   );
 };
