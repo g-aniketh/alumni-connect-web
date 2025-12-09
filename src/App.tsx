@@ -54,6 +54,7 @@ import EmailVerificationPage from "./pages/EmailVerificationPage";
 import CollegeBulkImportPage from "./pages/college/CollegeBulkImportPage";
 import CollegeDegreeCreditsPage from "./pages/college/CollegeDegreeCreditsPage";
 import CollegeCreditsSyncPage from "./pages/college/CollegeCreditsSyncPage";
+import CollegeStudentDetailPage from "./pages/college/CollegeStudentDetailPage";
 import AlumniProfileCompletionPage from "./pages/onboarding/AlumniProfileCompletionPage";
 import StudentProfileCompletionPage from "./pages/onboarding/StudentProfileCompletionPage";
 import CollegeProfileCompletionPage from "./pages/onboarding/CollegeProfileCompletionPage";
@@ -366,6 +367,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={[UserRole.College]}>
                   <CollegeStudentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/college/students/:id"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.College]}>
+                  <CollegeStudentDetailPage />
                 </ProtectedRoute>
               }
             />

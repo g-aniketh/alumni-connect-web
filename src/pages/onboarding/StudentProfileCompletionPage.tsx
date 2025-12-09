@@ -67,7 +67,7 @@ const StudentProfileCompletionPage = () => {
   };
 
   const handleSkipForNow = () => {
-    navigate("/dashboard");
+    navigate("/student/dashboard");
   };
 
   const handleComplete = async () => {

@@ -32,7 +32,7 @@ const CollegeProfileCompletionPage = () => {
   const progress = (currentStep / totalSteps) * 100;
 
   const handleSkipForNow = () => {
-    navigate("/dashboard");
+    navigate("/college/dashboard");
   };
 
   const handleComplete = async () => {

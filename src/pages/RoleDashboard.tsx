@@ -31,8 +31,19 @@ const RoleDashboard = () => {
     }
     case UserRole.Alumni: {
       const alumni = user as import("../types").Alumni;
-      // Check if profile is incomplete (no current employer or designation)
-      if (!alumni.currentEmployer || !alumni.designation || !alumni.bio) {
+      // Check if profile is incomplete
+      // For converted alumni (students to alumni), skills are already present
+      // So we only require currentEmployer and designation for new alumni signups
+      // If they have skills, they're likely converted and can skip onboarding
+      // Bio is optional, not required
+      const hasSkills = alumni.skills && alumni.skills.length > 0;
+      const hasProfessionalInfo =
+        !!alumni.currentEmployer && !!alumni.designation;
+
+      // Skip onboarding if:
+      // 1. They have skills (converted from student), OR
+      // 2. They have professional info (currentEmployer + designation)
+      if (!hasSkills && !hasProfessionalInfo) {
         return <Navigate to="/onboarding/alumni" replace />;
       }
       return <Navigate to="/alumni/dashboard" replace />;

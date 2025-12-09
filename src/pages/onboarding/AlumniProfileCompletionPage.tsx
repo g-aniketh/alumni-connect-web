@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -22,6 +22,7 @@ import {
 import { ChevronRight, ChevronLeft, CheckCircle } from "lucide-react";
 import { alumniAPI } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
+import type { Alumni } from "../../types";
 
 // Skills data matching backend SkillSet
 const SkillSet: string[] = [
@@ -102,6 +103,45 @@ const AlumniProfileCompletionPage = () => {
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
 
+  // Pre-populate form with existing user data (for converted alumni)
+  useEffect(() => {
+    if (user && user.role === "Alumni") {
+      const alumni = user as Alumni;
+      
+      // Pre-populate skills if they exist
+      if (alumni.skills && alumni.skills.length > 0) {
+        setSkills(alumni.skills);
+      }
+      
+      // Pre-populate bio if it exists
+      if (alumni.bio) {
+        setBio(alumni.bio);
+      }
+      
+      // Pre-populate professional info if it exists
+      if (alumni.designation) {
+        setCurrentDesignation(alumni.designation);
+      }
+      if (alumni.currentEmployer) {
+        setCurrentEmployer(alumni.currentEmployer);
+      }
+      if (alumni.location) {
+        setLocation(alumni.location);
+      }
+      
+      // Pre-populate social links if they exist
+      if (alumni.linkedInProfile) {
+        setLinkedInProfile(alumni.linkedInProfile);
+      }
+      if (alumni.githubProfile) {
+        setGithubProfile(alumni.githubProfile);
+      }
+      if (alumni.personalWebsite) {
+        setPersonalWebsite(alumni.personalWebsite);
+      }
+    }
+  }, [user]);
+
   const handleSkillToggle = (skill: string) => {
     setSkills((prev) =>
       prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
@@ -121,7 +161,7 @@ const AlumniProfileCompletionPage = () => {
   };
 
   const handleSkipForNow = () => {
-    navigate("/dashboard");
+    navigate("/alumni/dashboard");
   };
 
   const handleComplete = async () => {
@@ -147,7 +187,7 @@ const AlumniProfileCompletionPage = () => {
 
       await alumniAPI.updateProfile(user.id, updateData);
       await refreshUser();
-      navigate("/dashboard");
+      navigate("/alumni/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update profile");
     } finally {
@@ -262,7 +302,7 @@ const AlumniProfileCompletionPage = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="currentDesignation">
-                    Current Job Title *
+                    Current Job Title
                   </Label>
                   <Input
                     id="currentDesignation"
@@ -273,7 +313,7 @@ const AlumniProfileCompletionPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="currentEmployer">Current Company *</Label>
+                  <Label htmlFor="currentEmployer">Current Company</Label>
                   <Input
                     id="currentEmployer"
                     placeholder="e.g., Google"
