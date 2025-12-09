@@ -11,7 +11,7 @@ import {
 } from "../../components/ui/dialog";
 import { Button } from "../../components/ui/button";
 import { useAuth } from "../../context/AuthContext";
-import { mentorshipsAPI } from "../../lib/api";
+import { mentorshipsAPI, connectionsAPI } from "../../lib/api";
 import type { BackendAlumni } from "../../types/api";
 import { motion } from "motion/react";
 import AlumniNetworkSkeleton from "./AlumniNetworkSkeleton";
@@ -38,6 +38,10 @@ const AlumniNetworkPage = () => {
   );
   const [isConnectDialogOpen, setIsConnectDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [connectingId, setConnectingId] = useState<string | null>(null);
+  const [sentConnectionIds, setSentConnectionIds] = useState<Set<string>>(
+    () => new Set()
+  );
 
   useEffect(() => {
     loadAlumni();
@@ -137,11 +141,29 @@ const AlumniNetworkPage = () => {
     [filteredAlumni]
   );
 
-  const handleSubmitConnect = useCallback(() => {
-    if (selectedAlumni) {
-      alert("Alumni-to-alumni connection feature is coming soon!");
+  const handleSubmitConnect = useCallback(async () => {
+    if (!selectedAlumni) return;
+    try {
+      setConnectingId(selectedAlumni._id);
+      await connectionsAPI.sendRequest({
+        receiverId: selectedAlumni._id,
+        receiverType: "Alumni",
+      });
+      setSentConnectionIds((prev) => {
+        const next = new Set(prev);
+        next.add(selectedAlumni._id);
+        return next;
+      });
       setIsConnectDialogOpen(false);
       setSelectedAlumni(null);
+    } catch (err) {
+      alert(
+        err instanceof Error
+          ? err.message
+          : "Failed to send connection request"
+      );
+    } finally {
+      setConnectingId(null);
     }
   }, [selectedAlumni]);
 
@@ -217,6 +239,8 @@ const AlumniNetworkPage = () => {
                         alumni={alumni}
                         onConnect={handleConnect}
                         viewerRole={user?.role}
+                        connectPending={sentConnectionIds.has(backendAlumni._id)}
+                        connectInFlight={connectingId === backendAlumni._id}
                       />
                     );
                   })}

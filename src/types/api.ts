@@ -282,6 +282,18 @@ export interface BackendEventRegistration {
   updatedAt: string;
 }
 
+// Connections
+export interface BackendConnectionRequest {
+  _id: string;
+  senderId: string;
+  senderType: string;
+  receiverId: string;
+  receiverType: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Mentorship Types
 export interface BackendMentorship {
   _id: string;

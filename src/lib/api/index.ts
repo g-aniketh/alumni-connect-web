@@ -13,6 +13,7 @@ export { mentorshipsAPI } from "./mentorships";
 export { campaignsAPI } from "./campaigns";
 export { uploadAPI } from "./upload";
 export { recommendationsAPI } from "./recommendations";
+export { connectionsAPI } from "./connections";
 export type {
   ParseResumeResponse,
   ParsedResumeProfile,

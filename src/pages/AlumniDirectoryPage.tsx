@@ -38,7 +38,7 @@ const AlumniDirectoryPage = () => {
   const [mentorStatuses, setMentorStatuses] = useState<Record<string, string>>(
     {}
   );
-  const [page, setPage] = useState(1);
+  const [visibleAlumniCount, setVisibleAlumniCount] = useState(PAGE_SIZE);
 
   const normalizeStatus = (
     status: string | undefined
@@ -104,10 +104,6 @@ const AlumniDirectoryPage = () => {
     }
   };
 
-
-  useEffect(() => {
-    setPage(1);
-  }, [nameSearch, skillSearch, companySearch, domainId, roleId]);
 
   const loadAlumni = async () => {
     try {
@@ -308,6 +304,10 @@ const AlumniDirectoryPage = () => {
     return matchesName && matchesSkill && matchesCompany && matchesDomainRole;
   });
 
+  useEffect(() => {
+    setVisibleAlumniCount(PAGE_SIZE);
+  }, [nameSearch, skillSearch, companySearch, domainId, roleId, filteredAlumni.length]);
+
   // If domain/role filtering results in no matches, show all alumni (excluding domain/role filter)
   const displayAlumni =
     filteredAlumni.length === 0 &&
@@ -351,6 +351,7 @@ const AlumniDirectoryPage = () => {
     const status = normalizeStatus(mentorStatuses[alumniItem._id]);
     return status !== "active" && status !== "pending";
   });
+  const visibleAlumniSlice = visibleAlumni.slice(0, visibleAlumniCount);
 
   // Transform BackendAlumni to Alumni for the component
   const transformAlumni = (backendAlumni: BackendAlumni): Alumni => {
@@ -496,7 +497,7 @@ const AlumniDirectoryPage = () => {
 
           {/* Alumni Cards Grid */}
           <div className="lg:col-span-3 space-y-4">
-            {visibleAlumni.length > 0 ? (
+            {visibleAlumniSlice.length > 0 ? (
               <>
                 {filteredAlumni.length === 0 && domainId && roleId && (
                   <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-800 dark:text-amber-200">
@@ -507,32 +508,36 @@ const AlumniDirectoryPage = () => {
                   </div>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {visibleAlumni
-                    .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
-                    .map((backendAlumni) => {
-                      const alumni = transformAlumni(backendAlumni);
-                      return (
-                        <AlumniProfileCard
-                          key={backendAlumni._id}
-                          alumni={alumni}
-                          onRequestMentorship={handleRequestMentorship}
-                          viewerRole={user?.role}
-                          mentorshipStatus={mentorStatuses[backendAlumni._id]}
-                          isRequesting={
-                            submitting && selectedAlumni?._id === backendAlumni._id
-                          }
-                        />
-                      );
-                    })}
+                  {visibleAlumniSlice.map((backendAlumni) => {
+                    const alumni = transformAlumni(backendAlumni);
+                    return (
+                      <AlumniProfileCard
+                        key={backendAlumni._id}
+                        alumni={alumni}
+                        onRequestMentorship={handleRequestMentorship}
+                        viewerRole={user?.role}
+                        mentorshipStatus={mentorStatuses[backendAlumni._id]}
+                        isRequesting={
+                          submitting && selectedAlumni?._id === backendAlumni._id
+                        }
+                      />
+                    );
+                  })}
                 </div>
-                <PaginationControls
-                  page={page}
-                  pageCount={Math.max(
-                    1,
-                    Math.ceil(visibleAlumni.length / PAGE_SIZE)
-                  )}
-                  onPageChange={setPage}
-                />
+                {visibleAlumniSlice.length < visibleAlumni.length && (
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        setVisibleAlumniCount((count) =>
+                          Math.min(count + PAGE_SIZE, visibleAlumni.length)
+                        )
+                      }
+                    >
+                      Load more
+                    </Button>
+                  </div>
+                )}
               </>
             ) : (
               <div className="text-center py-12">
@@ -662,44 +667,6 @@ const AlumniDirectoryPage = () => {
           </DialogContent>
         </Dialog>
       </div>
-    </div>
-  );
-};
-
-type PaginationControlsProps = {
-  page: number;
-  pageCount: number;
-  onPageChange: (page: number) => void;
-};
-
-const PaginationControls = ({
-  page,
-  pageCount,
-  onPageChange,
-}: PaginationControlsProps) => {
-  const canPrev = page > 1;
-  const canNext = page < pageCount;
-  return (
-    <div className="flex items-center justify-end gap-2 pt-2">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!canPrev}
-        onClick={() => canPrev && onPageChange(page - 1)}
-      >
-        Previous
-      </Button>
-      <span className="text-sm text-gray-600">
-        Page {page} of {pageCount}
-      </span>
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!canNext}
-        onClick={() => canNext && onPageChange(page + 1)}
-      >
-        Next
-      </Button>
     </div>
   );
 };

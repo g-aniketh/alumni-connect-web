@@ -14,6 +14,8 @@ interface AlumniProfileCardProps {
   viewerRole?: UserRole;
   mentorshipStatus?: string; // e.g., "pending", "active"
   isRequesting?: boolean;
+  connectPending?: boolean;
+  connectInFlight?: boolean;
 }
 
 export const AlumniProfileCard = React.memo(
@@ -24,6 +26,8 @@ export const AlumniProfileCard = React.memo(
     viewerRole,
     mentorshipStatus,
     isRequesting = false,
+    connectPending = false,
+    connectInFlight = false,
   }: AlumniProfileCardProps) => {
     const isAvailable = alumni.mentorshipAvailable === true;
     const isAlumniViewer = viewerRole === UserRole.Alumni;
@@ -121,9 +125,14 @@ export const AlumniProfileCard = React.memo(
                 className="w-full"
                 variant="default"
                 onClick={() => onConnect(alumni)}
+                disabled={connectPending || connectInFlight}
               >
                 <UserPlus className="w-4 h-4 mr-2" />
-                Connect
+                {connectPending
+                  ? "Request sent"
+                  : connectInFlight
+                    ? "Sending..."
+                    : "Connect"}
               </Button>
             ) : isStudentViewer && onRequestMentorship ? (
               <Button

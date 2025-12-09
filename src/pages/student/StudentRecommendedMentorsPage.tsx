@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
   Card,
   CardContent,
@@ -25,6 +26,7 @@ import { motion } from "motion/react";
 
 const StudentRecommendedMentorsPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [recommendations, setRecommendations] =
@@ -69,6 +71,10 @@ const StudentRecommendedMentorsPage = () => {
       const mentorIds = new Set<string>();
       const statusMap: Record<string, string> = {};
       response.mentorships.forEach((m) => {
+        const menteeId =
+          typeof m.menteeId === "object"
+            ? m.menteeId._id
+            : (m.menteeId as string | undefined);
         const mentorId =
           typeof m.mentorId === "object"
             ? m.mentorId._id
@@ -76,7 +82,8 @@ const StudentRecommendedMentorsPage = () => {
         const status = normalizeStatus(
           typeof m.status === "string" ? m.status : undefined
         );
-        if (mentorId) {
+        // Only consider mentorships where the current user is the mentee
+        if (mentorId && menteeId && user?.id === menteeId) {
           mentorIds.add(mentorId);
           if (status) {
             const current = statusMap[mentorId];
@@ -135,6 +142,7 @@ const StudentRecommendedMentorsPage = () => {
       });
       setRequestedMentorIds((prev) => new Set(prev).add(mentorId));
       setMentorStatuses((prev) => ({ ...prev, [mentorId]: "pending" }));
+      await loadExistingMentorships();
       navigate("/student/mentorships");
     } catch (err) {
       const message =
@@ -165,13 +173,6 @@ const StudentRecommendedMentorsPage = () => {
       </div>
     );
   }
-
-  const filteredMentors =
-    recommendations?.recommendations?.filter((mentor) => {
-      const status = normalizeStatus(mentorStatuses[mentor.alumni_id]);
-      // Hide mentors where student already has an active or pending mentorship
-      return status !== "active" && status !== "pending";
-    }) || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
@@ -228,9 +229,11 @@ const StudentRecommendedMentorsPage = () => {
           </Card>
         )}
 
-        {filteredMentors.length > 0 ? (
+        {recommendations &&
+        recommendations.recommendations &&
+        recommendations.recommendations.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMentors.map((mentor) => (
+            {recommendations.recommendations.map((mentor) => (
               <motion.div
                 key={mentor.alumni_id}
                 initial={{ opacity: 0, y: 20 }}
