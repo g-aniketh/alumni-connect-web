@@ -39,7 +39,7 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-800 grid-pattern">
+    <div className="flex flex-col min-h-screen bg-white text-gray-800 grid-pattern pt-[10vh]">
       {/* Language Bar at the very top */}
       <LanguageBar />
 

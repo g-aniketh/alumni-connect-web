@@ -23,7 +23,7 @@ const AlumniLinkedInFeedPage = () => {
   }, []);
 
   return (
-    <div className="bg-[#E3F2FD] min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen pt-[10vh]">
       <style>{`
         /* Custom overrides for Elfsight LinkedIn Feed to match dashboard theme */
         div[class*="eapps-linkedin-feed-posts-item"] {

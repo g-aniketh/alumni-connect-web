@@ -105,7 +105,7 @@ const AlumniJobCreationPage = () => {
   };
 
   return (
-    <div className="container py-8 max-w-3xl mx-auto">
+    <div className="container pt-[10vh] pb-8 max-w-3xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">
           Post a Job Opportunity

@@ -58,7 +58,7 @@ const ConnectedStudentsPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
+      <div className="container pt-[10vh] pb-8 min-h-screen">
         <div className="flex items-center justify-center py-12">
           <p className="text-muted-foreground">Loading connected students...</p>
         </div>
@@ -67,7 +67,7 @@ const ConnectedStudentsPage = () => {
   }
 
   return (
-    <div className="container py-8 min-h-screen">
+    <div className="container pt-[10vh] pb-8 min-h-screen">
       <div className="flex flex-col gap-2 mb-8">
         <h1 className="text-3xl font-bold tracking-tight">
           Connected Students

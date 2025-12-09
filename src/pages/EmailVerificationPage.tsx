@@ -54,7 +54,7 @@ const EmailVerificationPage = () => {
 
   if (verified) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 pt-[10vh]">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Email Verified</CardTitle>
@@ -79,7 +79,7 @@ const EmailVerificationPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 pt-[10vh]">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Verify Email Address</CardTitle>

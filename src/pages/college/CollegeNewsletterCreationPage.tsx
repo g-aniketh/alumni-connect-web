@@ -8,7 +8,7 @@ import { FileText } from "lucide-react";
 
 const CollegeNewsletterCreationPage = () => {
   return (
-    <div className="container py-8 max-w-3xl">
+    <div className="container pt-[10vh] pb-8 max-w-3xl">
       <div className="flex flex-col gap-2 mb-8">
         <h1 className="text-3xl font-bold tracking-tight">
           Create Newsletter/Blog Post

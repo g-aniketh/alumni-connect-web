@@ -85,7 +85,7 @@ const AlumniEventManagementPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
+      <div className="container pt-[10vh] pb-8 min-h-screen">
         <div className="flex items-center justify-center py-12">
           <p className="text-muted-foreground">Loading events...</p>
         </div>
@@ -94,7 +94,7 @@ const AlumniEventManagementPage = () => {
   }
 
   return (
-    <div className="container py-8 min-h-screen space-y-8">
+    <div className="container pt-[10vh] pb-8 min-h-screen space-y-8">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight">My Events</h1>

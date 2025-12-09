@@ -7,7 +7,7 @@ const PendingVerificationPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 pt-[10vh]">
       <div className="max-w-lg w-full bg-background border rounded-xl shadow-sm p-8 space-y-6">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">

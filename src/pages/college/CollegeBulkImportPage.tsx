@@ -336,7 +336,7 @@ Jane Smith,jane.smith@example.com,password123,2019,Electrical Engineering,B.Tech
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pt-[10vh]">
       <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight">Bulk Import</h1>

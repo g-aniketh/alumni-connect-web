@@ -406,7 +406,7 @@ const DomainExplorerPage = () => {
   }
 
   return (
-    <div className="container mx-auto py-12 px-4 max-w-7xl">
+    <div className="container mx-auto pt-[10vh] pb-12 px-4 max-w-7xl">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold tracking-tight mb-4">
           Domain Explorer

@@ -26,7 +26,7 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="container min-h-[calc(100vh-4rem)] py-10">
+    <div className="container min-h-[calc(100vh-4rem)] pt-[10vh] py-10">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* Left Side - Eye Animation */}
         <div className="hidden lg:block sticky top-24 h-[600px]">

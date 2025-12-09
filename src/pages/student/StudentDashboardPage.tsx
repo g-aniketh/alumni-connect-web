@@ -122,7 +122,7 @@ const StudentDashboardPage = () => {
 
   if (user && user.role === UserRole.Student && !(user as Student).isVerified) {
     return (
-      <div className="bg-[#E3F2FD] min-h-screen flex items-center justify-center">
+      <div className="bg-[#E3F2FD] min-h-screen flex items-center justify-center pt-[10vh]">
         <div className="container mx-auto text-center max-w-md space-y-4 p-4">
           <CheckCircle2 className="w-12 h-12 text-[#1E88E5] mx-auto" />
           <h1 className="text-2xl font-semibold text-[#1565C0]">
@@ -138,7 +138,7 @@ const StudentDashboardPage = () => {
   }
 
   return (
-    <div className="bg-[#E3F2FD] min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen pt-[10vh]">
       <div className="container mx-auto py-8 space-y-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}

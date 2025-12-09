@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { jobsAPI } from "../../lib/api";
 import type { BackendJob } from "../../types/api";
 import { JobType } from "../../types";
@@ -31,6 +32,8 @@ import {
   MapPin,
   Eye,
   Plus,
+  Building2,
+  Users,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -38,7 +41,9 @@ const CollegeJobManagementPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
-  const [jobs, setJobs] = useState<BackendJob[]>([]);
+  const [allJobs, setAllJobs] = useState<BackendJob[]>([]);
+  const [filteredJobs, setFilteredJobs] = useState<BackendJob[]>([]);
+  const [filterBy, setFilterBy] = useState<"all" | "college" | "alumni">("all");
   const [jobToDelete, setJobToDelete] = useState<BackendJob | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -49,15 +54,31 @@ const CollegeJobManagementPage = () => {
     loadJobs();
   }, []);
 
+  useEffect(() => {
+    // Apply filter whenever filterBy or allJobs changes
+    if (filterBy === "all") {
+      setFilteredJobs(allJobs);
+    } else if (filterBy === "college") {
+      setFilteredJobs(
+        allJobs.filter((job) => job.postedBy.posterType === "College")
+      );
+    } else if (filterBy === "alumni") {
+      setFilteredJobs(
+        allJobs.filter((job) => job.postedBy.posterType === "Alumni")
+      );
+    }
+  }, [filterBy, allJobs]);
+
   const loadJobs = async () => {
     try {
       setLoading(true);
       setError("");
-      const response = await jobsAPI.getFiltered({ by: "college" });
+      // Fetch all jobs (college + alumni) for comprehensive view
+      const response = await jobsAPI.getFiltered({ by: "all" });
       const jobsList = Array.isArray(response)
         ? response
         : ((response as { jobs?: BackendJob[] }).jobs ?? []);
-      setJobs(jobsList);
+      setAllJobs(jobsList);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load jobs");
     } finally {
@@ -121,7 +142,7 @@ const CollegeJobManagementPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
+      <div className="container pt-[10vh] pb-8 min-h-screen">
         <div className="flex items-center justify-center py-12">
           <p className="text-muted-foreground">Loading jobs...</p>
         </div>
@@ -130,16 +151,16 @@ const CollegeJobManagementPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#E3F2FD]">
+    <div className="min-h-screen bg-[#E3F2FD] pt-[10vh]">
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-[#1565C0]">
-              Job Postings
+              Job Postings Management
             </h1>
             <p className="text-[#333333]">
-              Manage your college's job postings, view applications, and update
-              job details.
+              Manage all job postings from your college and alumni network. View
+              applications and update job details.
             </p>
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -168,7 +189,52 @@ const CollegeJobManagementPage = () => {
           </div>
         )}
 
-        {jobs.length === 0 ? (
+        {/* Filter Tabs */}
+        <Card className="bg-white border-[#1E88E5]/30">
+          <CardContent className="pt-6">
+            <Tabs
+              value={filterBy}
+              onValueChange={(value) =>
+                setFilterBy(value as "all" | "college" | "alumni")
+              }
+            >
+              <TabsList className="grid w-full grid-cols-3 bg-[#E3F2FD]">
+                <TabsTrigger
+                  value="all"
+                  className="data-[state=active]:bg-[#1E88E5] data-[state=active]:text-white"
+                >
+                  All Jobs ({allJobs.length})
+                </TabsTrigger>
+                <TabsTrigger
+                  value="college"
+                  className="data-[state=active]:bg-[#1E88E5] data-[state=active]:text-white"
+                >
+                  <Building2 className="h-4 w-4 mr-2" />
+                  College Jobs (
+                  {
+                    allJobs.filter((j) => j.postedBy.posterType === "College")
+                      .length
+                  }
+                  )
+                </TabsTrigger>
+                <TabsTrigger
+                  value="alumni"
+                  className="data-[state=active]:bg-[#1E88E5] data-[state=active]:text-white"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Alumni Jobs (
+                  {
+                    allJobs.filter((j) => j.postedBy.posterType === "Alumni")
+                      .length
+                  }
+                  )
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </CardContent>
+        </Card>
+
+        {filteredJobs.length === 0 ? (
           <Card className="bg-white border-[#1E88E5]/30">
             <CardContent className="py-12">
               <div className="text-center text-[#333333]/60">
@@ -194,6 +260,7 @@ const CollegeJobManagementPage = () => {
               <TableHeader className="bg-[#E3F2FD]">
                 <TableRow className="border-[#1E88E5]/20 hover:bg-[#E3F2FD]/80">
                   <TableHead className="text-[#1565C0]">Job Title</TableHead>
+                  <TableHead className="text-[#1565C0]">Posted By</TableHead>
                   <TableHead className="text-[#1565C0]">Type</TableHead>
                   <TableHead className="text-[#1565C0]">Location</TableHead>
                   <TableHead className="text-[#1565C0]">Applications</TableHead>
@@ -202,7 +269,7 @@ const CollegeJobManagementPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {jobs.map((job) => {
+                {filteredJobs.map((job) => {
                   const posterName =
                     typeof job.postedBy.posterId === "object"
                       ? job.postedBy.posterId.name
@@ -222,6 +289,37 @@ const CollegeJobManagementPage = () => {
                           <div className="text-sm text-[#333333]/70">
                             {posterName}
                           </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {job.postedBy.posterType === "Alumni" ? (
+                            <>
+                              <Badge
+                                variant="outline"
+                                className="border-green-300 text-green-700 bg-green-50"
+                              >
+                                <Users className="h-3 w-3 mr-1" />
+                                Alumni
+                              </Badge>
+                              {job.referral && (
+                                <Badge
+                                  variant="outline"
+                                  className="border-purple-300 text-purple-700 bg-purple-50"
+                                >
+                                  Referral
+                                </Badge>
+                              )}
+                            </>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="border-blue-300 text-blue-700 bg-blue-50"
+                            >
+                              <Building2 className="h-3 w-3 mr-1" />
+                              College
+                            </Badge>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -257,32 +355,40 @@ const CollegeJobManagementPage = () => {
                           className="flex items-center gap-2"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
-                            onClick={() =>
-                              navigate(`/college/jobs/edit/${job._id}`)
-                            }
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => {
-                              setJobToDelete(job);
-                              setIsDeleteDialogOpen(true);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {/* Only show edit/delete for college's own jobs */}
+                          {job.postedBy.posterType === "College" && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
+                                onClick={() =>
+                                  navigate(`/college/jobs/edit/${job._id}`)
+                                }
+                                title="Edit Job"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  setJobToDelete(job);
+                                  setIsDeleteDialogOpen(true);
+                                }}
+                                title="Delete Job"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
                             className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
                             onClick={() => handleViewJobDetails(job)}
+                            title="View Job Details"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>

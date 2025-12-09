@@ -112,7 +112,7 @@ const AlumniJobManagementPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 dark:from-sky-950 dark:to-blue-900">
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 dark:from-sky-950 dark:to-blue-900 pt-[10vh]">
         <div className="container py-8">
           <div className="flex items-center justify-center py-12">
             <p className="text-muted-foreground">Loading jobs...</p>
@@ -123,7 +123,7 @@ const AlumniJobManagementPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 dark:from-sky-950 dark:to-blue-900">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-100 dark:from-sky-950 dark:to-blue-900 pt-[10vh]">
       <div className="container py-8 space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex flex-col gap-2">

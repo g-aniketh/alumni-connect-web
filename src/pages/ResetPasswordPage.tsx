@@ -89,7 +89,7 @@ const ResetPasswordPage = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 pt-[10vh]">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Password Reset Successful</CardTitle>
@@ -114,7 +114,7 @@ const ResetPasswordPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 pt-[10vh]">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Reset Password</CardTitle>

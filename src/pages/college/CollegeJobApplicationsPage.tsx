@@ -41,7 +41,7 @@ const CollegeJobApplicationsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#E3F2FD]">
+    <div className="min-h-screen bg-[#E3F2FD] pt-[10vh]">
       <div className="container mx-auto px-4 py-8 space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[#1565C0]">

@@ -271,7 +271,7 @@ const JobsPage = () => {
       : "/college/jobs/create";
 
   return (
-    <div className="bg-[#E3F2FD] min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen pt-[10vh]">
       <div className="container mx-auto py-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -472,9 +472,7 @@ const JobsPage = () => {
           job={selectedJob ? transformJob(selectedJob) : null}
           open={isDetailsOpen}
           onOpenChange={setIsDetailsOpen}
-          hasApplied={
-            selectedJob ? hasApplied(selectedJob._id) : false
-          }
+          hasApplied={selectedJob ? hasApplied(selectedJob._id) : false}
         />
       </div>
     </div>
@@ -526,17 +524,17 @@ const JobListItem = ({
             </p>
           </div>
           <div className="hidden md:flex items-center gap-2 text-sm text-[#333333]/80 flex-wrap">
-              {eligibility && (
-                <Badge
-                  variant="outline"
-                  className={`${getMatchScoreColor(
-                    eligibility.eligibility_percent
-                  )} border font-semibold`}
-                >
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  {eligibility.eligibility_percent.toFixed(1)}% match
-                </Badge>
-              )}
+            {eligibility && (
+              <Badge
+                variant="outline"
+                className={`${getMatchScoreColor(
+                  eligibility.eligibility_percent
+                )} border font-semibold`}
+              >
+                <TrendingUp className="h-3 w-3 mr-1" />
+                {eligibility.eligibility_percent.toFixed(1)}% match
+              </Badge>
+            )}
             <Badge
               variant="outline"
               className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]"

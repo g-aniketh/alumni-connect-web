@@ -50,7 +50,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pt-[10vh]">
       <div className="container py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">

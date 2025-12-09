@@ -38,7 +38,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)]">
+    <div className="relative min-h-[calc(100vh-4rem)] pt-[10vh]">
       <LoginBackground />
       <div className="container py-10 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">

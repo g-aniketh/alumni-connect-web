@@ -102,7 +102,12 @@ const AlumniNetworkPage = () => {
 
       return matchesName && matchesSkill && matchesCompany;
     });
-  }, [alumni, debouncedNameSearch, debouncedSkillSearch, debouncedCompanySearch]);
+  }, [
+    alumni,
+    debouncedNameSearch,
+    debouncedSkillSearch,
+    debouncedCompanySearch,
+  ]);
 
   const { paginatedAlumni, pageCount, currentPage } = useMemo(() => {
     const totalItems = filteredAlumni.length;
@@ -192,7 +197,7 @@ const AlumniNetworkPage = () => {
   }
 
   return (
-    <div className="bg-[#E3F2FD] min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen pt-[10vh]">
       <div className="container mx-auto py-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}

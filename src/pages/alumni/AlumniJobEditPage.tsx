@@ -137,7 +137,7 @@ const AlumniJobEditPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
+      <div className="container pt-[10vh] pb-8 min-h-screen">
         <div className="flex items-center justify-center py-12">
           <p className="text-muted-foreground">Loading job...</p>
         </div>
@@ -147,7 +147,7 @@ const AlumniJobEditPage = () => {
 
   if (!job) {
     return (
-      <div className="container py-8 min-h-screen">
+      <div className="container pt-[10vh] pb-8 min-h-screen">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Job not found</p>
           <Button onClick={() => navigate("/alumni/jobs")} className="mt-4">

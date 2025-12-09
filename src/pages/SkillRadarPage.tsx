@@ -165,7 +165,7 @@ const SkillRadarPage = () => {
   const strongSkills = gaps.filter((s: { gap: number }) => s.gap <= 5);
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <div className="container mx-auto pt-[10vh] pb-8 px-4 max-w-7xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight mb-2">
           Skill Radar Analysis

@@ -130,7 +130,7 @@ const StudentSkillsSelectionPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 py-10">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 pt-[10vh] pb-10">
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle>Add Your Skills</CardTitle>

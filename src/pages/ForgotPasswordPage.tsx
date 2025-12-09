@@ -48,7 +48,7 @@ const ForgotPasswordPage = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 pt-[10vh]">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Check Your Email</CardTitle>
@@ -89,7 +89,7 @@ const ForgotPasswordPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/40 pt-[10vh]">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Forgot Password</CardTitle>

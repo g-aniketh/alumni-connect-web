@@ -60,7 +60,7 @@ const CollegeProfileCompletionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-green-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+    <div className="min-h-screen bg-linear-to-br from-green-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 pt-[10vh] pb-12 px-4">
       <div className="container max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

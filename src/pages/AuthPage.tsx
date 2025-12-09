@@ -13,7 +13,7 @@ const AuthPage = () => {
   const isLogin = location.pathname === "/login";
 
   return (
-    <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-10">
+    <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] pt-[10vh] py-10">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Welcome to Alumni Connect</h1>

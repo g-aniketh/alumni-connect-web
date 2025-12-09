@@ -281,7 +281,7 @@ const StudentMentorshipsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#E3F2FD] flex items-center justify-center">
+      <div className="min-h-screen bg-[#E3F2FD] flex items-center justify-center pt-[10vh]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E88E5] mx-auto mb-4"></div>
           <p className="text-[#1565C0]">Loading mentorships...</p>
@@ -291,7 +291,7 @@ const StudentMentorshipsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#E3F2FD]">
+    <div className="min-h-screen bg-[#E3F2FD] pt-[10vh]">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col gap-2 mb-8">

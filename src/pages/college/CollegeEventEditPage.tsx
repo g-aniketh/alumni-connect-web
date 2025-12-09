@@ -102,7 +102,7 @@ const CollegeEventEditPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8 min-h-screen">
+      <div className="container pt-[10vh] pb-8 min-h-screen">
         <div className="flex items-center justify-center py-12">
           <p className="text-muted-foreground">Loading event...</p>
         </div>
@@ -112,7 +112,7 @@ const CollegeEventEditPage = () => {
 
   if (!event) {
     return (
-      <div className="container py-8 min-h-screen">
+      <div className="container pt-[10vh] pb-8 min-h-screen">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Event not found</p>
           <Button onClick={() => navigate("/college/events")} className="mt-4">
