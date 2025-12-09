@@ -42,9 +42,15 @@ interface JobDetailsProps {
   job: Job | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  hasApplied?: boolean;
 }
 
-export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
+export const JobDetails = ({
+  job,
+  open,
+  onOpenChange,
+  hasApplied = false,
+}: JobDetailsProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
@@ -427,7 +433,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                                       {!eligibility.hard_filters
                                         .skills_minimum_met && (
                                         <div className="flex items-start gap-2 text-sm text-red-700">
-                                          <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                          <XCircle className="h-4 w-4 mt-0.5 shrink-0" />
                                           <div>
                                             <p className="font-medium">
                                               Missing required skills
@@ -460,14 +466,14 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                                       {!eligibility.hard_filters
                                         .seniority_compatible && (
                                         <div className="flex items-start gap-2 text-sm text-red-700">
-                                          <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                          <XCircle className="h-4 w-4 mt-0.5 shrink-0" />
                                           <p>Seniority level mismatch</p>
                                         </div>
                                       )}
                                       {!eligibility.hard_filters
                                         .domain_reasonable && (
                                         <div className="flex items-start gap-2 text-sm text-red-700">
-                                          <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                          <XCircle className="h-4 w-4 mt-0.5 shrink-0" />
                                           <p>Domain/field mismatch</p>
                                         </div>
                                       )}
@@ -581,12 +587,21 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
 
             <DialogFooter className="p-6 bg-[#E3F2FD]/30 border-t border-[#E3F2FD]">
               {user && user.role === UserRole.Student ? (
-                <Button
-                  className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white"
-                  onClick={handleApply}
-                >
-                  Apply Now
-                </Button>
+                hasApplied ? (
+                  <Button
+                    className="w-full sm:w-auto bg-emerald-100 text-emerald-800 border-emerald-200"
+                    disabled
+                  >
+                    Already Applied
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+                    onClick={handleApply}
+                  >
+                    Apply Now
+                  </Button>
+                )
               ) : job.applyLink ? (
                 <Button
                   className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white"

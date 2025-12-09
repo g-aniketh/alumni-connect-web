@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
   Card,
   CardContent,
@@ -9,10 +10,7 @@ import {
 } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
-import {
-  Avatar,
-  AvatarFallback,
-} from "../../components/ui/avatar";
+import { Avatar, AvatarFallback } from "../../components/ui/avatar";
 import {
   Sparkles,
   Building2,
@@ -28,14 +26,85 @@ import { motion } from "motion/react";
 
 const StudentRecommendedMentorsPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [recommendations, setRecommendations] =
     useState<MentorRecommendationsResponse | null>(null);
+  const [requestingId, setRequestingId] = useState<string | null>(null);
+  const [requestedMentorIds, setRequestedMentorIds] = useState<Set<string>>(
+    () => new Set()
+  );
+  const [mentorStatuses, setMentorStatuses] = useState<Record<string, string>>(
+    {}
+  );
+  const [requestError, setRequestError] = useState<string>("");
+
+  const normalizeStatus = (
+    status: string | undefined
+  ): "active" | "pending" | "" => {
+    if (!status) return "";
+    const s = status.trim().toLowerCase();
+    if (
+      [
+        "active",
+        "accepted",
+        "approved",
+        "ongoing",
+        "on-going",
+        "in-progress",
+        "in_progress",
+        "mentoring",
+      ].includes(s)
+    ) {
+      return "active";
+    }
+    if (["pending", "requested", "request", "submitted"].includes(s)) {
+      return "pending";
+    }
+    return "";
+  };
+
+  const loadExistingMentorships = useCallback(async () => {
+    try {
+      const response = await mentorshipsAPI.getMy();
+      const mentorIds = new Set<string>();
+      const statusMap: Record<string, string> = {};
+      response.mentorships.forEach((m) => {
+        const menteeId =
+          typeof m.menteeId === "object"
+            ? m.menteeId._id
+            : (m.menteeId as string | undefined);
+        const mentorId =
+          typeof m.mentorId === "object"
+            ? m.mentorId._id
+            : (m.mentorId as string | undefined);
+        const status = normalizeStatus(
+          typeof m.status === "string" ? m.status : undefined
+        );
+        // Only consider mentorships where the current user is the mentee
+        if (mentorId && menteeId && user?.id === menteeId) {
+          mentorIds.add(mentorId);
+          if (status) {
+            const current = statusMap[mentorId];
+            // prefer active over pending
+            if (current !== "active" || status === "active") {
+              statusMap[mentorId] = status;
+            }
+          }
+        }
+      });
+      setRequestedMentorIds(mentorIds);
+      setMentorStatuses(statusMap);
+    } catch {
+      // If this fails, we still allow the page to render; no user-facing error needed
+    }
+  }, []);
 
   useEffect(() => {
     loadRecommendations();
-  }, []);
+    loadExistingMentorships();
+  }, [loadExistingMentorships]);
 
   const loadRecommendations = async () => {
     try {
@@ -55,20 +124,34 @@ const StudentRecommendedMentorsPage = () => {
   };
 
   const handleRequestMentorship = async (mentorId: string) => {
+    const existingStatus = mentorStatuses[mentorId];
+    const normalized = normalizeStatus(existingStatus);
+    if (
+      normalized ||
+      requestedMentorIds.has(mentorId) ||
+      requestingId === mentorId
+    ) {
+      return;
+    }
+
     try {
+      setRequestError("");
+      setRequestingId(mentorId);
       await mentorshipsAPI.createRequest({
         mentorId,
       });
-      alert("Mentorship request sent successfully!");
-      // Optionally reload recommendations or navigate
+      setRequestedMentorIds((prev) => new Set(prev).add(mentorId));
+      setMentorStatuses((prev) => ({ ...prev, [mentorId]: "pending" }));
+      await loadExistingMentorships();
       navigate("/student/mentorships");
     } catch (err) {
-      alert(
+      const message =
         err instanceof Error
           ? err.message
-          : "Failed to send mentorship request"
-      );
+          : "Failed to send mentorship request";
+      setRequestError(message);
     }
+    setRequestingId(null);
   };
 
   const getScoreColor = (score: number): string => {
@@ -112,14 +195,16 @@ const StudentRecommendedMentorsPage = () => {
           </p>
         </motion.div>
 
-        {error && (
+        {(error || requestError) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3"
           >
             <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {error || requestError}
+            </p>
           </motion.div>
         )}
 
@@ -223,13 +308,40 @@ const StudentRecommendedMentorsPage = () => {
                       </div>
                     </div>
 
-                    <Button
-                      onClick={() => handleRequestMentorship(mentor.alumni_id)}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Request Mentorship
-                    </Button>
+                    {(() => {
+                      const status = normalizeStatus(
+                        mentorStatuses[mentor.alumni_id]
+                      );
+                      const isPending = status === "pending";
+                      const isActive = status === "active";
+                      const isRequesting = requestingId === mentor.alumni_id;
+                      const alreadyRequested =
+                        requestedMentorIds.has(mentor.alumni_id) || isPending;
+                      const disabled = isPending || isActive || isRequesting;
+                      const label = isActive
+                        ? "Already mentoring you"
+                        : isPending || alreadyRequested
+                          ? "Request pending"
+                          : isRequesting
+                            ? "Sending..."
+                            : "Request Mentorship";
+                      return (
+                        <Button
+                          onClick={() =>
+                            handleRequestMentorship(mentor.alumni_id)
+                          }
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-80 disabled:cursor-not-allowed"
+                          disabled={disabled}
+                        >
+                          {isRequesting ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                          )}
+                          {label}
+                        </Button>
+                      );
+                    })()}
                   </CardContent>
                 </Card>
               </motion.div>

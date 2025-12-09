@@ -143,11 +143,11 @@ const Navbar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
+                  <div className="flex flex-col space-y-1 min-w-0">
                     <p className="text-sm font-medium leading-none">
                       {user.name}
                     </p>
-                    <p className="text-xs leading-none text-gray-500">
+                    <p className="text-xs leading-tight text-gray-500 break-all break-words overflow-wrap-anywhere">
                       {user.email}
                     </p>
                   </div>

@@ -24,15 +24,17 @@ export const BasicInfoSection = ({
   onFormDataChange,
 }: BasicInfoSectionProps) => {
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader>
-        <CardTitle>Basic Information</CardTitle>
+        <CardTitle className="text-xl">Basic Information</CardTitle>
         <CardDescription>Your account and contact information</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label htmlFor="name" className="text-sm font-semibold">
+              Full Name
+            </Label>
             {isEditing ? (
               <Input
                 id="name"
@@ -43,16 +45,21 @@ export const BasicInfoSection = ({
                     name: e.target.value,
                   } as ProfileFormData)
                 }
+                className="h-11"
               />
             ) : (
-              <div className="flex items-center gap-2 text-sm">
-                <User className="h-4 w-4 text-muted-foreground" />
-                {user.name}
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border/50">
+                <div className="flex-shrink-0 p-2 rounded-full bg-primary/10">
+                  <User className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium">{user.name}</span>
               </div>
             )}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+          <div className="space-y-3">
+            <Label htmlFor="email" className="text-sm font-semibold">
+              Email Address
+            </Label>
             {isEditing ? (
               <Input
                 id="email"
@@ -64,11 +71,16 @@ export const BasicInfoSection = ({
                     email: e.target.value,
                   } as ProfileFormData)
                 }
+                className="h-11"
               />
             ) : (
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                {user.email}
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border border-border/50 min-w-0">
+                <div className="flex-shrink-0 p-2 rounded-full bg-primary/10 mt-0.5">
+                  <Mail className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium break-all break-words overflow-wrap-anywhere min-w-0">
+                  {user.email}
+                </span>
               </div>
             )}
           </div>

@@ -74,23 +74,25 @@ export const ProfileHeader = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-6">
-          <Avatar className="h-24 w-24">
-            <AvatarImage
-              src={profilePictureUrl}
-              alt={user.name}
-              className="object-cover"
-            />
-            <AvatarFallback className="text-2xl">
-              {user.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
+    <Card className="shadow-lg border-2">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          <div className="flex-shrink-0">
+            <Avatar className="h-28 w-28 sm:h-32 sm:w-32 ring-4 ring-primary/10 shadow-lg">
+              <AvatarImage
+                src={profilePictureUrl}
+                alt={user.name}
+                className="object-cover"
+              />
+              <AvatarFallback className="text-3xl bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
+                {user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="flex-1 text-center sm:text-left w-full sm:w-auto">
             {isEditing ? (
               <Input
                 value={"name" in formData ? formData.name : ""}
@@ -100,17 +102,21 @@ export const ProfileHeader = ({
                     name: e.target.value,
                   } as ProfileFormData)
                 }
-                className="text-2xl font-bold mb-2"
+                className="text-2xl sm:text-3xl font-bold mb-3 text-center sm:text-left"
               />
             ) : (
-              <h2 className="text-2xl font-bold">{user.name}</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                {user.name}
+              </h2>
             )}
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="secondary">{user.role}</Badge>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <Badge variant="secondary" className="text-sm px-3 py-1">
+                {user.role}
+              </Badge>
               {user.role === UserRole.Alumni && user.mentorshipAvailable && (
                 <Badge
                   variant="outline"
-                  className="bg-green-50 text-green-700 border-green-200"
+                  className="bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-sm px-3 py-1"
                 >
                   Open for Mentorship
                 </Badge>
@@ -120,13 +126,15 @@ export const ProfileHeader = ({
         </div>
       </CardHeader>
       {isEditing && (
-        <CardContent>
-          <FileUpload
-            type="profile-picture"
-            currentUrl={profilePictureUrl}
-            onUploadSuccess={handleProfilePictureUpload}
-            onDelete={handleProfilePictureDelete}
-          />
+        <CardContent className="pt-0">
+          <div className="border-t pt-6">
+            <FileUpload
+              type="profile-picture"
+              currentUrl={profilePictureUrl}
+              onUploadSuccess={handleProfilePictureUpload}
+              onDelete={handleProfilePictureDelete}
+            />
+          </div>
         </CardContent>
       )}
     </Card>

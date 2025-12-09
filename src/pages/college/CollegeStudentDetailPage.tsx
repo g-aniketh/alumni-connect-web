@@ -376,11 +376,13 @@ const CollegeStudentDetailPage = () => {
                 Personal Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <div>
+                <div className="flex items-start gap-2 min-w-0">
+                  <Mail className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
                     <Label className="text-muted-foreground">Email</Label>
-                    <p className="font-medium">{student.email}</p>
+                    <p className="font-medium break-all break-words overflow-wrap-anywhere">
+                      {student.email}
+                    </p>
                   </div>
                 </div>
                 {student.phoneNumber && (

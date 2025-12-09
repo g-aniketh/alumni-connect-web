@@ -62,8 +62,8 @@ const JobsPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [page, setPage] = useState(1);
-  const [myJobsPage, setMyJobsPage] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [visibleMyCount, setVisibleMyCount] = useState(MY_JOBS_PAGE_SIZE);
 
   useEffect(() => {
     loadJobs();
@@ -82,7 +82,8 @@ const JobsPage = () => {
   }, [user]);
 
   useEffect(() => {
-    setPage(1);
+    // reset visible counts when filters change
+    setVisibleCount(PAGE_SIZE);
   }, [searchQuery, locationFilter, typeFilter, sortByRelevance]);
 
   const loadMyApplications = async () => {
@@ -228,20 +229,8 @@ const JobsPage = () => {
       return dateB - dateA;
     });
 
-  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
-  const paginatedJobs = filteredJobs.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE
-  );
-
-  const totalMyJobPages = Math.max(
-    1,
-    Math.ceil(myJobs.length / MY_JOBS_PAGE_SIZE)
-  );
-  const paginatedMyJobs = myJobs.slice(
-    (myJobsPage - 1) * MY_JOBS_PAGE_SIZE,
-    myJobsPage * MY_JOBS_PAGE_SIZE
-  );
+  const visibleJobs = filteredJobs.slice(0, visibleCount);
+  const visibleMyJobs = myJobs.slice(0, visibleMyCount);
 
   const handleViewDetails = (job: BackendJob) => {
     setSelectedJob(job);
@@ -401,7 +390,7 @@ const JobsPage = () => {
             >
               {filteredJobs.length > 0 ? (
                 <>
-                  {paginatedJobs.map((job) => (
+                  {visibleJobs.map((job) => (
                     <JobListItem
                       key={job._id}
                       job={job}
@@ -410,11 +399,20 @@ const JobsPage = () => {
                       eligibility={jobEligibilityMap.get(job._id)}
                     />
                   ))}
-                  <PaginationControls
-                    page={page}
-                    pageCount={totalPages}
-                    onPageChange={setPage}
-                  />
+                  {visibleJobs.length < filteredJobs.length && (
+                    <div className="flex justify-center pt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          setVisibleCount((count) =>
+                            Math.min(count + PAGE_SIZE, filteredJobs.length)
+                          )
+                        }
+                      >
+                        Load more
+                      </Button>
+                    </div>
+                  )}
                 </>
               ) : (
                 <EmptyState
@@ -436,7 +434,7 @@ const JobsPage = () => {
             >
               {myJobs.length > 0 ? (
                 <>
-                  {paginatedMyJobs.map((job) => (
+                  {visibleMyJobs.map((job) => (
                     <MyJobListItem
                       key={job._id}
                       job={job}
@@ -444,11 +442,20 @@ const JobsPage = () => {
                       onSelect={handleViewDetails}
                     />
                   ))}
-                  <PaginationControls
-                    page={myJobsPage}
-                    pageCount={totalMyJobPages}
-                    onPageChange={setMyJobsPage}
-                  />
+                  {visibleMyJobs.length < myJobs.length && (
+                    <div className="flex justify-center pt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          setVisibleMyCount((count) =>
+                            Math.min(count + MY_JOBS_PAGE_SIZE, myJobs.length)
+                          )
+                        }
+                      >
+                        Load more
+                      </Button>
+                    </div>
+                  )}
                 </>
               ) : (
                 <EmptyState
@@ -465,6 +472,9 @@ const JobsPage = () => {
           job={selectedJob ? transformJob(selectedJob) : null}
           open={isDetailsOpen}
           onOpenChange={setIsDetailsOpen}
+          hasApplied={
+            selectedJob ? hasApplied(selectedJob._id) : false
+          }
         />
       </div>
     </div>
@@ -540,15 +550,11 @@ const JobListItem = ({
               </Badge>
             )}
           </div>
-          <div className="w-24 text-right">
+          <div className="w-28 text-right">
             {hasApplied ? (
-              <Button
-                variant="outline"
-                disabled
-                className="bg-[#F5F5F5] text-[#333333]"
-              >
+              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 px-3 py-1">
                 Applied
-              </Button>
+              </Badge>
             ) : (
               <Button className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
                 Apply
@@ -648,43 +654,5 @@ const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
     )}
   </div>
 );
-
-type PaginationControlsProps = {
-  page: number;
-  pageCount: number;
-  onPageChange: (page: number) => void;
-};
-
-const PaginationControls = ({
-  page,
-  pageCount,
-  onPageChange,
-}: PaginationControlsProps) => {
-  const canPrev = page > 1;
-  const canNext = page < pageCount;
-  return (
-    <div className="flex items-center justify-end gap-2 pt-2">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!canPrev}
-        onClick={() => canPrev && onPageChange(page - 1)}
-      >
-        Previous
-      </Button>
-      <span className="text-sm text-gray-600">
-        Page {page} of {pageCount}
-      </span>
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!canNext}
-        onClick={() => canNext && onPageChange(page + 1)}
-      >
-        Next
-      </Button>
-    </div>
-  );
-};
 
 export default JobsPage;

@@ -47,14 +47,14 @@ const CollegeStudentsPage = () => {
   const [pendingStudents, setPendingStudents] = useState<BackendStudent[]>([]);
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState<string>("all");
-  const [page, setPage] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     loadStudents();
   }, []);
 
   useEffect(() => {
-    setPage(1);
+    setVisibleCount(PAGE_SIZE);
   }, [search, departmentFilter]);
 
   const loadStudents = async () => {
@@ -94,11 +94,7 @@ const CollegeStudentsPage = () => {
     return matchesSearch && matchesDept;
   });
 
-  const pageCount = Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE));
-  const paginatedStudents = filteredStudents.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE
-  );
+  const visibleStudents = filteredStudents.slice(0, visibleCount);
 
   if (loading) {
     return <CollegeStudentsPageSkeleton />;
@@ -218,7 +214,7 @@ const CollegeStudentsPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {paginatedStudents.map((student) => (
+                    {visibleStudents.map((student) => (
                       <TableRow
                         key={student._id}
                         className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30 cursor-pointer"
@@ -239,11 +235,11 @@ const CollegeStudentsPage = () => {
                                 {student.name.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
-                            <div>
+                            <div className="min-w-0 flex-1">
                               <div className="font-medium text-[#1565C0]">
                                 {student.name}
                               </div>
-                              <div className="text-sm text-[#333333]/70">
+                              <div className="text-sm text-[#333333]/70 break-all break-words overflow-wrap-anywhere">
                                 {student.email}
                               </div>
                             </div>
@@ -287,11 +283,20 @@ const CollegeStudentsPage = () => {
                   </TableBody>
                 </Table>
               </div>
-              <PaginationControls
-                page={page}
-                pageCount={pageCount}
-                onPageChange={setPage}
-              />
+              {visibleStudents.length < filteredStudents.length && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      setVisibleCount((count) =>
+                        Math.min(count + PAGE_SIZE, filteredStudents.length)
+                      )
+                    }
+                  >
+                    Load more
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -315,11 +320,11 @@ const PendingStudentCard = ({ student, onVerify }: PendingStudentCardProps) => (
             {student.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
-        <div>
+        <div className="min-w-0 flex-1">
           <CardTitle className="text-base text-[#1565C0]">
             {student.name}
           </CardTitle>
-          <CardDescription className="text-[#333333]/80">
+          <CardDescription className="text-[#333333]/80 break-all break-words overflow-wrap-anywhere">
             {student.email}
           </CardDescription>
         </div>
@@ -365,45 +370,5 @@ const EmptyState = ({ message }: EmptyStateProps) => (
     {message}
   </div>
 );
-
-type PaginationControlsProps = {
-  page: number;
-  pageCount: number;
-  onPageChange: (page: number) => void;
-};
-
-const PaginationControls = ({
-  page,
-  pageCount,
-  onPageChange,
-}: PaginationControlsProps) => {
-  const canPrev = page > 1;
-  const canNext = page < pageCount;
-  return (
-    <div className="flex items-center justify-end gap-2 pt-4">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!canPrev}
-        onClick={() => canPrev && onPageChange(page - 1)}
-        className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]"
-      >
-        Previous
-      </Button>
-      <span className="text-sm text-[#333333]/80">
-        Page {page} of {pageCount}
-      </span>
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!canNext}
-        onClick={() => canNext && onPageChange(page + 1)}
-        className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]"
-      >
-        Next
-      </Button>
-    </div>
-  );
-};
 
 export default CollegeStudentsPage;

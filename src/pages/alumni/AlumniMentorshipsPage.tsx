@@ -61,6 +61,8 @@ const AlumniMentorshipsPage = () => {
   const [actionType, setActionType] = useState<ActionType | null>(null);
   const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionTargetId, setActionTargetId] = useState<string | null>(null);
 
   const [pendingRequests, setPendingRequests] = useState<BackendMentorship[]>(
     []
@@ -128,8 +130,10 @@ const AlumniMentorshipsPage = () => {
   };
 
   const handleAction = (mentorship: BackendMentorship, type: ActionType) => {
+    if (actionLoading) return;
     setSelectedMentorship(mentorship);
     setActionType(type);
+    setActionTargetId(mentorship._id);
     setIsActionDialogOpen(true);
   };
 
@@ -138,6 +142,7 @@ const AlumniMentorshipsPage = () => {
 
     try {
       setError("");
+      setActionLoading(true);
 
       if (actionType === "accept") {
         await mentorshipsAPI.updateStatus(selectedMentorship._id, {
@@ -156,9 +161,12 @@ const AlumniMentorshipsPage = () => {
       setIsActionDialogOpen(false);
       setSelectedMentorship(null);
       setActionType(null);
+      setActionTargetId(null);
       setFeedback("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to perform action");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -229,6 +237,8 @@ const AlumniMentorshipsPage = () => {
                     mentorship={m}
                     student={getStudentInfo(m)}
                     onAction={handleAction}
+                    actionLoading={actionLoading}
+                    actionTargetId={actionTargetId}
                   />
                 ))}
               </div>
@@ -249,6 +259,8 @@ const AlumniMentorshipsPage = () => {
                     mentorship={m}
                     student={getStudentInfo(m)}
                     onAction={handleAction}
+                    actionLoading={actionLoading}
+                    actionTargetId={actionTargetId}
                   />
                 ))}
               </div>
@@ -269,6 +281,8 @@ const AlumniMentorshipsPage = () => {
                     mentorship={m}
                     student={getStudentInfo(m)}
                     onAction={handleAction}
+                    actionLoading={actionLoading}
+                    actionTargetId={actionTargetId}
                   />
                 ))}
               </div>
@@ -289,6 +303,7 @@ const AlumniMentorshipsPage = () => {
           onSubmit={handleSubmitAction}
           feedback={feedback}
           setFeedback={setFeedback}
+          actionLoading={actionLoading}
         />
       </div>
     </div>
@@ -305,7 +320,12 @@ const MentorshipCard = ({
   mentorship,
   student,
   onAction,
-}: MentorshipCardProps) => {
+  actionLoading,
+  actionTargetId,
+}: MentorshipCardProps & {
+  actionLoading: boolean;
+  actionTargetId: string | null;
+}) => {
   if (!student) return null;
 
   const normalized = mentorship.status.toLowerCase();
@@ -366,18 +386,24 @@ const MentorshipCard = ({
             size="sm"
             className="flex-1 bg-[#1E88E5] hover:bg-[#1565C0] text-white"
             onClick={() => onAction(mentorship, "accept")}
+            disabled={actionLoading && actionTargetId === mentorship._id}
           >
             <CheckCircle2 className="h-4 w-4 mr-2" />
-            Accept
+            {actionLoading && actionTargetId === mentorship._id
+              ? "Processing..."
+              : "Accept"}
           </Button>
           <Button
             size="sm"
             variant="outline"
             className="flex-1 border-red-200 text-red-700 hover:bg-red-50"
             onClick={() => onAction(mentorship, "reject")}
+            disabled={actionLoading && actionTargetId === mentorship._id}
           >
             <XCircle className="h-4 w-4 mr-2" />
-            Decline
+            {actionLoading && actionTargetId === mentorship._id
+              ? "Processing..."
+              : "Decline"}
           </Button>
         </CardFooter>
       )}
@@ -388,9 +414,12 @@ const MentorshipCard = ({
             size="sm"
             className="w-full border-red-200 text-red-700 hover:bg-red-50"
             onClick={() => onAction(mentorship, "end")}
+            disabled={actionLoading && actionTargetId === mentorship._id}
           >
             <XCircle className="h-4 w-4 mr-2" />
-            End Mentorship
+            {actionLoading && actionTargetId === mentorship._id
+              ? "Ending..."
+              : "End Mentorship"}
           </Button>
         </CardFooter>
       )}
@@ -459,7 +488,8 @@ const ActionDialog = ({
   onSubmit,
   feedback,
   setFeedback,
-}: ActionDialogProps) => {
+  actionLoading,
+}: ActionDialogProps & { actionLoading: boolean }) => {
   if (!mentorship || !actionType) return null;
 
   const titles = {
@@ -498,10 +528,16 @@ const ActionDialog = ({
           </div>
         )}
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={actionLoading}
+          >
             Cancel
           </Button>
-          <Button onClick={onSubmit}>Confirm</Button>
+          <Button onClick={onSubmit} disabled={actionLoading}>
+            {actionLoading ? "Processing..." : "Confirm"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
