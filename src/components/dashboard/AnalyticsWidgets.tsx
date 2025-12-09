@@ -26,7 +26,7 @@ import {
 type ChartPaletteKey = "student" | "college" | "alumni";
 
 const palettes: Record<ChartPaletteKey, string[]> = {
-  student: ["#7C3AED", "#EC4899", "#22D3EE", "#F59E0B", "#10B981"],
+  student: ["#93C5FD", "#6EE7B7", "#C4B5FD", "#FCD34D", "#F9A8D4"],
   college: ["#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EC4899"],
   alumni: ["#1565C0", "#1E88E5", "#42A5F5", "#90CAF9", "#BBDEFB"],
 };

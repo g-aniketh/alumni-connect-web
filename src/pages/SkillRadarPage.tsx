@@ -29,11 +29,121 @@ import { AlertTriangle, CheckCircle2, TrendingUp, ArrowRight } from "lucide-reac
 import { skillData, type RoleSkillData, type SkillMetric } from "@/lib/skillData";
 import { Link } from "react-router-dom";
 
+const colorThemes = [
+  {
+    main: "blue",
+    hex: "#2563eb",
+    cardBorder: "border-blue-200",
+    hoverBorder: "hover:border-blue-400",
+    iconBg: "bg-blue-100",
+    iconColor: "text-blue-600",
+    hoverBg: "hover:bg-blue-50",
+    titleColor: "text-blue-900",
+    roleBorder: "border-l-blue-500",
+    badge: "bg-blue-100 text-blue-700 hover:bg-blue-200",
+    accent: "text-blue-600",
+    bgAccent: "bg-blue-600",
+    subtleBg: "bg-blue-50",
+    button: "bg-blue-600 hover:bg-blue-700",
+    ring: "ring-blue-500/20",
+  },
+  {
+    main: "emerald",
+    hex: "#059669",
+    cardBorder: "border-emerald-200",
+    hoverBorder: "hover:border-emerald-400",
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-600",
+    hoverBg: "hover:bg-emerald-50",
+    titleColor: "text-emerald-900",
+    roleBorder: "border-l-emerald-500",
+    badge: "bg-emerald-100 text-emerald-700 hover:bg-emerald-200",
+    accent: "text-emerald-600",
+    bgAccent: "bg-emerald-600",
+    subtleBg: "bg-emerald-50",
+    button: "bg-emerald-600 hover:bg-emerald-700",
+    ring: "ring-emerald-500/20",
+  },
+  {
+    main: "violet",
+    hex: "#7c3aed",
+    cardBorder: "border-violet-200",
+    hoverBorder: "hover:border-violet-400",
+    iconBg: "bg-violet-100",
+    iconColor: "text-violet-600",
+    hoverBg: "hover:bg-violet-50",
+    titleColor: "text-violet-900",
+    roleBorder: "border-l-violet-500",
+    badge: "bg-violet-100 text-violet-700 hover:bg-violet-200",
+    accent: "text-violet-600",
+    bgAccent: "bg-violet-600",
+    subtleBg: "bg-violet-50",
+    button: "bg-violet-600 hover:bg-violet-700",
+    ring: "ring-violet-500/20",
+  },
+  {
+    main: "amber",
+    hex: "#d97706",
+    cardBorder: "border-amber-200",
+    hoverBorder: "hover:border-amber-400",
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-600",
+    hoverBg: "hover:bg-amber-50",
+    titleColor: "text-amber-900",
+    roleBorder: "border-l-amber-500",
+    badge: "bg-amber-100 text-amber-700 hover:bg-amber-200",
+    accent: "text-amber-600",
+    bgAccent: "bg-amber-600",
+    subtleBg: "bg-amber-50",
+    button: "bg-amber-600 hover:bg-amber-700",
+    ring: "ring-amber-500/20",
+  },
+  {
+    main: "rose",
+    hex: "#e11d48",
+    cardBorder: "border-rose-200",
+    hoverBorder: "hover:border-rose-400",
+    iconBg: "bg-rose-100",
+    iconColor: "text-rose-600",
+    hoverBg: "hover:bg-rose-50",
+    titleColor: "text-rose-900",
+    roleBorder: "border-l-rose-500",
+    badge: "bg-rose-100 text-rose-700 hover:bg-rose-200",
+    accent: "text-rose-600",
+    bgAccent: "bg-rose-600",
+    subtleBg: "bg-rose-50",
+    button: "bg-rose-600 hover:bg-rose-700",
+    ring: "ring-rose-500/20",
+  },
+  {
+    main: "cyan",
+    hex: "#0891b2",
+    cardBorder: "border-cyan-200",
+    hoverBorder: "hover:border-cyan-400",
+    iconBg: "bg-cyan-100",
+    iconColor: "text-cyan-600",
+    hoverBg: "hover:bg-cyan-50",
+    titleColor: "text-cyan-900",
+    roleBorder: "border-l-cyan-500",
+    badge: "bg-cyan-100 text-cyan-700 hover:bg-cyan-200",
+    accent: "text-cyan-600",
+    bgAccent: "bg-cyan-600",
+    subtleBg: "bg-cyan-50",
+    button: "bg-cyan-600 hover:bg-cyan-700",
+    ring: "ring-cyan-500/20",
+  },
+];
+
 const SkillRadarPage = () => {
   const [selectedRole, setSelectedRole] = useState<string>(skillData[0].roleId);
 
   const currentData = useMemo(() => {
     return skillData.find((d: RoleSkillData) => d.roleId === selectedRole) || skillData[0];
+  }, [selectedRole]);
+
+  const theme = useMemo(() => {
+    const index = skillData.findIndex(d => d.roleId === selectedRole);
+    return colorThemes[index % colorThemes.length];
   }, [selectedRole]);
 
   // Calculate gaps
@@ -59,11 +169,11 @@ const SkillRadarPage = () => {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Left Column: Controls & Chart */}
         <div className="lg:col-span-2 space-y-6">
-          <Card>
+          <Card className={`border-2 ${theme.cardBorder}`}>
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle>Skill Comparison</CardTitle>
+                  <CardTitle className={theme.titleColor}>Skill Comparison</CardTitle>
                   <CardDescription>
                     You vs. Industry Average for {currentData.roleName}
                   </CardDescription>
@@ -72,7 +182,7 @@ const SkillRadarPage = () => {
                   value={selectedRole}
                   onValueChange={setSelectedRole}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className={`w-[200px] ${theme.cardBorder} ${theme.ring}`}>
                     <SelectValue placeholder="Select Role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -95,16 +205,16 @@ const SkillRadarPage = () => {
                     <Radar
                       name="My Skills"
                       dataKey="studentScore"
-                      stroke="#2563eb"
-                      fill="#2563eb"
+                      stroke={theme.hex}
+                      fill={theme.hex}
                       fillOpacity={0.3}
                     />
                     <Radar
                       name="Industry Avg"
                       dataKey="industryAverage"
-                      stroke="#16a34a"
-                      fill="#16a34a"
-                      fillOpacity={0.3}
+                      stroke="#9ca3af"
+                      fill="#9ca3af"
+                      fillOpacity={0.1}
                     />
                     <Legend />
                     <Tooltip 
@@ -117,9 +227,9 @@ const SkillRadarPage = () => {
           </Card>
 
           {/* Detailed Breakdown */}
-          <Card>
+          <Card className={`border-2 ${theme.cardBorder}`}>
             <CardHeader>
-              <CardTitle>Detailed Breakdown</CardTitle>
+              <CardTitle className={theme.titleColor}>Detailed Breakdown</CardTitle>
               <CardDescription>
                 Skill-by-skill comparison
               </CardDescription>
@@ -128,7 +238,7 @@ const SkillRadarPage = () => {
               {currentData.skills.map((skill: SkillMetric) => (
                 <div key={skill.subject} className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium">{skill.subject}</span>
+                    <span className={`font-medium ${theme.titleColor}`}>{skill.subject}</span>
                     <span className="text-muted-foreground">
                       {skill.studentScore} / {skill.industryAverage} (Target)
                     </span>
@@ -136,12 +246,12 @@ const SkillRadarPage = () => {
                   <div className="relative h-2 w-full bg-secondary rounded-full overflow-hidden">
                     {/* Industry Marker */}
                     <div 
-                      className="absolute top-0 bottom-0 w-1 bg-green-500 z-10"
+                      className="absolute top-0 bottom-0 w-1 bg-gray-400 z-10"
                       style={{ left: `${skill.industryAverage}%` }}
                     />
                     {/* Student Progress */}
                     <div 
-                      className="h-full bg-primary transition-all duration-500"
+                      className={`h-full ${theme.bgAccent} transition-all duration-500`}
                       style={{ width: `${skill.studentScore}%` }}
                     />
                   </div>
@@ -216,10 +326,10 @@ const SkillRadarPage = () => {
           </Card>
 
           {/* Recommendations */}
-          <Card>
+          <Card className={`border-2 ${theme.cardBorder}`}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
+              <CardTitle className={`flex items-center gap-2 ${theme.titleColor}`}>
+                <TrendingUp className={`h-5 w-5 ${theme.accent}`} />
                 Recommendations
               </CardTitle>
             </CardHeader>
@@ -229,19 +339,19 @@ const SkillRadarPage = () => {
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-sm">
-                  <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5" />
+                  <div className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`} />
                   <span>Focus on <strong>{laggingSkills[0]?.subject || "core skills"}</strong> projects to build practical experience.</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
-                  <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5" />
+                  <div className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`} />
                   <span>Connect with alumni mentors specializing in {currentData.roleName}.</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
-                  <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5" />
+                  <div className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`} />
                   <span>Check out the Domain Explorer for a detailed roadmap.</span>
                 </li>
               </ul>
-              <Button className="w-full mt-2" asChild>
+              <Button className={`w-full mt-2 ${theme.button} text-white`} asChild>
                 <Link to="/domain-explorer">
                   Go to Domain Explorer <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
