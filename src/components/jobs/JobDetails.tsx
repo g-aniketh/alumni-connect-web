@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { Progress } from "../ui/progress";
 import { type Job } from "../../types";
 import {
   Briefcase,
@@ -23,10 +24,17 @@ import {
   Upload,
   FileText,
   Star,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { UserRole } from "../../types";
-import { jobsAPI, uploadAPI } from "../../lib/api";
+import { jobsAPI, uploadAPI, recommendationsAPI } from "../../lib/api";
+import type { JobEligibilityResult } from "../../lib/api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -48,6 +56,64 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
     message: "",
     resumeFile: null,
   });
+  const [eligibility, setEligibility] = useState<JobEligibilityResult | null>(
+    null
+  );
+  const [loadingEligibility, setLoadingEligibility] = useState(false);
+  const [eligibilityError, setEligibilityError] = useState<string>("");
+  const [eligibilityExpanded, setEligibilityExpanded] = useState(false);
+
+  // Fetch eligibility when job is opened (for students and alumni)
+  useEffect(() => {
+    if (
+      open &&
+      job &&
+      user &&
+      (user.role === UserRole.Student || user.role === UserRole.Alumni)
+    ) {
+      fetchEligibility();
+    } else {
+      setEligibility(null);
+      setEligibilityError("");
+      setEligibilityExpanded(false);
+    }
+  }, [open, job?.id, user]);
+
+  const fetchEligibility = async () => {
+    if (!job) return;
+
+    try {
+      setLoadingEligibility(true);
+      setEligibilityError("");
+      const response = await recommendationsAPI.checkJobEligibility([job.id]);
+      if (response.results && response.results.length > 0) {
+        setEligibility(response.results[0]);
+      }
+    } catch (err) {
+      setEligibilityError(
+        err instanceof Error
+          ? err.message
+          : "Failed to check eligibility. Please try again."
+      );
+      setEligibility(null);
+    } finally {
+      setLoadingEligibility(false);
+    }
+  };
+
+  const getScoreColor = (score: number): string => {
+    if (score >= 80) return "bg-green-500";
+    if (score >= 60) return "bg-blue-500";
+    if (score >= 40) return "bg-yellow-500";
+    return "bg-red-500";
+  };
+
+  const getMatchDetailsColor = (score: number): string => {
+    if (score >= 0.8) return "text-green-700 bg-green-50 border-green-200";
+    if (score >= 0.6) return "text-blue-700 bg-blue-50 border-blue-200";
+    if (score >= 0.4) return "text-yellow-700 bg-yellow-50 border-yellow-200";
+    return "text-red-700 bg-red-50 border-red-200";
+  };
 
   if (!job) return null;
 
@@ -167,6 +233,284 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                   Posted: {new Date(job.postedDate).toLocaleDateString()}
                 </div>
               </div>
+
+              <Separator className="bg-[#E3F2FD]" />
+
+              {/* Eligibility Section - Show for Students and Alumni */}
+              {user &&
+                (user.role === UserRole.Student ||
+                  user.role === UserRole.Alumni) && (
+                  <div className="space-y-4">
+                    {loadingEligibility ? (
+                      <div className="flex items-center justify-center p-6 border border-[#E3F2FD] rounded-lg bg-[#E3F2FD]/20">
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin text-[#1E88E5]" />
+                        <span className="text-sm text-[#333333]">
+                          Checking your eligibility...
+                        </span>
+                      </div>
+                    ) : eligibilityError ? (
+                      <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-yellow-800">
+                          <AlertCircle className="h-4 w-4" />
+                          <p className="text-sm">{eligibilityError}</p>
+                        </div>
+                      </div>
+                    ) : eligibility ? (
+                      <div
+                        className={`p-5 rounded-lg border-2 ${
+                          eligibility.eligible
+                            ? "bg-green-50 border-green-200"
+                            : "bg-red-50 border-red-200"
+                        }`}
+                      >
+                        {/* Eligibility Header - Clickable to expand/collapse */}
+                        <button
+                          onClick={() =>
+                            setEligibilityExpanded(!eligibilityExpanded)
+                          }
+                          className="w-full flex items-center justify-between mb-4 hover:opacity-80 transition-opacity"
+                        >
+                          <div className="flex items-center gap-3">
+                            {eligibility.eligible ? (
+                              <CheckCircle2 className="h-6 w-6 text-green-600" />
+                            ) : (
+                              <XCircle className="h-6 w-6 text-red-600" />
+                            )}
+                            <div className="text-left">
+                              <h3 className="font-semibold text-lg text-[#333333]">
+                                {eligibility.eligible
+                                  ? "You're Eligible!"
+                                  : "Not Eligible"}
+                              </h3>
+                              <p className="text-sm text-[#333333]/70">
+                                Overall Match Score
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <div
+                                className={`text-3xl font-bold ${getScoreColor(
+                                  eligibility.eligibility_percent
+                                )}`}
+                              >
+                                {eligibility.eligibility_percent.toFixed(1)}%
+                              </div>
+                              <Progress
+                                value={eligibility.eligibility_percent}
+                                className="w-24 h-2 mt-1"
+                                indicatorClassName={getScoreColor(
+                                  eligibility.eligibility_percent
+                                )}
+                              />
+                            </div>
+                            {eligibilityExpanded ? (
+                              <ChevronUp className="h-5 w-5 text-[#333333]" />
+                            ) : (
+                              <ChevronDown className="h-5 w-5 text-[#333333]" />
+                            )}
+                          </div>
+                        </button>
+
+                        {/* Expandable Details */}
+                        {eligibilityExpanded && (
+                          <div className="space-y-4 pt-4 border-t border-current border-opacity-20">
+                            {/* Match Details */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                              <div
+                                className={`p-3 rounded-md border ${getMatchDetailsColor(
+                                  eligibility.scores.semantic
+                                )}`}
+                              >
+                                <div className="text-xs opacity-70 mb-1">
+                                  Semantic Match
+                                </div>
+                                <div className="font-semibold">
+                                  {(eligibility.scores.semantic * 100).toFixed(
+                                    1
+                                  )}
+                                  %
+                                </div>
+                              </div>
+                              <div
+                                className={`p-3 rounded-md border ${getMatchDetailsColor(
+                                  eligibility.scores.skills
+                                )}`}
+                              >
+                                <div className="text-xs opacity-70 mb-1">
+                                  Skills
+                                </div>
+                                <div className="font-semibold">
+                                  {(eligibility.scores.skills * 100).toFixed(1)}
+                                  %
+                                </div>
+                              </div>
+                              <div
+                                className={`p-3 rounded-md border ${getMatchDetailsColor(
+                                  eligibility.scores.seniority
+                                )}`}
+                              >
+                                <div className="text-xs opacity-70 mb-1">
+                                  Seniority
+                                </div>
+                                <div className="font-semibold">
+                                  {(eligibility.scores.seniority * 100).toFixed(
+                                    1
+                                  )}
+                                  %
+                                </div>
+                              </div>
+                              <div
+                                className={`p-3 rounded-md border ${getMatchDetailsColor(
+                                  eligibility.scores.domain
+                                )}`}
+                              >
+                                <div className="text-xs opacity-70 mb-1">
+                                  Domain
+                                </div>
+                                <div className="font-semibold">
+                                  {(eligibility.scores.domain * 100).toFixed(1)}
+                                  %
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Explanation */}
+                            <div className="p-3 bg-white/60 rounded-md mb-3">
+                              <p className="text-sm text-[#333333]">
+                                {eligibility.explanation}
+                              </p>
+                            </div>
+
+                            {/* What's Missing (if not eligible) */}
+                            {!eligibility.eligible && (
+                              <div className="space-y-3 mt-4 pt-4 border-t border-red-200">
+                                <h4 className="font-semibold text-red-800 flex items-center gap-2">
+                                  <AlertCircle className="h-4 w-4" />
+                                  Why you're not eligible:
+                                </h4>
+                                <div className="space-y-2">
+                                  {!eligibility.hard_filters
+                                    .skills_minimum_met && (
+                                    <div className="flex items-start gap-2 text-sm text-red-700">
+                                      <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                      <div>
+                                        <p className="font-medium">
+                                          Missing required skills
+                                        </p>
+                                        {eligibility.skills_breakdown
+                                          .missing_skills.length > 0 && (
+                                          <ul className="mt-1 ml-4 list-disc space-y-1 text-xs">
+                                            {eligibility.skills_breakdown.missing_skills
+                                              .slice(0, 5)
+                                              .map((skill, idx) => (
+                                                <li key={idx}>{skill}</li>
+                                              ))}
+                                            {eligibility.skills_breakdown
+                                              .missing_skills.length > 5 && (
+                                              <li className="italic">
+                                                +{" "}
+                                                {eligibility.skills_breakdown
+                                                  .missing_skills.length -
+                                                  5}{" "}
+                                                more
+                                              </li>
+                                            )}
+                                          </ul>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {!eligibility.hard_filters
+                                    .seniority_compatible && (
+                                    <div className="flex items-start gap-2 text-sm text-red-700">
+                                      <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                      <p>Seniority level mismatch</p>
+                                    </div>
+                                  )}
+                                  {!eligibility.hard_filters
+                                    .domain_reasonable && (
+                                    <div className="flex items-start gap-2 text-sm text-red-700">
+                                      <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                      <p>Domain/field mismatch</p>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Skills you have */}
+                                {eligibility.skills_breakdown
+                                  .extra_resume_skills.length > 0 && (
+                                  <div className="mt-4 pt-3 border-t border-red-200">
+                                    <p className="text-sm font-medium text-green-700 mb-2">
+                                      Skills you have:
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {eligibility.skills_breakdown.extra_resume_skills
+                                        .slice(0, 10)
+                                        .map((skill, idx) => (
+                                          <Badge
+                                            key={idx}
+                                            variant="outline"
+                                            className="bg-green-100 text-green-700 border-green-300 text-xs"
+                                          >
+                                            {skill}
+                                          </Badge>
+                                        ))}
+                                      {eligibility.skills_breakdown
+                                        .extra_resume_skills.length > 10 && (
+                                        <Badge
+                                          variant="outline"
+                                          className="bg-green-100 text-green-700 border-green-300 text-xs"
+                                        >
+                                          +
+                                          {eligibility.skills_breakdown
+                                            .extra_resume_skills.length -
+                                            10}{" "}
+                                          more
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* What matches (if eligible) */}
+                            {eligibility.eligible && (
+                              <div className="mt-4 pt-4 border-t border-green-200">
+                                <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                                  <CheckCircle2 className="h-4 w-4" />
+                                  Your matching skills:
+                                </h4>
+                                {eligibility.skills_breakdown.matched_skills
+                                  .length > 0 ? (
+                                  <div className="flex flex-wrap gap-2">
+                                    {eligibility.skills_breakdown.matched_skills.map(
+                                      (skill, idx) => (
+                                        <Badge
+                                          key={idx}
+                                          variant="outline"
+                                          className="bg-green-100 text-green-700 border-green-300 text-xs"
+                                        >
+                                          {skill}
+                                        </Badge>
+                                      )
+                                    )}
+                                  </div>
+                                ) : (
+                                  <p className="text-sm text-green-700">
+                                    Your overall profile aligns well with this
+                                    position.
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                )}
 
               <Separator className="bg-[#E3F2FD]" />
 

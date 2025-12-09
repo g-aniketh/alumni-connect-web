@@ -42,9 +42,7 @@ export const JobEligibilityChecker = ({
       setResults(response.results);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to check job eligibility"
+        err instanceof Error ? err.message : "Failed to check job eligibility"
       );
     } finally {
       setLoading(false);
@@ -115,74 +113,89 @@ export const JobEligibilityChecker = ({
                   Check Again
                 </Button>
               </div>
-              {results.map((result) => (
-                <div
-                  key={result.job_id}
-                  className={`p-4 rounded-lg border-2 ${getScoreColor(
-                    result.eligibility_score
-                  )}`}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg mb-1">
-                        {result.job_title}
-                      </h4>
-                      <p className="text-sm opacity-80">{result.company}</p>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge
-                        variant={result.eligible ? "default" : "secondary"}
-                        className={
-                          result.eligible
-                            ? "bg-green-600 text-white"
-                            : "bg-gray-400 text-white"
-                        }
-                      >
-                        {result.eligible ? (
-                          <CheckCircle2 className="h-3 w-3 mr-1" />
-                        ) : (
-                          <XCircle className="h-3 w-3 mr-1" />
-                        )}
-                        {result.eligible ? "Eligible" : "Not Eligible"}
-                      </Badge>
-                      <div className="text-2xl font-bold">
-                        {result.eligibility_score}%
-                      </div>
-                    </div>
-                  </div>
+              {results
+                .sort((a, b) => b.eligibility_percent - a.eligibility_percent)
+                .map((result) => {
+                  // Find the job to get company info
+                  const job = jobs.find((j) => j._id === result.job_id);
+                  const company =
+                    job && typeof job.postedBy.posterId === "object"
+                      ? job.postedBy.posterId.name
+                      : "Company";
 
-                  <div className="grid grid-cols-3 gap-4 mb-3">
-                    <div className="text-center">
-                      <div className="text-xs opacity-70 mb-1">
-                        Skills Match
+                  return (
+                    <div
+                      key={result.job_id}
+                      className={`p-4 rounded-lg border-2 ${getScoreColor(
+                        result.eligibility_percent
+                      )}`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-lg mb-1">
+                            {result.title}
+                          </h4>
+                          <p className="text-sm opacity-80">{company}</p>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <Badge
+                            variant={result.eligible ? "default" : "secondary"}
+                            className={
+                              result.eligible
+                                ? "bg-green-600 text-white"
+                                : "bg-gray-400 text-white"
+                            }
+                          >
+                            {result.eligible ? (
+                              <CheckCircle2 className="h-3 w-3 mr-1" />
+                            ) : (
+                              <XCircle className="h-3 w-3 mr-1" />
+                            )}
+                            {result.eligible ? "Eligible" : "Not Eligible"}
+                          </Badge>
+                          <div className="text-2xl font-bold">
+                            {result.eligibility_percent.toFixed(1)}%
+                          </div>
+                        </div>
                       </div>
-                      <div className="font-semibold">
-                        {result.match_details.skills_match}%
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xs opacity-70 mb-1">
-                        Experience Match
-                      </div>
-                      <div className="font-semibold">
-                        {result.match_details.experience_match}%
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xs opacity-70 mb-1">
-                        Education Match
-                      </div>
-                      <div className="font-semibold">
-                        {result.match_details.education_match}%
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="p-3 bg-white/50 dark:bg-black/20 rounded-md mt-3">
-                    <p className="text-sm">{result.reasoning}</p>
-                  </div>
-                </div>
-              ))}
+                      <div className="grid grid-cols-4 gap-4 mb-3">
+                        <div className="text-center">
+                          <div className="text-xs opacity-70 mb-1">
+                            Semantic
+                          </div>
+                          <div className="font-semibold">
+                            {(result.scores.semantic * 100).toFixed(1)}%
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs opacity-70 mb-1">Skills</div>
+                          <div className="font-semibold">
+                            {(result.scores.skills * 100).toFixed(1)}%
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs opacity-70 mb-1">
+                            Seniority
+                          </div>
+                          <div className="font-semibold">
+                            {(result.scores.seniority * 100).toFixed(1)}%
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs opacity-70 mb-1">Domain</div>
+                          <div className="font-semibold">
+                            {(result.scores.domain * 100).toFixed(1)}%
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-white/50 dark:bg-black/20 rounded-md mt-3">
+                        <p className="text-sm">{result.explanation}</p>
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           )}
         </div>
