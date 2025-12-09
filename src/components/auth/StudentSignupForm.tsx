@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { collegeAPI } from "../../lib/api";
 import { Department } from "../../types";
 import { degreeMap, degrees, departmentMap } from "./formConstants";
+import { SuccessModal } from "../ui/SuccessModal";
 
 export const StudentSignupForm = () => {
   const { signup } = useAuth();
@@ -40,6 +41,7 @@ export const StudentSignupForm = () => {
   const [loadingColleges, setLoadingColleges] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     loadColleges();
@@ -107,10 +109,11 @@ export const StudentSignupForm = () => {
         graduationYear: graduationYearNum,
       };
       await signup("Student", signupData);
-      alert(
-        "Account created successfully! Please check your email to verify your account, then log in to complete your profile."
-      );
-      navigate("/login?role=student");
+      setShowSuccessModal(true);
+      // Navigate after a delay to let user see the success message
+      setTimeout(() => {
+        navigate("/login?role=student");
+      }, 2500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
@@ -307,6 +310,13 @@ export const StudentSignupForm = () => {
           </Button>
         </form>
       </CardContent>
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title="Account Created Successfully!"
+        message="Your student account has been created. Please log in to complete your profile and start exploring opportunities."
+      />
     </Card>
   );
 };

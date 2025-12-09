@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, GraduationCap } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserRole, type Alumni, type Student, type College } from "../../types";
 import { tokenService } from "../../lib/api";
+import LanguageBar from "./LanguageBar";
 
 const Navbar = () => {
   const {
@@ -45,9 +46,9 @@ const Navbar = () => {
         storedUser ||
         (roleFromToken
           ? ({ id: "", name: "", email: "", role: roleFromToken } as
-              | Alumni
-              | Student
-              | College)
+            | Alumni
+            | Student
+            | College)
           : null)
       );
     } catch {
@@ -102,28 +103,33 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-white">
-      <div className="container mx-auto flex h-16 items-center">
-        <Link to="/" className="mr-8 flex items-center space-x-2">
-          <GraduationCap className="h-7 w-7" />
-          <span className="font-bold text-lg">AlumniConnect</span>
-        </Link>
+    <>
+      <LanguageBar />
+      <header className="fixed top-12 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl">
+        <div className="bg-white/95 backdrop-blur-md rounded-full border border-gray-200 shadow-lg px-6 py-3 flex items-center">
+          <Link to="/" className="mr-8 flex items-center space-x-2">
+            <img
+              src="https://res.cloudinary.com/dj6i0b4q2/image/upload/v1765264961/image-removebg-preview_4_rc5dsk.png"
+              alt="Alumni Connect Logo"
+              className="h-10 w-auto object-contain"
+            />
+            <span className="font-bold text-lg hidden sm:inline">AlumniConnect</span>
+          </Link>
 
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-          {navigationItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`transition-colors hover:text-black ${
-                location.pathname.startsWith(item.path)
+          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`transition-colors hover:text-black ${location.pathname.startsWith(item.path)
                   ? "text-black"
                   : "text-gray-500"
-              }`}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </nav>
+                  }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
           {isAuthenticated && user ? (
@@ -172,39 +178,43 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="md:hidden ml-2">
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <Link to="/" className="flex items-center space-x-2 mb-8">
-                <GraduationCap className="h-7 w-7" />
-                <span className="font-bold text-lg">AlumniConnect</span>
-              </Link>
-              <nav className="grid gap-4">
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`text-lg font-semibold transition-colors hover:text-black ${
-                      location.pathname.startsWith(item.path)
+          <div className="md:hidden ml-2">
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right">
+                <Link to="/" className="flex items-center space-x-2 mb-8">
+                  <img
+                    src="https://res.cloudinary.com/dj6i0b4q2/image/upload/v1765264961/image-removebg-preview_4_rc5dsk.png"
+                    alt="Alumni Connect Logo"
+                    className="h-10 w-auto object-contain"
+                  />
+                  <span className="font-bold text-lg">AlumniConnect</span>
+                </Link>
+                <nav className="grid gap-4">
+                  {navigationItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={`text-lg font-semibold transition-colors hover:text-black ${location.pathname.startsWith(item.path)
                         ? "text-black"
                         : "text-gray-500"
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </nav>
-            </SheetContent>
-          </Sheet>
+                        }`}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };
 
