@@ -134,7 +134,9 @@ const CollegeJobManagementPage = () => {
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight text-[#1565C0]">Job Postings</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-[#1565C0]">
+              Job Postings
+            </h1>
             <p className="text-[#333333]">
               Manage your college's job postings, view applications, and update
               job details.
@@ -150,7 +152,11 @@ const CollegeJobManagementPage = () => {
                 Post New Job
               </Link>
             </Button>
-            <Button variant="outline" asChild className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]">
+            <Button
+              variant="outline"
+              asChild
+              className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]"
+            >
               <Link to="/college/jobs/applications">View Applications</Link>
             </Button>
           </div>
@@ -167,11 +173,16 @@ const CollegeJobManagementPage = () => {
             <CardContent className="py-12">
               <div className="text-center text-[#333333]/60">
                 <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-50 text-[#1E88E5]" />
-                <p className="text-lg font-medium mb-2 text-[#1565C0]">No jobs posted yet</p>
+                <p className="text-lg font-medium mb-2 text-[#1565C0]">
+                  No jobs posted yet
+                </p>
                 <p className="text-sm mb-4">
                   Start by posting your first job opportunity.
                 </p>
-                <Button asChild className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
+                <Button
+                  asChild
+                  className="bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+                >
                   <Link to="/college/jobs/create">Post Your First Job</Link>
                 </Button>
               </div>
@@ -198,21 +209,26 @@ const CollegeJobManagementPage = () => {
                       : "Company";
 
                   return (
-                    <TableRow 
-                      key={job._id} 
+                    <TableRow
+                      key={job._id}
                       className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30 cursor-pointer"
                       onClick={() => handleViewJobDetails(job)}
                     >
                       <TableCell>
                         <div>
-                          <div className="font-medium text-[#1565C0]">{job.title}</div>
+                          <div className="font-medium text-[#1565C0]">
+                            {job.title}
+                          </div>
                           <div className="text-sm text-[#333333]/70">
                             {posterName}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]">
+                        <Badge
+                          variant="outline"
+                          className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]"
+                        >
                           {mapBackendJobType(job.jobType)}
                         </Badge>
                       </TableCell>
@@ -237,7 +253,10 @@ const CollegeJobManagementPage = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="flex items-center gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Button
                             variant="ghost"
                             size="sm"
@@ -259,9 +278,9 @@ const CollegeJobManagementPage = () => {
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
                             onClick={() => handleViewJobDetails(job)}
                           >

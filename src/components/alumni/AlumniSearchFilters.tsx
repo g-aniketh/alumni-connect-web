@@ -38,7 +38,9 @@ export const AlumniSearchFilters = React.memo(
         <CardContent className="space-y-4">
           {onNameSearchChange && (
             <div className="space-y-2">
-              <Label htmlFor="name-search" className="text-[#333333]">Name</Label>
+              <Label htmlFor="name-search" className="text-[#333333]">
+                Name
+              </Label>
               <Input
                 id="name-search"
                 placeholder="e.g., John Doe"
@@ -49,7 +51,9 @@ export const AlumniSearchFilters = React.memo(
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="skill-search" className="text-[#333333]">Skillset</Label>
+            <Label htmlFor="skill-search" className="text-[#333333]">
+              Skillset
+            </Label>
             <Input
               id="skill-search"
               placeholder="e.g., React, Python"
@@ -60,7 +64,9 @@ export const AlumniSearchFilters = React.memo(
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="company-search" className="text-[#333333]">Company</Label>
+            <Label htmlFor="company-search" className="text-[#333333]">
+              Company
+            </Label>
             <Input
               id="company-search"
               placeholder="e.g., Google, Microsoft"

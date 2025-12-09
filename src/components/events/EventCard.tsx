@@ -132,9 +132,7 @@ export const EventCard = ({
               <div className="text-xs font-semibold text-[#1E88E5] mb-1">
                 {month}
               </div>
-              <div className="text-2xl font-bold text-[#1565C0]">
-                {day}
-              </div>
+              <div className="text-2xl font-bold text-[#1565C0]">{day}</div>
             </div>
           </div>
 
@@ -143,9 +141,7 @@ export const EventCard = ({
             <h3 className="text-lg font-bold text-[#1565C0] mb-2">
               {event.title}
             </h3>
-            <p className="text-sm text-[#333333] mb-3">
-              {venue}
-            </p>
+            <p className="text-sm text-[#333333] mb-3">{venue}</p>
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-3">
@@ -156,10 +152,11 @@ export const EventCard = ({
                   <Badge
                     key={idx}
                     variant="outline"
-                    className={`text-xs ${isPopular || isSocial
+                    className={`text-xs ${
+                      isPopular || isSocial
                         ? "bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30"
                         : "bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30"
-                      }`}
+                    }`}
                   >
                     {tag}
                   </Badge>

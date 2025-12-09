@@ -112,16 +112,18 @@ const CollegeCreditsSyncPage = () => {
         const rollNumbers: string[] = [];
         const startMatch = rollNumberStart.match(/^(.+?)(\d+)$/);
         const endMatch = rollNumberEnd.match(/^(.+?)(\d+)$/);
-        
+
         if (startMatch && endMatch && startMatch[1] === endMatch[1]) {
           // Same prefix, generate numeric range
           const prefix = startMatch[1];
           const startNum = parseInt(startMatch[2], 10);
           const endNum = parseInt(endMatch[2], 10);
           const paddingLength = startMatch[2].length;
-          
+
           for (let i = startNum; i <= endNum; i++) {
-            rollNumbers.push(`${prefix}${i.toString().padStart(paddingLength, '0')}`);
+            rollNumbers.push(
+              `${prefix}${i.toString().padStart(paddingLength, "0")}`
+            );
           }
         } else {
           // Different pattern or no numeric suffix, just include start and end
@@ -130,7 +132,7 @@ const CollegeCreditsSyncPage = () => {
             rollNumbers.push(rollNumberEnd);
           }
         }
-        
+
         if (rollNumbers.length > 0) {
           filters.rollNumbers = rollNumbers;
         }

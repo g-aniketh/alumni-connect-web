@@ -96,13 +96,14 @@ const AlumniDashboardPage = () => {
         setTotalMentorships(allMentorships.length);
       } catch (mentorshipErr) {
         // Silently handle 403 errors for unverified users (allow them to use the app)
-        const errorMessage = mentorshipErr instanceof Error ? mentorshipErr.message : "";
-        const isVerificationError = 
-          errorMessage.includes("403") || 
-          errorMessage.includes("Forbidden") || 
+        const errorMessage =
+          mentorshipErr instanceof Error ? mentorshipErr.message : "";
+        const isVerificationError =
+          errorMessage.includes("403") ||
+          errorMessage.includes("Forbidden") ||
           errorMessage.includes("Access denied") ||
           errorMessage.includes("not verified");
-        
+
         if (!isVerificationError) {
           // Only log non-verification errors
           console.warn("Failed to load mentorships:", mentorshipErr);
@@ -240,7 +241,9 @@ const AlumniDashboardPage = () => {
           <Card className="bg-white border-[#1E88E5]/30">
             <CardHeader>
               <CardTitle className="text-[#1565C0]">Quick Actions</CardTitle>
-              <CardDescription className="text-[#333333]/80">Common tasks and shortcuts.</CardDescription>
+              <CardDescription className="text-[#333333]/80">
+                Common tasks and shortcuts.
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <QuickActionButton
@@ -335,7 +338,12 @@ const AlumniDashboardPage = () => {
                       <p className="font-semibold">
                         {activeMentorships.length} Active
                       </p>
-                      <Button asChild variant="outline" size="sm" className="bg-white hover:bg-emerald-100">
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="bg-white hover:bg-emerald-100"
+                      >
                         <Link to="/alumni/mentorships">Manage All</Link>
                       </Button>
                     </div>
@@ -375,7 +383,12 @@ const AlumniDashboardPage = () => {
               {myJobs.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {myJobs.map((job, i) => (
-                    <JobCard key={job._id} job={job} delay={i * 0.1} onViewDetails={handleViewJobDetails} />
+                    <JobCard
+                      key={job._id}
+                      job={job}
+                      delay={i * 0.1}
+                      onViewDetails={handleViewJobDetails}
+                    />
                   ))}
                 </div>
               ) : (
@@ -443,16 +456,12 @@ type StatCardProps = {
   className?: string;
 };
 
-const StatCard = ({
-  title,
-  value,
-  icon,
-}: StatCardProps) => (
-  <Card
-    className="p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer bg-white border-[#1E88E5]/30"
-  >
+const StatCard = ({ title, value, icon }: StatCardProps) => (
+  <Card className="p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer bg-white border-[#1E88E5]/30">
     <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium text-[#333333]/80">{title}</CardTitle>
+      <CardTitle className="text-sm font-medium text-[#333333]/80">
+        {title}
+      </CardTitle>
       <div className="p-2 bg-[#E3F2FD] rounded-lg border border-[#1E88E5]/20">
         {icon}
       </div>
@@ -470,7 +479,11 @@ type QuickActionButtonProps = {
   className?: string;
 };
 
-const QuickActionButton = ({ icon: Icon, title, link }: QuickActionButtonProps) => (
+const QuickActionButton = ({
+  icon: Icon,
+  title,
+  link,
+}: QuickActionButtonProps) => (
   <Button
     asChild
     variant="outline"
@@ -502,7 +515,9 @@ const MentorshipRequestCard = ({
     <div className="flex items-start gap-4 rounded-lg border p-4 bg-white border-[#1E88E5]/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
       <Avatar className="h-12 w-12 border-2 border-[#E3F2FD]">
         <AvatarImage src={student.profilePictureUrl} alt={student.name} />
-        <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">{student.name.charAt(0)}</AvatarFallback>
+        <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">
+          {student.name.charAt(0)}
+        </AvatarFallback>
       </Avatar>
       <div className="flex-1">
         <div className="flex justify-between items-start">
@@ -510,7 +525,10 @@ const MentorshipRequestCard = ({
             <p className="font-semibold text-[#1565C0]">{student.name}</p>
             <p className="text-sm text-[#333333]/80">{student.degree}</p>
           </div>
-          <Badge variant="outline" className="bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30">
+          <Badge
+            variant="outline"
+            className="bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30"
+          >
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
@@ -518,7 +536,12 @@ const MentorshipRequestCard = ({
         <p className="mt-2 text-sm text-[#333333] line-clamp-2">
           {request.message}
         </p>
-        <Button variant="outline" size="sm" className="mt-3 bg-[#1E88E5] hover:bg-[#1565C0] text-white border-none" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-3 bg-[#1E88E5] hover:bg-[#1565C0] text-white border-none"
+          asChild
+        >
           <Link to="/alumni/mentorships">View Request</Link>
         </Button>
       </div>
@@ -538,7 +561,7 @@ const JobCard = ({ job, delay, onViewDetails }: JobCardProps) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.5 }}
   >
-    <Card 
+    <Card
       className="h-full flex flex-col bg-white border-[#1E88E5]/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
       onClick={() => onViewDetails(job)}
     >
@@ -549,9 +572,9 @@ const JobCard = ({ job, delay, onViewDetails }: JobCardProps) => (
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-end">
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className="w-full bg-[#E3F2FD] hover:bg-[#1E88E5] text-[#1565C0] hover:text-white border-[#1E88E5]/30"
           onClick={(e) => {
             e.stopPropagation();
@@ -578,13 +601,20 @@ const EventCard = ({ event, delay }: EventCardProps) => (
   >
     <Card className="h-full flex flex-col bg-white border-[#1E88E5]/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
       <CardHeader>
-        <CardTitle className="text-base text-[#1565C0]">{event.title}</CardTitle>
+        <CardTitle className="text-base text-[#1565C0]">
+          {event.title}
+        </CardTitle>
         <CardDescription className="text-[#333333]/80">
           {new Date(event.eventDate).toLocaleDateString()}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-end">
-        <Button variant="outline" size="sm" className="w-full bg-[#E3F2FD] hover:bg-[#1E88E5] text-[#1565C0] hover:text-white border-[#1E88E5]/30" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full bg-[#E3F2FD] hover:bg-[#1E88E5] text-[#1565C0] hover:text-white border-[#1E88E5]/30"
+          asChild
+        >
           <Link to={`/events`}>View Event</Link>
         </Button>
       </CardContent>
@@ -601,11 +631,16 @@ type EmptyStateProps = {
 const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
   <div className="text-center py-12">
     {icon && (
-      <div className="inline-block p-4 bg-[#E3F2FD] rounded-full text-[#1E88E5]">{icon}</div>
+      <div className="inline-block p-4 bg-[#E3F2FD] rounded-full text-[#1E88E5]">
+        {icon}
+      </div>
     )}
     <p className="mt-4 text-[#333333]">{message}</p>
     {cta && (
-      <Button asChild className="mt-4 bg-[#1E88E5] hover:bg-[#1565C0] text-white">
+      <Button
+        asChild
+        className="mt-4 bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+      >
         <Link to={cta.link}>{cta.text}</Link>
       </Button>
     )}

@@ -8,15 +8,17 @@ interface EyeAnimationProps {
   isSuccess?: boolean;
 }
 
-export const EyeAnimation: React.FC<EyeAnimationProps> = ({ isSuccess = false }) => {
+export const EyeAnimation: React.FC<EyeAnimationProps> = ({
+  isSuccess = false,
+}) => {
   return (
     <div className="w-full h-full bg-white rounded-2xl overflow-hidden relative flex flex-col items-center justify-center p-8">
-      <img 
+      <img
         src={loginIllustration}
         alt="Verification Status"
-        className={`w-full h-full object-contain transition-opacity duration-500 ${isSuccess ? 'opacity-20 blur-sm' : 'opacity-100'}`}
+        className={`w-full h-full object-contain transition-opacity duration-500 ${isSuccess ? "opacity-20 blur-sm" : "opacity-100"}`}
       />
-      
+
       <AnimatePresence>
         {isSuccess && (
           <motion.div
@@ -29,7 +31,7 @@ export const EyeAnimation: React.FC<EyeAnimationProps> = ({ isSuccess = false })
             <div className="bg-green-100 p-6 rounded-full mb-4">
               <CheckCircle className="w-24 h-24 text-green-600" />
             </div>
-            <motion.h2 
+            <motion.h2
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}

@@ -350,8 +350,8 @@ const StudentApplicationsPage = () => {
 
                       const posterName =
                         job &&
-                          job.postedBy &&
-                          typeof job.postedBy.posterId === "object"
+                        job.postedBy &&
+                        typeof job.postedBy.posterId === "object"
                           ? job.postedBy.posterId.name
                           : "Company";
 

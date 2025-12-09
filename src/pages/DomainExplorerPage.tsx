@@ -28,7 +28,12 @@ import {
   Cloud,
   Clock,
 } from "lucide-react";
-import { domains, type Domain, type Role, type RoadmapStep } from "../lib/domainData";
+import {
+  domains,
+  type Domain,
+  type Role,
+  type RoadmapStep,
+} from "../lib/domainData";
 import { Link } from "react-router-dom";
 
 const iconMap: Record<string, ElementType> = {
@@ -143,7 +148,7 @@ const DomainExplorerPage = () => {
   };
 
   if (selectedDomain) {
-    const domainIndex = domains.findIndex(d => d.id === selectedDomain.id);
+    const domainIndex = domains.findIndex((d) => d.id === selectedDomain.id);
     const theme = colorThemes[domainIndex % colorThemes.length];
 
     return (
@@ -158,7 +163,9 @@ const DomainExplorerPage = () => {
         </Button>
 
         <div className="mb-8">
-          <h1 className={`text-3xl font-bold tracking-tight mb-2 ${theme.titleColor}`}>
+          <h1
+            className={`text-3xl font-bold tracking-tight mb-2 ${theme.titleColor}`}
+          >
             {selectedDomain.title}
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -168,17 +175,25 @@ const DomainExplorerPage = () => {
 
         <div className="grid gap-6">
           {selectedDomain.roles.map((role: Role) => (
-            <Card key={role.id} className={`overflow-hidden border-l-4 ${theme.roleBorder} bg-white`}>
+            <Card
+              key={role.id}
+              className={`overflow-hidden border-l-4 ${theme.roleBorder} bg-white`}
+            >
               <CardHeader
                 className={`cursor-pointer ${theme.hoverBg} transition-colors`}
                 onClick={() => toggleRole(role.id)}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className={`text-xl flex items-center gap-2 ${theme.titleColor}`}>
+                    <CardTitle
+                      className={`text-xl flex items-center gap-2 ${theme.titleColor}`}
+                    >
                       {role.title}
                       {role.demand === "High" && (
-                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 hover:bg-green-100">
+                        <Badge
+                          variant="secondary"
+                          className="text-xs bg-green-100 text-green-800 hover:bg-green-100"
+                        >
                           High Demand
                         </Badge>
                       )}
@@ -194,7 +209,7 @@ const DomainExplorerPage = () => {
                   )}
                 </div>
               </CardHeader>
-              
+
               {expandedRole === role.id && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
@@ -208,58 +223,91 @@ const DomainExplorerPage = () => {
                       <div className="space-y-6">
                         {/* Salary */}
                         <div className={`${theme.subtleBg} p-4 rounded-lg`}>
-                          <h3 className={`font-semibold flex items-center gap-2 mb-3 ${theme.titleColor}`}>
+                          <h3
+                            className={`font-semibold flex items-center gap-2 mb-3 ${theme.titleColor}`}
+                          >
                             <DollarSign className={`h-4 w-4 ${theme.accent}`} />
                             Salary Insights
                           </h3>
                           <div className="grid grid-cols-3 gap-2 text-center">
                             <div className="bg-white p-2 rounded border">
-                              <div className="text-xs text-muted-foreground">Min</div>
-                              <div className="font-medium">{role.salary.min}</div>
+                              <div className="text-xs text-muted-foreground">
+                                Min
+                              </div>
+                              <div className="font-medium">
+                                {role.salary.min}
+                              </div>
                             </div>
-                            <div className={`bg-white p-2 rounded border ${theme.cardBorder} ring-1 ${theme.ring}`}>
-                              <div className={`text-xs ${theme.accent} font-medium`}>Average</div>
-                              <div className={`font-bold ${theme.accent}`}>{role.salary.avg}</div>
+                            <div
+                              className={`bg-white p-2 rounded border ${theme.cardBorder} ring-1 ${theme.ring}`}
+                            >
+                              <div
+                                className={`text-xs ${theme.accent} font-medium`}
+                              >
+                                Average
+                              </div>
+                              <div className={`font-bold ${theme.accent}`}>
+                                {role.salary.avg}
+                              </div>
                             </div>
                             <div className="bg-white p-2 rounded border">
-                              <div className="text-xs text-muted-foreground">Max</div>
-                              <div className="font-medium">{role.salary.max}</div>
+                              <div className="text-xs text-muted-foreground">
+                                Max
+                              </div>
+                              <div className="font-medium">
+                                {role.salary.max}
+                              </div>
                             </div>
                           </div>
                         </div>
 
                         {/* Roadmap */}
                         <div>
-                          <h3 className={`font-semibold flex items-center gap-2 mb-3 ${theme.titleColor}`}>
+                          <h3
+                            className={`font-semibold flex items-center gap-2 mb-3 ${theme.titleColor}`}
+                          >
                             <BookOpen className={`h-4 w-4 ${theme.accent}`} />
                             Learning Roadmap
                           </h3>
                           <div className="relative pl-4 border-l-2 border-muted space-y-6 ml-2">
-                            {role.roadmap.map((step: RoadmapStep, index: number) => (
-                              <div key={index} className="relative">
-                                <div className={`absolute -left-[21px] top-1 h-3 w-3 rounded-full border-2 ${theme.cardBorder} ${theme.iconBg}`} />
-                                <div className="space-y-1">
-                                  <h4 className="text-sm font-semibold leading-none">{step.step}</h4>
-                                  <p className="text-sm text-muted-foreground">{step.description}</p>
-                                  <div className={`flex items-center text-xs ${theme.accent} font-medium mt-1`}>
-                                    <Clock className="mr-1 h-3 w-3" />
-                                    {step.duration}
+                            {role.roadmap.map(
+                              (step: RoadmapStep, index: number) => (
+                                <div key={index} className="relative">
+                                  <div
+                                    className={`absolute -left-[21px] top-1 h-3 w-3 rounded-full border-2 ${theme.cardBorder} ${theme.iconBg}`}
+                                  />
+                                  <div className="space-y-1">
+                                    <h4 className="text-sm font-semibold leading-none">
+                                      {step.step}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground">
+                                      {step.description}
+                                    </p>
+                                    <div
+                                      className={`flex items-center text-xs ${theme.accent} font-medium mt-1`}
+                                    >
+                                      <Clock className="mr-1 h-3 w-3" />
+                                      {step.duration}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              )
+                            )}
                           </div>
                         </div>
 
                         {/* Demand */}
                         <div>
-                          <h3 className={`font-semibold flex items-center gap-2 mb-2 ${theme.titleColor}`}>
+                          <h3
+                            className={`font-semibold flex items-center gap-2 mb-2 ${theme.titleColor}`}
+                          >
                             <TrendingUp className={`h-4 w-4 ${theme.accent}`} />
                             Market Demand
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            Current market demand is <strong>{role.demand}</strong>. 
-                            {role.demand === "High" 
+                            Current market demand is{" "}
+                            <strong>{role.demand}</strong>.
+                            {role.demand === "High"
                               ? " Companies are actively looking for professionals in this field."
                               : " Steady demand with specific skill requirements."}
                           </p>
@@ -270,46 +318,77 @@ const DomainExplorerPage = () => {
                       <div className="space-y-6">
                         {/* Companies */}
                         <div>
-                          <h3 className={`font-semibold flex items-center gap-2 mb-3 ${theme.titleColor}`}>
+                          <h3
+                            className={`font-semibold flex items-center gap-2 mb-3 ${theme.titleColor}`}
+                          >
                             <Building className={`h-4 w-4 ${theme.accent}`} />
                             Top Hiring Companies
                           </h3>
                           <div className="flex flex-wrap gap-2">
-                            {role.companies.map((company: string, i: number) => (
-                              <Badge key={i} variant="outline" className="bg-white">
-                                {company}
-                              </Badge>
-                            ))}
+                            {role.companies.map(
+                              (company: string, i: number) => (
+                                <Badge
+                                  key={i}
+                                  variant="outline"
+                                  className="bg-white"
+                                >
+                                  {company}
+                                </Badge>
+                              )
+                            )}
                           </div>
                         </div>
 
                         {/* Internships */}
                         <div>
-                          <h3 className={`font-semibold flex items-center gap-2 mb-3 ${theme.titleColor}`}>
-                            <GraduationCap className={`h-4 w-4 ${theme.accent}`} />
+                          <h3
+                            className={`font-semibold flex items-center gap-2 mb-3 ${theme.titleColor}`}
+                          >
+                            <GraduationCap
+                              className={`h-4 w-4 ${theme.accent}`}
+                            />
                             Upcoming Internships
                           </h3>
                           <ul className="space-y-2">
-                            {role.internships.map((internship: string, i: number) => (
-                              <li key={i} className="text-sm flex items-center gap-2">
-                                <div className={`h-1.5 w-1.5 rounded-full ${theme.accent.replace('text-', 'bg-')}`} />
-                                {internship}
-                              </li>
-                            ))}
+                            {role.internships.map(
+                              (internship: string, i: number) => (
+                                <li
+                                  key={i}
+                                  className="text-sm flex items-center gap-2"
+                                >
+                                  <div
+                                    className={`h-1.5 w-1.5 rounded-full ${theme.accent.replace("text-", "bg-")}`}
+                                  />
+                                  {internship}
+                                </li>
+                              )
+                            )}
                           </ul>
                         </div>
 
                         {/* Alumni Connection */}
-                        <div className={`${theme.subtleBg} p-4 rounded-lg border ${theme.cardBorder}`}>
-                          <h3 className={`font-semibold flex items-center gap-2 mb-2 ${theme.titleColor}`}>
+                        <div
+                          className={`${theme.subtleBg} p-4 rounded-lg border ${theme.cardBorder}`}
+                        >
+                          <h3
+                            className={`font-semibold flex items-center gap-2 mb-2 ${theme.titleColor}`}
+                          >
                             <Users className={`h-4 w-4 ${theme.accent}`} />
                             Alumni Network
                           </h3>
                           <p className="text-sm text-muted-foreground mb-4">
-                            Connect with <strong>{role.alumniCount}+ alumni</strong> working in this role to get guidance and mentorship.
+                            Connect with{" "}
+                            <strong>{role.alumniCount}+ alumni</strong> working
+                            in this role to get guidance and mentorship.
                           </p>
-                          <Button size="sm" className={`w-full ${theme.button} text-white`} asChild>
-                            <Link to={`/student/alumni?domain=${selectedDomain.id}&role=${role.id}`}>
+                          <Button
+                            size="sm"
+                            className={`w-full ${theme.button} text-white`}
+                            asChild
+                          >
+                            <Link
+                              to={`/student/alumni?domain=${selectedDomain.id}&role=${role.id}`}
+                            >
                               Find Members
                             </Link>
                           </Button>
@@ -333,8 +412,8 @@ const DomainExplorerPage = () => {
           Domain Explorer
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Discover your career path. Explore different domains, understand roles, 
-          and connect with alumni who have walked the path.
+          Discover your career path. Explore different domains, understand
+          roles, and connect with alumni who have walked the path.
         </p>
       </div>
 
@@ -342,26 +421,35 @@ const DomainExplorerPage = () => {
         {domains.map((domain: Domain, index: number) => {
           const Icon = iconMap[domain.icon] || Briefcase;
           const theme = colorThemes[index % colorThemes.length];
-          
+
           return (
-            <Card 
-              key={domain.id} 
+            <Card
+              key={domain.id}
               className={`group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 ${theme.cardBorder} ${theme.hoverBorder} bg-white`}
               onClick={() => setSelectedDomain(domain)}
             >
               <CardHeader>
-                <div className={`h-12 w-12 rounded-lg ${theme.iconBg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <div
+                  className={`h-12 w-12 rounded-lg ${theme.iconBg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                >
                   <Icon className={`h-6 w-6 ${theme.iconColor}`} />
                 </div>
-                <CardTitle className={`text-2xl ${theme.titleColor}`}>{domain.title}</CardTitle>
+                <CardTitle className={`text-2xl ${theme.titleColor}`}>
+                  {domain.title}
+                </CardTitle>
                 <CardDescription className="text-base mt-2 text-[#333333]/70">
                   {domain.description}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center text-sm text-muted-foreground mt-2">
-                  <span className={`font-medium ${theme.accent} mr-1`}>{domain.roles.length}</span> Roles Available
-                  <ChevronRight className={`h-4 w-4 ml-auto ${theme.accent} group-hover:translate-x-1 transition-transform`} />
+                  <span className={`font-medium ${theme.accent} mr-1`}>
+                    {domain.roles.length}
+                  </span>{" "}
+                  Roles Available
+                  <ChevronRight
+                    className={`h-4 w-4 ml-auto ${theme.accent} group-hover:translate-x-1 transition-transform`}
+                  />
                 </div>
               </CardContent>
             </Card>

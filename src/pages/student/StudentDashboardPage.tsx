@@ -85,13 +85,14 @@ const StudentDashboardPage = () => {
         setMyMentorships(allMentorships);
       } catch (mentorshipErr) {
         // Silently handle 403 errors for unverified users (allow them to use the app)
-        const errorMessage = mentorshipErr instanceof Error ? mentorshipErr.message : "";
-        const isVerificationError = 
-          errorMessage.includes("403") || 
-          errorMessage.includes("Forbidden") || 
+        const errorMessage =
+          mentorshipErr instanceof Error ? mentorshipErr.message : "";
+        const isVerificationError =
+          errorMessage.includes("403") ||
+          errorMessage.includes("Forbidden") ||
           errorMessage.includes("Access denied") ||
           errorMessage.includes("not verified");
-        
+
         if (!isVerificationError) {
           // Only log non-verification errors
           console.warn("Failed to load mentorships:", mentorshipErr);
@@ -300,13 +301,22 @@ const DashboardSection = ({
     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow border-[#1E88E5]/30">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-xl font-bold text-[#1565C0]">{title}</CardTitle>
+          <CardTitle className="text-xl font-bold text-[#1565C0]">
+            {title}
+          </CardTitle>
           {description && (
-            <CardDescription className="mt-1 text-[#333333]/80">{description}</CardDescription>
+            <CardDescription className="mt-1 text-[#333333]/80">
+              {description}
+            </CardDescription>
           )}
         </div>
         {linkTo && (
-          <Button variant="ghost" size="sm" asChild className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]">
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
+          >
             <Link to={linkTo}>
               View all <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
@@ -326,7 +336,13 @@ type QuickActionButtonProps = {
   iconClassName?: string;
 };
 
-const QuickActionButton = ({ icon: Icon, title, link, className, iconClassName }: QuickActionButtonProps) => (
+const QuickActionButton = ({
+  icon: Icon,
+  title,
+  link,
+  className,
+  iconClassName,
+}: QuickActionButtonProps) => (
   <Button
     asChild
     variant="outline"
@@ -355,8 +371,8 @@ const ApplicationCard = ({ application, delay }: ApplicationCardProps) => {
     job.postedBy && typeof job.postedBy.posterId === "object"
       ? job.postedBy.posterId.name
       : job.postedBy?.posterType
-      ? job.postedBy.posterType
-      : "Company";
+        ? job.postedBy.posterType
+        : "Company";
 
   return (
     <motion.div
@@ -367,11 +383,14 @@ const ApplicationCard = ({ application, delay }: ApplicationCardProps) => {
       <div className="flex items-center gap-4 rounded-lg border border-[#1E88E5]/20 p-4 bg-white hover:bg-[#E3F2FD]/30 transition-colors">
         <div className="flex-1">
           <p className="font-semibold text-[#1565C0]">{job.title}</p>
-          <p className="text-sm text-[#333333]/70">
-            {posterName}
-          </p>
+          <p className="text-sm text-[#333333]/70">{posterName}</p>
         </div>
-        <Badge variant="outline" className="border-[#1E88E5]/30 text-[#1E88E5] bg-[#E3F2FD]">{application.status.replace("_", " ")}</Badge>
+        <Badge
+          variant="outline"
+          className="border-[#1E88E5]/30 text-[#1E88E5] bg-[#E3F2FD]"
+        >
+          {application.status.replace("_", " ")}
+        </Badge>
       </div>
     </motion.div>
   );
@@ -398,7 +417,9 @@ const MentorshipCard = ({ mentorship, delay }: MentorshipCardProps) => {
       <div className="flex items-center gap-4 rounded-lg border border-[#1E88E5]/20 p-4 bg-white hover:bg-[#E3F2FD]/30 transition-colors">
         <Avatar className="h-10 w-10 border border-[#1E88E5]/20">
           <AvatarImage src={mentor.profilePictureUrl} alt={mentor.name} />
-          <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">{mentor.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">
+            {mentor.name.charAt(0)}
+          </AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <p className="font-semibold text-[#1565C0]">{mentor.name}</p>
@@ -406,7 +427,11 @@ const MentorshipCard = ({ mentorship, delay }: MentorshipCardProps) => {
             {mentor.currentDesignation || "Mentor"}
           </p>
         </div>
-        <Button variant="ghost" size="icon" className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
+        >
           <MessageSquare className="w-5 h-5" />
         </Button>
       </div>
@@ -444,8 +469,12 @@ const EventCard = ({ registration, delay }: EventCardProps) => {
           </span>
         </div>
         <div className="flex-1">
-          <p className="font-semibold line-clamp-1 text-[#1565C0]">{event.title}</p>
-          <p className="text-sm text-[#333333]/70 line-clamp-1">{event.location}</p>
+          <p className="font-semibold line-clamp-1 text-[#1565C0]">
+            {event.title}
+          </p>
+          <p className="text-sm text-[#333333]/70 line-clamp-1">
+            {event.location}
+          </p>
         </div>
       </div>
     </motion.div>
@@ -465,7 +494,11 @@ const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
     </div>
     <p className="font-medium text-[#333333]/60">{message}</p>
     {cta && (
-      <Button asChild variant="outline" className="mt-4 border-[#1E88E5]/30 text-[#1E88E5] hover:bg-[#E3F2FD]">
+      <Button
+        asChild
+        variant="outline"
+        className="mt-4 border-[#1E88E5]/30 text-[#1E88E5] hover:bg-[#E3F2FD]"
+      >
         <Link to={cta.link}>{cta.text}</Link>
       </Button>
     )}

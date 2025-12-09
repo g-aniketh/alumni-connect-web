@@ -17,13 +17,7 @@ import {
 import { Badge } from "../../components/ui/badge";
 import { eventsAPI } from "../../lib/api";
 import type { BackendEventRegistration, BackendEvent } from "../../types/api";
-import {
-  Calendar,
-  MapPin,
-  Clock,
-  X,
-  CheckCircle2,
-} from "lucide-react";
+import { Calendar, MapPin, Clock, X, CheckCircle2 } from "lucide-react";
 
 const StudentEventRegistrationsPage = () => {
   const [registrations, setRegistrations] = useState<

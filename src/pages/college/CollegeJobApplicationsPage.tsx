@@ -67,7 +67,9 @@ const CollegeJobApplicationsPage = () => {
             <aside className="lg:col-span-1 space-y-3">
               <Card className="bg-white border-[#1E88E5]/30">
                 <CardHeader>
-                  <CardTitle className="text-sm text-[#1565C0]">College Jobs</CardTitle>
+                  <CardTitle className="text-sm text-[#1565C0]">
+                    College Jobs
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {jobs.map((job) => (

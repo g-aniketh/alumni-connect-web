@@ -325,9 +325,7 @@ const EventsCampaignsPage = () => {
       <div className="min-h-screen bg-[#E3F2FD] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E88E5] mx-auto mb-4"></div>
-          <p className="text-[#333333]">
-            Loading events...
-          </p>
+          <p className="text-[#333333]">Loading events...</p>
         </div>
       </div>
     );

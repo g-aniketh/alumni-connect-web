@@ -80,11 +80,11 @@ const ChartCard = ({
   children,
   className = "",
 }: ChartCardProps) => (
-  <Card
-    className={`bg-white border-[#1E88E5]/30 shadow-sm ${className}`}
-  >
+  <Card className={`bg-white border-[#1E88E5]/30 shadow-sm ${className}`}>
     <CardHeader className="space-y-1">
-      <CardTitle className="text-lg font-semibold text-[#1565C0]">{title}</CardTitle>
+      <CardTitle className="text-lg font-semibold text-[#1565C0]">
+        {title}
+      </CardTitle>
       {description && (
         <CardDescription className="text-sm text-[#333333]/80">
           {description}
@@ -103,18 +103,30 @@ type SkillProgressPoint = {
 
 type ApplicationStage = { stage: string; count: number };
 type EventSlice = { name: string; value: number };
-type MentorshipImpactPoint = { month: string; confidence: number; network: number };
+type MentorshipImpactPoint = {
+  month: string;
+  confidence: number;
+  network: number;
+};
 
 type PlacementTrendPoint = { year: string; placements: number; offers: number };
 type DepartmentOutcome = { dept: string; employed: number };
 type GeoSlice = { name: string; value: number };
 type VerificationHealth = { label: string; verified: number; pending: number };
 
-type MentorshipHealthPoint = { month: string; active: number; new: number; completed: number };
+type MentorshipHealthPoint = {
+  month: string;
+  active: number;
+  new: number;
+  completed: number;
+};
 type JobImpactSlice = { label: string; value: number };
 type EngagementBar = { channel: string; score: number };
-type GivingBackPoint = { quarter: string; donations: number; volunteerHours: number };
-
+type GivingBackPoint = {
+  quarter: string;
+  donations: number;
+  volunteerHours: number;
+};
 
 export const StudentAnalytics = () => {
   const palette = palettes.student;
@@ -345,7 +357,10 @@ export const CollegeAnalytics = () => {
             <Tooltip content={<ChartTooltip />} />
             <Bar dataKey="employed" radius={[10, 10, 6, 6]}>
               {departmentOutcomes.map((_, idx) => (
-                <Cell key={idx} fill={lightPalette[idx % lightPalette.length]} />
+                <Cell
+                  key={idx}
+                  fill={lightPalette[idx % lightPalette.length]}
+                />
               ))}
             </Bar>
           </BarChart>
@@ -370,7 +385,10 @@ export const CollegeAnalytics = () => {
               label
             >
               {alumniGeo.map((_, idx) => (
-                <Cell key={idx} fill={lightPalette[idx % lightPalette.length]} />
+                <Cell
+                  key={idx}
+                  fill={lightPalette[idx % lightPalette.length]}
+                />
               ))}
             </Pie>
           </PieChart>
@@ -427,7 +445,7 @@ export const AlumniAnalytics = () => {
     { label: "Shortlisted", value: 27 },
     { label: "Offers", value: 13 },
   ];
-  
+
   const jobOutcomesColors = ["#93C5FD", "#6EE7B7", "#FCD34D"]; // Light Blue, Light Green, Light Amber
 
   const engagement: EngagementBar[] = [
@@ -445,8 +463,6 @@ export const AlumniAnalytics = () => {
     { quarter: "Q3", donations: 53, volunteerHours: 73 },
     { quarter: "Q4", donations: 61, volunteerHours: 80 },
   ];
-
-
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -512,7 +528,10 @@ export const AlumniAnalytics = () => {
               paddingAngle={6}
             >
               {jobImpact.map((_, idx) => (
-                <Cell key={idx} fill={jobOutcomesColors[idx % jobOutcomesColors.length]} />
+                <Cell
+                  key={idx}
+                  fill={jobOutcomesColors[idx % jobOutcomesColors.length]}
+                />
               ))}
             </Pie>
           </PieChart>
@@ -535,7 +554,10 @@ export const AlumniAnalytics = () => {
             <Tooltip content={<ChartTooltip />} />
             <Bar dataKey="score" radius={[10, 10, 6, 6]}>
               {engagement.map((_, idx) => (
-                <Cell key={idx} fill={engagementColors[idx % engagementColors.length]} />
+                <Cell
+                  key={idx}
+                  fill={engagementColors[idx % engagementColors.length]}
+                />
               ))}
             </Bar>
           </BarChart>
@@ -571,9 +593,6 @@ export const AlumniAnalytics = () => {
           </LineChart>
         </ResponsiveContainer>
       </ChartCard>
-
-
     </div>
   );
 };
-

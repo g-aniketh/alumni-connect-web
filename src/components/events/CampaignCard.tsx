@@ -46,8 +46,12 @@ export const CampaignCard = ({ campaign, onDonate }: CampaignCardProps) => {
       )}
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-xl text-[#1565C0]">{campaign.title}</CardTitle>
-          <Badge variant="secondary" className="bg-[#E3F2FD] text-[#1565C0]">{campaign.status}</Badge>
+          <CardTitle className="text-xl text-[#1565C0]">
+            {campaign.title}
+          </CardTitle>
+          <Badge variant="secondary" className="bg-[#E3F2FD] text-[#1565C0]">
+            {campaign.status}
+          </Badge>
         </div>
         <p className="text-sm text-[#333333] mt-2 line-clamp-2">
           {campaign.description}
@@ -67,7 +71,11 @@ export const CampaignCard = ({ campaign, onDonate }: CampaignCardProps) => {
               {formatCurrency(campaign.targetAmount)}
             </span>
           </div>
-          <Progress value={progressPercentage} className="h-2 bg-[#E3F2FD]" indicatorClassName="bg-[#1E88E5]" />
+          <Progress
+            value={progressPercentage}
+            className="h-2 bg-[#E3F2FD]"
+            indicatorClassName="bg-[#1E88E5]"
+          />
           <p className="text-xs text-[#333333]/60 text-center">
             {progressPercentage.toFixed(1)}% funded
           </p>

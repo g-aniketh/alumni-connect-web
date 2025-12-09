@@ -21,7 +21,11 @@ interface LoginFormProps {
   onLoginSuccess?: () => void;
 }
 
-export const LoginForm = ({ role, onLoginError, onLoginSuccess }: LoginFormProps) => {
+export const LoginForm = ({
+  role,
+  onLoginError,
+  onLoginSuccess,
+}: LoginFormProps) => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");

@@ -131,7 +131,8 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                     {job.title}
                   </DialogTitle>
                   <DialogDescription className="text-base mt-1 flex items-center gap-2 text-[#333333]">
-                    <Building2 className="h-4 w-4 text-[#1E88E5]" /> {job.company}
+                    <Building2 className="h-4 w-4 text-[#1E88E5]" />{" "}
+                    {job.company}
                   </DialogDescription>
                 </div>
                 {job.referralAvailable && (
@@ -158,8 +159,8 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                   {job.salaryMin && job.salaryMax
                     ? `$${job.salaryMin / 1000}k - $${job.salaryMax / 1000}k`
                     : job.salaryMin
-                    ? `$${job.salaryMin / 1000}k+`
-                    : "Competitive"}
+                      ? `$${job.salaryMin / 1000}k+`
+                      : "Competitive"}
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-[#1E88E5]" />
@@ -177,10 +178,16 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
 
               {job.department.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-lg text-[#1565C0]">Target Departments</h3>
+                  <h3 className="font-semibold text-lg text-[#1565C0]">
+                    Target Departments
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {job.department.map((dept) => (
-                      <Badge key={dept} variant="outline" className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]">
+                      <Badge
+                        key={dept}
+                        variant="outline"
+                        className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]"
+                      >
                         {dept}
                       </Badge>
                     ))}
@@ -191,11 +198,17 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
 
             <DialogFooter className="p-6 bg-[#E3F2FD]/30 border-t border-[#E3F2FD]">
               {user && user.role === UserRole.Student ? (
-                <Button className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white" onClick={handleApply}>
+                <Button
+                  className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+                  onClick={handleApply}
+                >
                   Apply Now
                 </Button>
               ) : job.applyLink ? (
-                <Button className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white" asChild>
+                <Button
+                  className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+                  asChild
+                >
                   <a
                     href={job.applyLink}
                     target="_blank"
@@ -205,7 +218,10 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                   </a>
                 </Button>
               ) : (
-                <Button className="w-full sm:w-auto bg-[#F5F5F5] text-[#333333]" disabled>
+                <Button
+                  className="w-full sm:w-auto bg-[#F5F5F5] text-[#333333]"
+                  disabled
+                >
                   Applications closed
                 </Button>
               )}
@@ -259,10 +275,10 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                   user &&
                   user.role === UserRole.Student &&
                   user.resumeUrl && (
-                  <p className="text-xs text-gray-500">
-                    Your saved resume will be used if you don't upload a new
-                    one.
-                  </p>
+                    <p className="text-xs text-gray-500">
+                      Your saved resume will be used if you don't upload a new
+                      one.
+                    </p>
                   )}
               </div>
 
@@ -304,11 +320,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                 disabled={
                   loading ||
                   (!applicationData.resumeFile &&
-                    !(
-                      user &&
-                      user.role === UserRole.Student &&
-                      user.resumeUrl
-                    ))
+                    !(user && user.role === UserRole.Student && user.resumeUrl))
                 }
               >
                 {loading ? "Submitting..." : "Submit Application"}

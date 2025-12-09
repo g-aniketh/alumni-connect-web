@@ -23,7 +23,6 @@ import {
   Mail,
   Phone,
   GraduationCap,
-  Calendar,
   User,
   Edit,
   Save,
@@ -63,7 +62,9 @@ const CollegeStudentDetailPage = () => {
       setLoading(true);
       setError("");
       const studentsData = await collegeAPI.getAllStudents();
-      const foundStudent = studentsData.find((s) => s._id === id || s.id === id);
+      const foundStudent = studentsData.find(
+        (s) => s._id === id || s.id === id
+      );
       if (foundStudent) {
         setStudent(foundStudent);
         setEditedCredits(foundStudent.credits || 0);
@@ -71,7 +72,9 @@ const CollegeStudentDetailPage = () => {
         setError("Student not found");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load student data");
+      setError(
+        err instanceof Error ? err.message : "Failed to load student data"
+      );
     } finally {
       setLoading(false);
     }
@@ -224,7 +227,9 @@ const CollegeStudentDetailPage = () => {
                 className="p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3"
               >
                 <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {error}
+                </p>
               </motion.div>
             )}
 
@@ -235,7 +240,9 @@ const CollegeStudentDetailPage = () => {
                 className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg flex items-start gap-3"
               >
                 <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
-                <p className="text-sm text-green-600 dark:text-green-400">{success}</p>
+                <p className="text-sm text-green-600 dark:text-green-400">
+                  {success}
+                </p>
               </motion.div>
             )}
 
@@ -259,11 +266,15 @@ const CollegeStudentDetailPage = () => {
                   <p className="font-medium capitalize">{student.degree}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Enrollment Year</Label>
+                  <Label className="text-muted-foreground">
+                    Enrollment Year
+                  </Label>
                   <p className="font-medium">{student.enrollmentYear}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Graduation Year</Label>
+                  <Label className="text-muted-foreground">
+                    Graduation Year
+                  </Label>
                   <p className="font-medium">{student.graduationYear}</p>
                 </div>
                 <div>
@@ -278,7 +289,8 @@ const CollegeStudentDetailPage = () => {
                   <div>
                     <Label className="text-lg font-semibold">Credits</Label>
                     <p className="text-sm text-muted-foreground">
-                      Current credits: {student.credits || 0} / {requiredCredits} required
+                      Current credits: {student.credits || 0} /{" "}
+                      {requiredCredits} required
                     </p>
                   </div>
                   {!isEditingCredits && (
@@ -338,7 +350,9 @@ const CollegeStudentDetailPage = () => {
                           className="bg-primary h-4 rounded-full transition-all"
                           style={{
                             width: `${Math.min(
-                              ((student.credits || 0) / Math.max(requiredCredits, 1)) * 100,
+                              ((student.credits || 0) /
+                                Math.max(requiredCredits, 1)) *
+                                100,
                               100
                             )}%`,
                           }}
@@ -470,4 +484,3 @@ const CollegeStudentDetailPage = () => {
 };
 
 export default CollegeStudentDetailPage;
-

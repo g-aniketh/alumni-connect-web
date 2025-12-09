@@ -20,7 +20,11 @@ type User = Alumni | Student | College;
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (role: UserRole, emailOrRollNumber: string, password: string) => Promise<void>;
+  login: (
+    role: UserRole,
+    emailOrRollNumber: string,
+    password: string
+  ) => Promise<void>;
   signup: (role: UserRole, data: SignupRequest) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;

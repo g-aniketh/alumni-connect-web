@@ -88,7 +88,10 @@ const AlumniDirectoryPage = () => {
   };
 
   // Get relevant skills/keywords from domain and role
-  const getRoleKeywords = (domainId: string | null, roleId: string | null): string[] => {
+  const getRoleKeywords = (
+    domainId: string | null,
+    roleId: string | null
+  ): string[] => {
     if (!domainId || !roleId) return [];
 
     const domain = domains.find((d: Domain) => d.id === domainId);
@@ -98,7 +101,7 @@ const AlumniDirectoryPage = () => {
     if (!role) return [];
 
     const keywords: string[] = [];
-    
+
     // Add role title keywords
     const titleWords = role.title.toLowerCase().split(/\s+/);
     keywords.push(...titleWords.filter((word: string) => word.length > 2));
@@ -106,28 +109,66 @@ const AlumniDirectoryPage = () => {
     // Extract skills from roadmap steps
     role.roadmap.forEach((step: { step: string; description: string }) => {
       const stepKeywords = step.description.toLowerCase().split(/[,\s&]+/);
-      keywords.push(...stepKeywords.filter((word: string) => 
-        word.length > 2 && 
-        !['learn', 'understand', 'master', 'build', 'create', 'work', 'focus', 'handle'].includes(word)
-      ));
+      keywords.push(
+        ...stepKeywords.filter(
+          (word: string) =>
+            word.length > 2 &&
+            ![
+              "learn",
+              "understand",
+              "master",
+              "build",
+              "create",
+              "work",
+              "focus",
+              "handle",
+            ].includes(word)
+        )
+      );
     });
 
     // Map common keywords to skill names
     const skillMapping: Record<string, string[]> = {
-      'frontend': ['React', 'Vue.js', 'Angular', 'HTML', 'CSS', 'JavaScript', 'TypeScript'],
-      'backend': ['Node.js', 'Python', 'Java', 'Database Management', 'REST', 'GraphQL', 'API Design'],
-      'fullstack': ['React', 'Node.js', 'Full Stack', 'Full-Stack'],
-      'ai': ['Machine Learning', 'Data Science', 'Artificial Intelligence', 'Python'],
-      'data': ['Data Science', 'Machine Learning', 'Database Management', 'Big Data'],
-      'devops': ['DevOps', 'Docker', 'AWS', 'Cloud Computing', 'CI/CD'],
-      'cybersecurity': ['Cybersecurity', 'Security'],
-      'cloud': ['Cloud Computing', 'AWS', 'Azure', 'Google Cloud Platform'],
+      frontend: [
+        "React",
+        "Vue.js",
+        "Angular",
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "TypeScript",
+      ],
+      backend: [
+        "Node.js",
+        "Python",
+        "Java",
+        "Database Management",
+        "REST",
+        "GraphQL",
+        "API Design",
+      ],
+      fullstack: ["React", "Node.js", "Full Stack", "Full-Stack"],
+      ai: [
+        "Machine Learning",
+        "Data Science",
+        "Artificial Intelligence",
+        "Python",
+      ],
+      data: [
+        "Data Science",
+        "Machine Learning",
+        "Database Management",
+        "Big Data",
+      ],
+      devops: ["DevOps", "Docker", "AWS", "Cloud Computing", "CI/CD"],
+      cybersecurity: ["Cybersecurity", "Security"],
+      cloud: ["Cloud Computing", "AWS", "Azure", "Google Cloud Platform"],
     };
 
     // Check for keyword matches and add corresponding skills
-    const lowerKeywords = keywords.map(k => k.toLowerCase());
+    const lowerKeywords = keywords.map((k) => k.toLowerCase());
     Object.entries(skillMapping).forEach(([key, skills]) => {
-      if (lowerKeywords.some(k => k.includes(key) || key.includes(k))) {
+      if (lowerKeywords.some((k) => k.includes(key) || key.includes(k))) {
         keywords.push(...skills);
       }
     });
@@ -136,10 +177,13 @@ const AlumniDirectoryPage = () => {
   };
 
   const roleKeywords = getRoleKeywords(domainId, roleId);
-  const selectedDomain = domainId ? domains.find((d: Domain) => d.id === domainId) : null;
-  const selectedRole = selectedDomain && roleId 
-    ? selectedDomain.roles.find((r: Role) => r.id === roleId) 
+  const selectedDomain = domainId
+    ? domains.find((d: Domain) => d.id === domainId)
     : null;
+  const selectedRole =
+    selectedDomain && roleId
+      ? selectedDomain.roles.find((r: Role) => r.id === roleId)
+      : null;
 
   const filteredAlumni = alumni.filter((alumni) => {
     // Name search (case-insensitive)
@@ -167,7 +211,9 @@ const AlumniDirectoryPage = () => {
     // Domain/Role filtering - if domain and role are provided, filter by matching skills/designation
     let matchesDomainRole = true;
     if (domainId && roleId && roleKeywords.length > 0) {
-      const alumniSkills = (alumni.skills || []).map((s: string) => s.toLowerCase());
+      const alumniSkills = (alumni.skills || []).map((s: string) =>
+        s.toLowerCase()
+      );
       const alumniDesignation = (alumni.currentDesignation || "").toLowerCase();
       const alumniCompany = (alumni.currentEmployer || "").toLowerCase();
       const roleTitle = (selectedRole?.title || "").toLowerCase();
@@ -176,16 +222,23 @@ const AlumniDirectoryPage = () => {
       const hasMatchingSkill = roleKeywords.some((keyword: string) => {
         const lowerKeyword = keyword.toLowerCase();
         return (
-          alumniSkills.some((skill: string) => skill.includes(lowerKeyword) || lowerKeyword.includes(skill)) ||
+          alumniSkills.some(
+            (skill: string) =>
+              skill.includes(lowerKeyword) || lowerKeyword.includes(skill)
+          ) ||
           alumniDesignation.includes(lowerKeyword) ||
           alumniCompany.includes(lowerKeyword) ||
-          roleTitle.split(' ').some((word: string) => alumniDesignation.includes(word))
+          roleTitle
+            .split(" ")
+            .some((word: string) => alumniDesignation.includes(word))
         );
       });
 
       // Also check if designation contains role title words
-      const roleTitleWords = roleTitle.split(/\s+/).filter((w: string) => w.length > 2);
-      const hasMatchingDesignation = roleTitleWords.some((word: string) => 
+      const roleTitleWords = roleTitle
+        .split(/\s+/)
+        .filter((w: string) => w.length > 2);
+      const hasMatchingDesignation = roleTitleWords.some((word: string) =>
         alumniDesignation.includes(word)
       );
 
@@ -196,33 +249,42 @@ const AlumniDirectoryPage = () => {
   });
 
   // If domain/role filtering results in no matches, show all alumni (excluding domain/role filter)
-  const displayAlumni = filteredAlumni.length === 0 && domainId && roleId && nameSearch === "" && skillSearch === "" && companySearch === ""
-    ? alumni.filter((alumni) => {
-        // Name search (case-insensitive)
-        const matchesName =
-          nameSearch === "" ||
-          (alumni.name &&
-            alumni.name.toLowerCase().includes(nameSearch.toLowerCase()));
+  const displayAlumni =
+    filteredAlumni.length === 0 &&
+    domainId &&
+    roleId &&
+    nameSearch === "" &&
+    skillSearch === "" &&
+    companySearch === ""
+      ? alumni.filter((alumniItem) => {
+          // Name search (case-insensitive)
+          const nameSearchLower = nameSearch.toLowerCase();
+          const matchesName =
+            nameSearch === "" ||
+            (alumniItem.name &&
+              alumniItem.name.toLowerCase().includes(nameSearchLower));
 
-        // Skill search - check if any skill matches (case-insensitive)
-        const matchesSkill =
-          skillSearch === "" ||
-          (alumni.skills &&
-            alumni.skills.some((skill) =>
-              skill.toLowerCase().includes(skillSearch.toLowerCase())
-            ));
+          // Skill search - check if any skill matches (case-insensitive)
+          const skillSearchLower = skillSearch.toLowerCase();
+          const matchesSkill =
+            skillSearch === "" ||
+            (alumniItem.skills &&
+              alumniItem.skills.some((skill: string) =>
+                skill.toLowerCase().includes(skillSearchLower)
+              ));
 
-        // Company search (case-insensitive)
-        const matchesCompany =
-          companySearch === "" ||
-          (alumni.currentEmployer &&
-            alumni.currentEmployer
-              .toLowerCase()
-              .includes(companySearch.toLowerCase()));
+          // Company search (case-insensitive)
+          const companySearchLower = companySearch.toLowerCase();
+          const matchesCompany =
+            companySearch === "" ||
+            (alumniItem.currentEmployer &&
+              alumniItem.currentEmployer
+                .toLowerCase()
+                .includes(companySearchLower));
 
-        return matchesName && matchesSkill && matchesCompany;
-      })
-    : filteredAlumni;
+          return matchesName && matchesSkill && matchesCompany;
+        })
+      : filteredAlumni;
 
   // Transform BackendAlumni to Alumni for the component
   const transformAlumni = (backendAlumni: BackendAlumni): Alumni => {
@@ -317,9 +379,9 @@ const AlumniDirectoryPage = () => {
             )}
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            {selectedDomain && selectedRole 
+            {selectedDomain && selectedRole
               ? `Alumni working in ${selectedRole.title} or have related skills. ${filteredAlumni.length > 0 ? `${filteredAlumni.length} matching alumni found.` : `No matching alumni found. Showing all ${displayAlumni.length} available alumni.`}`
-              : 'Connect with alumni mentors and find guidance for your career journey.'}
+              : "Connect with alumni mentors and find guidance for your career journey."}
           </p>
         </div>
 
@@ -352,7 +414,8 @@ const AlumniDirectoryPage = () => {
                 {filteredAlumni.length === 0 && domainId && roleId && (
                   <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-800 dark:text-amber-200">
                     <p className="text-sm font-medium">
-                      No alumni found matching {selectedRole?.title} in {selectedDomain?.title}. Showing all available alumni.
+                      No alumni found matching {selectedRole?.title} in{" "}
+                      {selectedDomain?.title}. Showing all available alumni.
                     </p>
                   </div>
                 )}

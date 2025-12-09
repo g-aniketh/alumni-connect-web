@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "../ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -51,7 +46,9 @@ export const AlumniProfileCard = React.memo(
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-semibold text-lg text-[#1565C0]">{alumni.name}</h3>
+                <h3 className="font-semibold text-lg text-[#1565C0]">
+                  {alumni.name}
+                </h3>
                 <p className="text-sm text-[#333333]">{alumni.designation}</p>
                 <p className="text-xs text-[#333333]/80">
                   @{alumni.currentEmployer} | Class of {alumni.graduationYear}
@@ -83,12 +80,19 @@ export const AlumniProfileCard = React.memo(
               <p className="text-xs font-semibold text-[#1E88E5]">SKILLS</p>
               <div className="flex flex-wrap gap-1 justify-center">
                 {alumni.skills.slice(0, 3).map((skill) => (
-                  <Badge key={skill} variant="outline" className="bg-white border-[#1E88E5]/30 text-[#1565C0]">
+                  <Badge
+                    key={skill}
+                    variant="outline"
+                    className="bg-white border-[#1E88E5]/30 text-[#1565C0]"
+                  >
                     {skill}
                   </Badge>
                 ))}
                 {alumni.skills.length > 3 && (
-                  <Badge variant="outline" className="bg-white border-[#1E88E5]/30 text-[#1565C0]">
+                  <Badge
+                    variant="outline"
+                    className="bg-white border-[#1E88E5]/30 text-[#1565C0]"
+                  >
                     +{alumni.skills.length - 3} more
                   </Badge>
                 )}

@@ -107,17 +107,17 @@ const AlumniProfileCompletionPage = () => {
   useEffect(() => {
     if (user && user.role === "Alumni") {
       const alumni = user as Alumni;
-      
+
       // Pre-populate skills if they exist
       if (alumni.skills && alumni.skills.length > 0) {
         setSkills(alumni.skills);
       }
-      
+
       // Pre-populate bio if it exists
       if (alumni.bio) {
         setBio(alumni.bio);
       }
-      
+
       // Pre-populate professional info if it exists
       if (alumni.designation) {
         setCurrentDesignation(alumni.designation);
@@ -128,7 +128,7 @@ const AlumniProfileCompletionPage = () => {
       if (alumni.location) {
         setLocation(alumni.location);
       }
-      
+
       // Pre-populate social links if they exist
       if (alumni.linkedInProfile) {
         setLinkedInProfile(alumni.linkedInProfile);
@@ -301,9 +301,7 @@ const AlumniProfileCompletionPage = () => {
             {currentStep === 2 && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="currentDesignation">
-                    Current Job Title
-                  </Label>
+                  <Label htmlFor="currentDesignation">Current Job Title</Label>
                   <Input
                     id="currentDesignation"
                     placeholder="e.g., Software Engineer"

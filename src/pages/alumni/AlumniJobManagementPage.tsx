@@ -194,7 +194,7 @@ const AlumniJobManagementPage = () => {
                       : "Company";
 
                   return (
-                    <TableRow 
+                    <TableRow
                       key={job._id}
                       className="cursor-pointer"
                       onClick={() => handleViewJobDetails(job)}
@@ -233,7 +233,10 @@ const AlumniJobManagementPage = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="flex items-center gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Button
                             variant="ghost"
                             size="sm"
@@ -253,8 +256,8 @@ const AlumniJobManagementPage = () => {
                           >
                             <Trash2 className="h-4 w-4 text-red-600" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleViewJobDetails(job)}
                           >

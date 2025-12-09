@@ -1,5 +1,8 @@
 import { api } from "./base";
-import type { BackendStudent, CreditEligibilityResponse } from "../../types/api";
+import type {
+  BackendStudent,
+  CreditEligibilityResponse,
+} from "../../types/api";
 
 // Student API endpoints
 export const studentAPI = {

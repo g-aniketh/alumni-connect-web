@@ -155,7 +155,9 @@ const CollegeAlumniPage = () => {
         >
           <Card className="bg-white border-[#1E88E5]/30">
             <CardHeader>
-              <CardTitle className="text-[#1565C0]">Pending Verifications</CardTitle>
+              <CardTitle className="text-[#1565C0]">
+                Pending Verifications
+              </CardTitle>
               <CardDescription className="text-[#333333]/80">
                 These alumni are awaiting verification to get full access.
               </CardDescription>
@@ -239,14 +241,21 @@ const CollegeAlumniPage = () => {
                     <TableRow className="border-[#1E88E5]/20 hover:bg-[#E3F2FD]/80">
                       <TableHead className="text-[#1565C0]">Alumni</TableHead>
                       <TableHead className="text-[#1565C0]">Batch</TableHead>
-                      <TableHead className="text-[#1565C0]">Department</TableHead>
-                      <TableHead className="text-[#1565C0]">Current Role</TableHead>
+                      <TableHead className="text-[#1565C0]">
+                        Department
+                      </TableHead>
+                      <TableHead className="text-[#1565C0]">
+                        Current Role
+                      </TableHead>
                       <TableHead className="text-[#1565C0]">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paginatedAlumni.map((alumnus) => (
-                      <TableRow key={alumnus._id} className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30">
+                      <TableRow
+                        key={alumnus._id}
+                        className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30"
+                      >
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9 border border-[#E3F2FD]">
@@ -259,15 +268,21 @@ const CollegeAlumniPage = () => {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium text-[#1565C0]">{alumnus.name}</div>
+                              <div className="font-medium text-[#1565C0]">
+                                {alumnus.name}
+                              </div>
                               <div className="text-sm text-[#333333]/70">
                                 {alumnus.email}
                               </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-[#333333]">{alumnus.graduationYear}</TableCell>
-                        <TableCell className="text-[#333333]">{alumnus.department}</TableCell>
+                        <TableCell className="text-[#333333]">
+                          {alumnus.graduationYear}
+                        </TableCell>
+                        <TableCell className="text-[#333333]">
+                          {alumnus.department}
+                        </TableCell>
                         <TableCell className="text-[#333333]">
                           {alumnus.currentDesignation || "N/A"} @{" "}
                           {alumnus.currentEmployer || "N/A"}
@@ -290,7 +305,10 @@ const CollegeAlumniPage = () => {
                     ))}
                     {filteredAlumni.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center text-[#333333]/60">
+                        <TableCell
+                          colSpan={5}
+                          className="h-24 text-center text-[#333333]/60"
+                        >
                           No alumni found.
                         </TableCell>
                       </TableRow>
@@ -322,23 +340,32 @@ const PendingAlumniCard = ({ alumnus, onVerify }: PendingAlumniCardProps) => (
       <div className="flex items-center gap-4">
         <Avatar className="h-12 w-12 border-2 border-[#E3F2FD]">
           <AvatarImage src={alumnus.profilePictureUrl} alt={alumnus.name} />
-          <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">{alumnus.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">
+            {alumnus.name.charAt(0)}
+          </AvatarFallback>
         </Avatar>
         <div>
-          <CardTitle className="text-base text-[#1565C0]">{alumnus.name}</CardTitle>
-          <CardDescription className="text-[#333333]/80">{alumnus.email}</CardDescription>
+          <CardTitle className="text-base text-[#1565C0]">
+            {alumnus.name}
+          </CardTitle>
+          <CardDescription className="text-[#333333]/80">
+            {alumnus.email}
+          </CardDescription>
         </div>
       </div>
     </CardHeader>
     <CardContent className="text-sm space-y-1 text-[#333333]">
       <p>
-        <strong className="text-[#1565C0]">Batch:</strong> {alumnus.graduationYear}
+        <strong className="text-[#1565C0]">Batch:</strong>{" "}
+        {alumnus.graduationYear}
       </p>
       <p>
-        <strong className="text-[#1565C0]">Department:</strong> {alumnus.department}
+        <strong className="text-[#1565C0]">Department:</strong>{" "}
+        {alumnus.department}
       </p>
       <p>
-        <strong className="text-[#1565C0]">Company:</strong> {alumnus.currentEmployer || "N/A"}
+        <strong className="text-[#1565C0]">Company:</strong>{" "}
+        {alumnus.currentEmployer || "N/A"}
       </p>
     </CardContent>
     <CardFooter>

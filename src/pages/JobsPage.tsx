@@ -16,10 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import {
-  Card,
-  CardContent,
-} from "../components/ui/card";
+import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { jobsAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
@@ -213,7 +210,10 @@ const JobsPage = () => {
             </p>
           </div>
           {canCreateJobs && (
-            <Button asChild className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
+            <Button
+              asChild
+              className="bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+            >
               <Link to={createJobPath}>
                 <Plus className="h-4 w-4 mr-2" />
                 Post a Job
@@ -231,8 +231,18 @@ const JobsPage = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {canCreateJobs && (
             <TabsList className="bg-white/80 backdrop-blur-sm border border-[#1E88E5]/20">
-              <TabsTrigger value="all" className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]">All Jobs</TabsTrigger>
-              <TabsTrigger value="my-jobs" className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]">My Posted Jobs</TabsTrigger>
+              <TabsTrigger
+                value="all"
+                className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
+              >
+                All Jobs
+              </TabsTrigger>
+              <TabsTrigger
+                value="my-jobs"
+                className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
+              >
+                My Posted Jobs
+              </TabsTrigger>
             </TabsList>
           )}
 
@@ -378,7 +388,12 @@ const JobListItem = ({ job, onSelect, hasApplied }: JobListItemProps) => (
           </p>
         </div>
         <div className="flex items-center gap-4 text-sm text-[#333333]/80 hidden md:flex">
-          <Badge variant="outline" className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]">{job.jobType}</Badge>
+          <Badge
+            variant="outline"
+            className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]"
+          >
+            {job.jobType}
+          </Badge>
           {job.referral && (
             <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">
               <Star className="h-3 w-3 mr-1" />
@@ -388,11 +403,17 @@ const JobListItem = ({ job, onSelect, hasApplied }: JobListItemProps) => (
         </div>
         <div className="w-24 text-right">
           {hasApplied ? (
-            <Button variant="outline" disabled className="bg-[#F5F5F5] text-[#333333]">
+            <Button
+              variant="outline"
+              disabled
+              className="bg-[#F5F5F5] text-[#333333]"
+            >
               Applied
             </Button>
           ) : (
-            <Button className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">Apply</Button>
+            <Button className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
+              Apply
+            </Button>
           )}
         </div>
       </CardContent>
@@ -410,7 +431,7 @@ const MyJobListItem = ({ job, userRole, onSelect }: MyJobListItemProps) => (
   <motion.div
     variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
   >
-    <Card 
+    <Card
       className="bg-white border-[#1E88E5]/30 hover:shadow-md transition-shadow cursor-pointer hover:scale-[1.02]"
       onClick={() => onSelect(job)}
     >
@@ -426,11 +447,18 @@ const MyJobListItem = ({ job, userRole, onSelect }: MyJobListItemProps) => (
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Users className="h-4 w-4 text-[#1E88E5]" />
-          <span className="font-semibold text-[#1565C0]">{job.totalApplications}</span>
+          <span className="font-semibold text-[#1565C0]">
+            {job.totalApplications}
+          </span>
           <span className="text-[#333333]/80">Applicants</span>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" asChild className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]"
+          >
             <Link
               to={
                 userRole === UserRole.Alumni
@@ -441,7 +469,12 @@ const MyJobListItem = ({ job, userRole, onSelect }: MyJobListItemProps) => (
               Edit
             </Link>
           </Button>
-          <Button variant="outline" size="sm" asChild className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]"
+          >
             <Link
               to={
                 userRole === UserRole.Alumni

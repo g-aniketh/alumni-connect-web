@@ -26,7 +26,11 @@ import {
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { CheckCircle2, TrendingUp, ArrowRight } from "lucide-react";
-import { skillData, type RoleSkillData, type SkillMetric } from "@/lib/skillData";
+import {
+  skillData,
+  type RoleSkillData,
+  type SkillMetric,
+} from "@/lib/skillData";
 import { Link } from "react-router-dom";
 
 const colorThemes = [
@@ -138,19 +142,24 @@ const SkillRadarPage = () => {
   const [selectedRole, setSelectedRole] = useState<string>(skillData[0].roleId);
 
   const currentData = useMemo(() => {
-    return skillData.find((d: RoleSkillData) => d.roleId === selectedRole) || skillData[0];
+    return (
+      skillData.find((d: RoleSkillData) => d.roleId === selectedRole) ||
+      skillData[0]
+    );
   }, [selectedRole]);
 
   const theme = useMemo(() => {
-    const index = skillData.findIndex(d => d.roleId === selectedRole);
+    const index = skillData.findIndex((d) => d.roleId === selectedRole);
     return colorThemes[index % colorThemes.length];
   }, [selectedRole]);
 
   // Calculate gaps
-  const gaps = currentData.skills.map((skill: SkillMetric) => ({
-    ...skill,
-    gap: skill.industryAverage - skill.studentScore,
-  })).sort((a: { gap: number }, b: { gap: number }) => b.gap - a.gap);
+  const gaps = currentData.skills
+    .map((skill: SkillMetric) => ({
+      ...skill,
+      gap: skill.industryAverage - skill.studentScore,
+    }))
+    .sort((a: { gap: number }, b: { gap: number }) => b.gap - a.gap);
 
   const laggingSkills = gaps.filter((s: { gap: number }) => s.gap > 15);
   const strongSkills = gaps.filter((s: { gap: number }) => s.gap <= 5);
@@ -162,7 +171,8 @@ const SkillRadarPage = () => {
           Skill Radar Analysis
         </h1>
         <p className="text-muted-foreground text-lg">
-          Compare your skills with industry standards to identify gaps and growth opportunities.
+          Compare your skills with industry standards to identify gaps and
+          growth opportunities.
         </p>
       </div>
 
@@ -173,16 +183,17 @@ const SkillRadarPage = () => {
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle className={theme.titleColor}>Skill Comparison</CardTitle>
+                  <CardTitle className={theme.titleColor}>
+                    Skill Comparison
+                  </CardTitle>
                   <CardDescription>
                     You vs. Industry Average for {currentData.roleName}
                   </CardDescription>
                 </div>
-                <Select
-                  value={selectedRole}
-                  onValueChange={setSelectedRole}
-                >
-                  <SelectTrigger className={`w-[200px] ${theme.cardBorder} ${theme.ring}`}>
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger
+                    className={`w-[200px] ${theme.cardBorder} ${theme.ring}`}
+                  >
                     <SelectValue placeholder="Select Role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -198,10 +209,23 @@ const SkillRadarPage = () => {
             <CardContent>
               <div className="h-[400px] w-full flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={currentData.skills}>
+                  <RadarChart
+                    cx="50%"
+                    cy="50%"
+                    outerRadius="80%"
+                    data={currentData.skills}
+                  >
                     <PolarGrid stroke="#e5e7eb" />
-                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                    <PolarAngleAxis
+                      dataKey="subject"
+                      tick={{ fill: "#6b7280", fontSize: 12 }}
+                    />
+                    <PolarRadiusAxis
+                      angle={30}
+                      domain={[0, 100]}
+                      tick={false}
+                      axisLine={false}
+                    />
                     <Radar
                       name="My Skills"
                       dataKey="studentScore"
@@ -217,8 +241,12 @@ const SkillRadarPage = () => {
                       fillOpacity={0.1}
                     />
                     <Legend />
-                    <Tooltip 
-                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "none",
+                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      }}
                     />
                   </RadarChart>
                 </ResponsiveContainer>
@@ -229,28 +257,30 @@ const SkillRadarPage = () => {
           {/* Detailed Breakdown */}
           <Card className={`border-2 ${theme.cardBorder}`}>
             <CardHeader>
-              <CardTitle className={theme.titleColor}>Detailed Breakdown</CardTitle>
-              <CardDescription>
-                Skill-by-skill comparison
-              </CardDescription>
+              <CardTitle className={theme.titleColor}>
+                Detailed Breakdown
+              </CardTitle>
+              <CardDescription>Skill-by-skill comparison</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {currentData.skills.map((skill: SkillMetric) => (
                 <div key={skill.subject} className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className={`font-medium ${theme.titleColor}`}>{skill.subject}</span>
+                    <span className={`font-medium ${theme.titleColor}`}>
+                      {skill.subject}
+                    </span>
                     <span className="text-muted-foreground">
                       {skill.studentScore} / {skill.industryAverage} (Target)
                     </span>
                   </div>
                   <div className="relative h-2 w-full bg-secondary rounded-full overflow-hidden">
                     {/* Industry Marker */}
-                    <div 
+                    <div
                       className="absolute top-0 bottom-0 w-1 bg-gray-400 z-10"
                       style={{ left: `${skill.industryAverage}%` }}
                     />
                     {/* Student Progress */}
-                    <div 
+                    <div
                       className={`h-full ${theme.bgAccent} transition-all duration-500`}
                       style={{ width: `${skill.studentScore}%` }}
                     />
@@ -278,7 +308,10 @@ const SkillRadarPage = () => {
               <div className="flex flex-wrap gap-2">
                 {strongSkills.length > 0 ? (
                   strongSkills.map((skill: SkillMetric & { gap: number }) => (
-                    <Badge key={skill.subject} className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+                    <Badge
+                      key={skill.subject}
+                      className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
+                    >
                       {skill.subject}
                     </Badge>
                   ))
@@ -294,30 +327,53 @@ const SkillRadarPage = () => {
           {/* Recommendations */}
           <Card className={`border-2 ${theme.cardBorder}`}>
             <CardHeader>
-              <CardTitle className={`flex items-center gap-2 ${theme.titleColor}`}>
+              <CardTitle
+                className={`flex items-center gap-2 ${theme.titleColor}`}
+              >
                 <TrendingUp className={`h-5 w-5 ${theme.accent}`} />
                 Recommendations
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Based on your skill gaps in <strong>{currentData.roleName}</strong>, we recommend:
+                Based on your skill gaps in{" "}
+                <strong>{currentData.roleName}</strong>, we recommend:
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2 text-sm">
-                  <div className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`} />
-                  <span>Focus on <strong>{laggingSkills[0]?.subject || "core skills"}</strong> projects to build practical experience.</span>
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`}
+                  />
+                  <span>
+                    Focus on{" "}
+                    <strong>
+                      {laggingSkills[0]?.subject || "core skills"}
+                    </strong>{" "}
+                    projects to build practical experience.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
-                  <div className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`} />
-                  <span>Connect with alumni mentors specializing in {currentData.roleName}.</span>
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`}
+                  />
+                  <span>
+                    Connect with alumni mentors specializing in{" "}
+                    {currentData.roleName}.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
-                  <div className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`} />
-                  <span>Check out the Domain Explorer for a detailed roadmap.</span>
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full ${theme.bgAccent} mt-1.5`}
+                  />
+                  <span>
+                    Check out the Domain Explorer for a detailed roadmap.
+                  </span>
                 </li>
               </ul>
-              <Button className={`w-full mt-2 ${theme.button} text-white`} asChild>
+              <Button
+                className={`w-full mt-2 ${theme.button} text-white`}
+                asChild
+              >
                 <Link to="/domain-explorer">
                   Go to Domain Explorer <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>

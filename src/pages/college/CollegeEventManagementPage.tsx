@@ -100,7 +100,10 @@ const CollegeEventManagementPage = () => {
               Create, update, and manage all your institution's events.
             </p>
           </div>
-          <Button asChild className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
+          <Button
+            asChild
+            className="bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+          >
             <Link to="/college/events/create">
               <Plus className="h-4 w-4 mr-2" />
               Create Event
@@ -124,21 +127,28 @@ const CollegeEventManagementPage = () => {
                     <TableHead className="text-[#1565C0]">Date</TableHead>
                     <TableHead className="text-[#1565C0]">Location</TableHead>
                     <TableHead className="text-[#1565C0]">Status</TableHead>
-                    <TableHead className="text-right text-[#1565C0]">Actions</TableHead>
+                    <TableHead className="text-right text-[#1565C0]">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {events.map((event) => {
                     const status = getEventStatus(event.eventDate);
                     return (
-                      <TableRow key={event._id} className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30">
+                      <TableRow
+                        key={event._id}
+                        className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30"
+                      >
                         <TableCell className="font-medium text-[#1565C0]">
                           {event.title}
                         </TableCell>
                         <TableCell className="text-[#333333]">
                           {new Date(event.eventDate).toLocaleDateString()}
                         </TableCell>
-                        <TableCell className="text-[#333333]">{event.location}</TableCell>
+                        <TableCell className="text-[#333333]">
+                          {event.location}
+                        </TableCell>
                         <TableCell>
                           <Badge
                             variant={
@@ -148,8 +158,8 @@ const CollegeEventManagementPage = () => {
                               status === "Completed"
                                 ? "bg-gray-100 text-gray-600"
                                 : status === "Today"
-                                ? "bg-emerald-100 text-emerald-700 border-emerald-200"
-                                : "bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30"
+                                  ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                                  : "bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30"
                             }
                           >
                             {status}
@@ -212,7 +222,9 @@ const CollegeEventManagementPage = () => {
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent className="border-[#1E88E5]/20">
             <DialogHeader>
-              <DialogTitle className="text-[#1565C0]">Are you sure?</DialogTitle>
+              <DialogTitle className="text-[#1565C0]">
+                Are you sure?
+              </DialogTitle>
               <DialogDescription className="text-[#333333]/80">
                 This will permanently delete the event "{eventToDelete?.title}".
                 This action cannot be undone.
@@ -250,10 +262,15 @@ type EmptyStateProps = {
 
 const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
   <div className="text-center py-16 rounded-lg flex flex-col items-center text-[#333333]/60">
-    <div className="text-[#1E88E5]/40 mb-4 [&>svg]:w-12 [&>svg]:h-12">{icon}</div>
+    <div className="text-[#1E88E5]/40 mb-4 [&>svg]:w-12 [&>svg]:h-12">
+      {icon}
+    </div>
     <p className="font-medium">{message}</p>
     {cta && (
-      <Button asChild className="mt-4 bg-[#1E88E5] hover:bg-[#1565C0] text-white">
+      <Button
+        asChild
+        className="mt-4 bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+      >
         <Link to={cta.link}>{cta.text}</Link>
       </Button>
     )}

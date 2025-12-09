@@ -106,12 +106,12 @@ const AlumniMentorshipsPage = () => {
     } catch (err) {
       // Silently handle 403 errors for unverified users (allow them to use the app)
       const errorMessage = err instanceof Error ? err.message : "";
-      const isVerificationError = 
-        errorMessage.includes("403") || 
-        errorMessage.includes("Forbidden") || 
+      const isVerificationError =
+        errorMessage.includes("403") ||
+        errorMessage.includes("Forbidden") ||
         errorMessage.includes("Access denied") ||
         errorMessage.includes("not verified");
-      
+
       if (isVerificationError) {
         // Set empty defaults for unverified users, don't show error
         setPendingRequests([]);
@@ -127,10 +127,7 @@ const AlumniMentorshipsPage = () => {
     }
   };
 
-  const handleAction = (
-    mentorship: BackendMentorship,
-    type: ActionType
-  ) => {
+  const handleAction = (mentorship: BackendMentorship, type: ActionType) => {
     setSelectedMentorship(mentorship);
     setActionType(type);
     setIsActionDialogOpen(true);
@@ -203,13 +200,22 @@ const AlumniMentorshipsPage = () => {
 
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm border border-[#1E88E5]/20">
-            <TabsTrigger value="pending" className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]">
+            <TabsTrigger
+              value="pending"
+              className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
+            >
               Pending ({pendingRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="active" className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]">
+            <TabsTrigger
+              value="active"
+              className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
+            >
               Active ({activeMentorships.length})
             </TabsTrigger>
-            <TabsTrigger value="completed" className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]">
+            <TabsTrigger
+              value="completed"
+              className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
+            >
               History ({completedMentorships.length})
             </TabsTrigger>
           </TabsList>
@@ -320,10 +326,14 @@ const MentorshipCard = ({
           <div className="flex items-center gap-4">
             <Avatar className="h-14 w-14 border-2 border-[#E3F2FD]">
               <AvatarImage src={student.profilePictureUrl} alt={student.name} />
-              <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">{student.name.charAt(0)}</AvatarFallback>
+              <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">
+                {student.name.charAt(0)}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle className="text-lg text-[#1565C0]">{student.name}</CardTitle>
+              <CardTitle className="text-lg text-[#1565C0]">
+                {student.name}
+              </CardTitle>
               <CardDescription className="text-[#333333]/80">
                 {student.degree} • {student.department}
               </CardDescription>
@@ -335,7 +345,9 @@ const MentorshipCard = ({
       <CardContent className="flex-1 space-y-4">
         {mentorship.message && (
           <div>
-            <p className="text-sm font-semibold mb-1 text-[#1565C0]">Message:</p>
+            <p className="text-sm font-semibold mb-1 text-[#1565C0]">
+              Message:
+            </p>
             <p className="text-sm text-[#333333] line-clamp-3">
               {mentorship.message}
             </p>
@@ -416,12 +428,11 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
       className: "bg-red-100 text-red-800",
     },
   };
-  const { icon, label, className } =
-    statusMap[status as StatusKey] ?? {
-      icon: null,
-      label: status,
-      className: "",
-    };
+  const { icon, label, className } = statusMap[status as StatusKey] ?? {
+    icon: null,
+    label: status,
+    className: "",
+  };
   return (
     <Badge className={className}>
       {icon}

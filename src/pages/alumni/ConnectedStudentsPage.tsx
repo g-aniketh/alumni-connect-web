@@ -40,12 +40,12 @@ const ConnectedStudentsPage = () => {
     } catch (err) {
       // Silently handle 403 errors for unverified users (allow them to use the app)
       const errorMessage = err instanceof Error ? err.message : "";
-      const isVerificationError = 
-        errorMessage.includes("403") || 
-        errorMessage.includes("Forbidden") || 
+      const isVerificationError =
+        errorMessage.includes("403") ||
+        errorMessage.includes("Forbidden") ||
         errorMessage.includes("Access denied") ||
         errorMessage.includes("not verified");
-      
+
       if (!isVerificationError) {
         // Only log non-verification errors
         console.error("Error loading connected students:", err);

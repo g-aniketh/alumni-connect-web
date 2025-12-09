@@ -74,12 +74,12 @@ const StudentMentorshipsPage = () => {
     } catch (err) {
       // Silently handle 403 errors for unverified users (allow them to use the app)
       const errorMessage = err instanceof Error ? err.message : "";
-      const isVerificationError = 
-        errorMessage.includes("403") || 
-        errorMessage.includes("Forbidden") || 
+      const isVerificationError =
+        errorMessage.includes("403") ||
+        errorMessage.includes("Forbidden") ||
         errorMessage.includes("Access denied") ||
         errorMessage.includes("not verified");
-      
+
       if (isVerificationError) {
         // Set empty defaults for unverified users, don't show error
         setMyMentorships([]);
@@ -181,13 +181,13 @@ const StudentMentorshipsPage = () => {
         : designation || employer || "Alumni";
 
     // Get gradient based on status
-    const getCardGradient = (status: string) => {
+    const getCardGradient = () => {
       return "bg-white border-[#1E88E5]/30";
     };
 
     return (
       <Card
-        className={`hover:shadow-xl transition-all ${getCardGradient(request.status)} border hover:scale-[1.02] duration-300`}
+        className={`hover:shadow-xl transition-all ${getCardGradient()} border hover:scale-[1.02] duration-300`}
       >
         <CardHeader>
           <div className="flex items-start justify-between">
@@ -224,9 +224,7 @@ const StudentMentorshipsPage = () => {
               <p className="text-xs font-medium text-[#1565C0] mb-1">
                 Your Message:
               </p>
-              <p className="text-sm text-[#333333]">
-                {request.message}
-              </p>
+              <p className="text-sm text-[#333333]">{request.message}</p>
             </div>
           )}
           {request.areasOfInterest && request.areasOfInterest.length > 0 && (
@@ -237,14 +235,14 @@ const StudentMentorshipsPage = () => {
               <div className="flex flex-wrap gap-2">
                 {Array.isArray(request.areasOfInterest)
                   ? request.areasOfInterest.map((area, idx) => (
-                    <Badge
-                      key={idx}
-                      variant="outline"
-                      className="bg-[#E3F2FD] border-[#1E88E5]/30 text-[#1565C0]"
-                    >
-                      {area}
-                    </Badge>
-                  ))
+                      <Badge
+                        key={idx}
+                        variant="outline"
+                        className="bg-[#E3F2FD] border-[#1E88E5]/30 text-[#1565C0]"
+                      >
+                        {area}
+                      </Badge>
+                    ))
                   : null}
               </div>
             </div>
@@ -286,9 +284,7 @@ const StudentMentorshipsPage = () => {
       <div className="min-h-screen bg-[#E3F2FD] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E88E5] mx-auto mb-4"></div>
-          <p className="text-[#1565C0]">
-            Loading mentorships...
-          </p>
+          <p className="text-[#1565C0]">Loading mentorships...</p>
         </div>
       </div>
     );

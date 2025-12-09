@@ -245,7 +245,9 @@ const StatCard = ({
   iconColor,
 }: StatCardProps) => (
   <Link to={link}>
-    <Card className={`p-6 flex items-start gap-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${className}`}>
+    <Card
+      className={`p-6 flex items-start gap-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${className}`}
+    >
       <div className={`p-3 rounded-lg ${iconBg}`}>
         <Icon className={`w-6 h-6 ${iconColor}`} />
       </div>

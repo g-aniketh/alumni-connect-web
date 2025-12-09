@@ -1,5 +1,10 @@
 import { useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
 
 const ELFSIGHT_SCRIPT_ID = "elfsight-platform-script";
 const ELFSIGHT_APP_CLASS = "elfsight-app-9976dddf-b5d2-4251-bce5-efae76dd5b3b";
@@ -47,7 +52,9 @@ const AlumniLinkedInFeedPage = () => {
       <div className="container mx-auto py-8 space-y-6">
         <Card className="shadow-sm border-[#1E88E5]/30 bg-white">
           <CardHeader>
-            <CardTitle className="text-[#1565C0]">Alumni LinkedIn Feed</CardTitle>
+            <CardTitle className="text-[#1565C0]">
+              Alumni LinkedIn Feed
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div
@@ -63,4 +70,3 @@ const AlumniLinkedInFeedPage = () => {
 };
 
 export default AlumniLinkedInFeedPage;
-
