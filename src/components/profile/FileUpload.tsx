@@ -23,6 +23,8 @@ interface FileUploadProps {
   maxSizeMB?: number;
   label?: string;
   description?: string;
+  parse?: boolean; // For resume uploads - parse with ML model
+  update?: boolean; // For resume uploads - update profile with parsed data
 }
 
 export const FileUpload = ({
@@ -34,6 +36,8 @@ export const FileUpload = ({
   maxSizeMB = type === "profile-picture" ? 5 : 10,
   label,
   description,
+  parse = false,
+  update = false,
 }: FileUploadProps) => {
   const { refreshUser } = useAuth();
   const [uploading, setUploading] = useState(false);
@@ -80,7 +84,11 @@ export const FileUpload = ({
             await refreshUser();
           }
         } else {
-          result = await uploadAPI.uploadResume(file);
+          result = await uploadAPI.uploadResume(file, parse, update);
+          // Check if parsing failed during upload
+          if (result.parsed === false && parse) {
+            console.warn("Resume upload succeeded but parsing may have failed. Will retry parsing.");
+          }
           onUploadSuccess(result.url);
           // Update user with new resume URL
           if (result.user) {

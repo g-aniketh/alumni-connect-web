@@ -47,7 +47,9 @@ export const uploadAPI = {
 
   // Upload resume (authenticated - alumni/student)
   uploadResume: async (
-    file: File
+    file: File,
+    parse: boolean = true,
+    update: boolean = false
   ): Promise<{
     message: string;
     url: string;
@@ -57,12 +59,20 @@ export const uploadAPI = {
       email: string;
       resumeUrl?: string;
     };
+    parsed?: boolean;
+    profileUpdated?: boolean;
   }> => {
     const formData = new FormData();
     formData.append("resume", file);
 
     const token = tokenService.getAccessToken();
-    const response = await fetch(`${API_BASE_URL}/upload/resume`, {
+    const queryParams = new URLSearchParams();
+    if (parse) queryParams.append("parse", "true");
+    if (update) queryParams.append("update", "true");
+    const queryString = queryParams.toString();
+    const url = `${API_BASE_URL}/upload/resume${queryString ? `?${queryString}` : ""}`;
+
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -18,12 +18,22 @@ import {
 } from "../components/ui/select";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { jobsAPI } from "../lib/api";
+import { jobsAPI, recommendationsAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { UserRole } from "../types";
 import type { BackendJob, BackendJobApplication } from "../types/api";
+import type { JobEligibilityResult } from "../lib/api";
 import { JobType } from "../types";
-import { Plus, Search, Star, Briefcase, Users, Building2 } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Star,
+  Briefcase,
+  Users,
+  Building2,
+  TrendingUp,
+  Loader2,
+} from "lucide-react";
 import { motion } from "motion/react";
 import JobsPageSkeleton from "./JobsPageSkeleton";
 import type React from "react";
@@ -34,8 +44,12 @@ const MY_JOBS_PAGE_SIZE = 5;
 const JobsPage = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [loadingEligibility, setLoadingEligibility] = useState(false);
   const [error, setError] = useState<string>("");
   const [jobs, setJobs] = useState<BackendJob[]>([]);
+  const [jobEligibilityMap, setJobEligibilityMap] = useState<
+    Map<string, JobEligibilityResult>
+  >(new Map());
   const [myJobs, setMyJobs] = useState<BackendJob[]>([]);
   const [myApplications, setMyApplications] = useState<BackendJobApplication[]>(
     []
@@ -43,6 +57,7 @@ const JobsPage = () => {
   const [selectedJob, setSelectedJob] = useState<BackendJob | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [sortByRelevance, setSortByRelevance] = useState(true);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [locationFilter, setLocationFilter] = useState<string>("");
@@ -68,7 +83,7 @@ const JobsPage = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [searchQuery, locationFilter, typeFilter]);
+  }, [searchQuery, locationFilter, typeFilter, sortByRelevance]);
 
   const loadMyApplications = async () => {
     try {
@@ -88,10 +103,59 @@ const JobsPage = () => {
         ? response
         : (response.jobs ?? []);
       setJobs(jobsList);
+
+      // For students and alumni, load job eligibility scores for sorting
+      if (
+        user &&
+        (user.role === UserRole.Student || user.role === UserRole.Alumni) &&
+        jobsList.length > 0
+      ) {
+        await loadJobEligibility(jobsList);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load jobs");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadJobEligibility = async (jobsList: BackendJob[]) => {
+    if (jobsList.length === 0) return;
+
+    try {
+      setLoadingEligibility(true);
+      const jobIds = jobsList.map((job) => job._id);
+
+      // Check eligibility in batches if there are too many jobs (API might have limits)
+      const batchSize = 20;
+      const batches: string[][] = [];
+      for (let i = 0; i < jobIds.length; i += batchSize) {
+        batches.push(jobIds.slice(i, i + batchSize));
+      }
+
+      const eligibilityMap = new Map<string, JobEligibilityResult>();
+
+      // Process batches sequentially to avoid overwhelming the API
+      for (const batch of batches) {
+        try {
+          const eligibilityResponse =
+            await recommendationsAPI.checkJobEligibility(batch);
+
+          eligibilityResponse.results.forEach((result) => {
+            eligibilityMap.set(result.job_id, result);
+          });
+        } catch (err) {
+          // Silently fail for individual batches, continue with others
+          console.warn("Failed to check eligibility for job batch:", err);
+        }
+      }
+
+      setJobEligibilityMap(eligibilityMap);
+    } catch (err) {
+      // Silently fail - eligibility checking is optional
+      console.warn("Failed to load job eligibility:", err);
+    } finally {
+      setLoadingEligibility(false);
     }
   };
 
@@ -115,29 +179,54 @@ const JobsPage = () => {
     });
   };
 
-  const filteredJobs = jobs.filter((job) => {
-    const searchLower = searchQuery.toLowerCase();
-    const title = job.title?.toLowerCase() || "";
-    const description = job.description?.toLowerCase() || "";
-    const location = job.location?.toLowerCase() || "";
-    const company =
-      job.postedBy && typeof job.postedBy.posterId === "object"
-        ? job.postedBy.posterId.name?.toLowerCase() || ""
-        : "";
+  const filteredJobs = jobs
+    .filter((job) => {
+      const searchLower = searchQuery.toLowerCase();
+      const title = job.title?.toLowerCase() || "";
+      const description = job.description?.toLowerCase() || "";
+      const location = job.location?.toLowerCase() || "";
+      const company =
+        job.postedBy && typeof job.postedBy.posterId === "object"
+          ? job.postedBy.posterId.name?.toLowerCase() || ""
+          : "";
 
-    return (
-      (title.includes(searchLower) ||
-        description.includes(searchLower) ||
-        location.includes(searchLower) ||
-        company.includes(searchLower)) &&
-      (locationFilter
-        ? location.includes(locationFilter.toLowerCase())
-        : true) &&
-      (typeFilter !== "all"
-        ? job.jobType.toLowerCase() === typeFilter.toLowerCase()
-        : true)
-    );
-  });
+      return (
+        (title.includes(searchLower) ||
+          description.includes(searchLower) ||
+          location.includes(searchLower) ||
+          company.includes(searchLower)) &&
+        (locationFilter
+          ? location.includes(locationFilter.toLowerCase())
+          : true) &&
+        (typeFilter !== "all"
+          ? job.jobType.toLowerCase() === typeFilter.toLowerCase()
+          : true)
+      );
+    })
+    .sort((a, b) => {
+      // Only sort by relevance for students and alumni when enabled
+      if (
+        sortByRelevance &&
+        (user?.role === UserRole.Student || user?.role === UserRole.Alumni)
+      ) {
+        const eligibilityA = jobEligibilityMap.get(a._id);
+        const eligibilityB = jobEligibilityMap.get(b._id);
+
+        // Jobs with eligibility scores come first, sorted by score (highest first)
+        if (eligibilityA && eligibilityB) {
+          return (
+            eligibilityB.eligibility_percent - eligibilityA.eligibility_percent
+          );
+        }
+        if (eligibilityA) return -1; // A has score, B doesn't
+        if (eligibilityB) return 1; // B has score, A doesn't
+      }
+
+      // Default: sort by most recent
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA;
+    });
 
   const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
   const paginatedJobs = filteredJobs.slice(
@@ -277,7 +366,28 @@ const JobsPage = () => {
                       <SelectItem value="Contract">Contract</SelectItem>
                     </SelectContent>
                   </Select>
+                  {(user?.role === UserRole.Student ||
+                    user?.role === UserRole.Alumni) && (
+                    <Button
+                      variant={sortByRelevance ? "default" : "outline"}
+                      onClick={() => setSortByRelevance(!sortByRelevance)}
+                      className={
+                        sortByRelevance
+                          ? "bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+                          : ""
+                      }
+                    >
+                      <TrendingUp className="h-4 w-4 mr-2" />
+                      {sortByRelevance ? "By Relevance" : "By Date"}
+                    </Button>
+                  )}
                 </div>
+                {loadingEligibility && (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-[#1E88E5]">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Calculating job matches...</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -297,6 +407,7 @@ const JobsPage = () => {
                       job={job}
                       onSelect={handleViewDetails}
                       hasApplied={hasApplied(job._id)}
+                      eligibility={jobEligibilityMap.get(job._id)}
                     />
                   ))}
                   <PaginationControls
@@ -364,62 +475,91 @@ type JobListItemProps = {
   job: BackendJob;
   onSelect: (job: BackendJob) => void;
   hasApplied: boolean;
+  eligibility?: JobEligibilityResult;
 };
 
-const JobListItem = ({ job, onSelect, hasApplied }: JobListItemProps) => (
-  <motion.div
-    variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-  >
-    <Card
-      className="hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-[#1E88E5]/30 hover:scale-[1.02]"
-      onClick={() => onSelect(job)}
+const JobListItem = ({
+  job,
+  onSelect,
+  hasApplied,
+  eligibility,
+}: JobListItemProps) => {
+  const getMatchScoreColor = (score: number): string => {
+    if (score >= 80) return "bg-green-100 text-green-700 border-green-300";
+    if (score >= 60) return "bg-blue-100 text-blue-700 border-blue-300";
+    if (score >= 40) return "bg-yellow-100 text-yellow-700 border-yellow-300";
+    return "bg-gray-100 text-gray-700 border-gray-300";
+  };
+
+  return (
+    <motion.div
+      variants={{
+        hidden: { y: 20, opacity: 0 },
+        visible: { y: 0, opacity: 1 },
+      }}
     >
-      <CardContent className="p-4 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-lg bg-[#E3F2FD] flex items-center justify-center flex-shrink-0 border border-[#1E88E5]/20">
-          <Building2 className="h-6 w-6 text-[#1E88E5]" />
-        </div>
-        <div className="flex-1">
-          <h3 className="font-semibold text-[#1565C0]">{job.title}</h3>
-          <p className="text-sm text-[#333333]">
-            {typeof job.postedBy.posterId === "object"
-              ? job.postedBy.posterId.name
-              : "Company"}{" "}
-            • {job.location}
-          </p>
-        </div>
-        <div className="flex items-center gap-4 text-sm text-[#333333]/80 hidden md:flex">
-          <Badge
-            variant="outline"
-            className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]"
-          >
-            {job.jobType}
-          </Badge>
-          {job.referral && (
-            <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">
-              <Star className="h-3 w-3 mr-1" />
-              Referral
-            </Badge>
-          )}
-        </div>
-        <div className="w-24 text-right">
-          {hasApplied ? (
-            <Button
+      <Card
+        className="hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-[#1E88E5]/30 hover:scale-[1.02]"
+        onClick={() => onSelect(job)}
+      >
+        <CardContent className="p-4 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg bg-[#E3F2FD] flex items-center justify-center shrink-0 border border-[#1E88E5]/20">
+            <Building2 className="h-6 w-6 text-[#1E88E5]" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-[#1565C0]">{job.title}</h3>
+            <p className="text-sm text-[#333333]">
+              {typeof job.postedBy.posterId === "object"
+                ? job.postedBy.posterId.name
+                : "Company"}{" "}
+              • {job.location}
+            </p>
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-sm text-[#333333]/80 flex-wrap">
+              {eligibility && (
+                <Badge
+                  variant="outline"
+                  className={`${getMatchScoreColor(
+                    eligibility.eligibility_percent
+                  )} border font-semibold`}
+                >
+                  <TrendingUp className="h-3 w-3 mr-1" />
+                  {eligibility.eligibility_percent.toFixed(1)}% match
+                </Badge>
+              )}
+            <Badge
               variant="outline"
-              disabled
-              className="bg-[#F5F5F5] text-[#333333]"
+              className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]"
             >
-              Applied
-            </Button>
-          ) : (
-            <Button className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
-              Apply
-            </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  </motion.div>
-);
+              {job.jobType}
+            </Badge>
+            {job.referral && (
+              <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">
+                <Star className="h-3 w-3 mr-1" />
+                Referral
+              </Badge>
+            )}
+          </div>
+          <div className="w-24 text-right">
+            {hasApplied ? (
+              <Button
+                variant="outline"
+                disabled
+                className="bg-[#F5F5F5] text-[#333333]"
+              >
+                Applied
+              </Button>
+            ) : (
+              <Button className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
+                Apply
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
 
 type MyJobListItemProps = {
   job: BackendJob;
@@ -436,7 +576,7 @@ const MyJobListItem = ({ job, userRole, onSelect }: MyJobListItemProps) => (
       onClick={() => onSelect(job)}
     >
       <CardContent className="p-4 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-lg bg-[#E3F2FD] flex items-center justify-center flex-shrink-0 border border-[#1E88E5]/20">
+        <div className="w-12 h-12 rounded-lg bg-[#E3F2FD] flex items-center justify-center shrink-0 border border-[#1E88E5]/20">
           <Briefcase className="h-6 w-6 text-[#1E88E5]" />
         </div>
         <div className="flex-1">

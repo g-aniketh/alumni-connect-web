@@ -12,3 +12,15 @@ export { eventsAPI } from "./events";
 export { mentorshipsAPI } from "./mentorships";
 export { campaignsAPI } from "./campaigns";
 export { uploadAPI } from "./upload";
+export { recommendationsAPI } from "./recommendations";
+export type {
+  ParseResumeResponse,
+  ParsedResumeProfile,
+  JobEligibilityResponse,
+  JobEligibilityResult,
+  MentorRecommendationsResponse,
+  RecommendedMentor,
+  StudentRecommendationsResponse,
+  RecommendedStudent,
+  RecommendationHealthResponse,
+} from "./recommendations";

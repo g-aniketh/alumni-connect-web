@@ -60,6 +60,8 @@ import StudentProfileCompletionPage from "./pages/onboarding/StudentProfileCompl
 import CollegeProfileCompletionPage from "./pages/onboarding/CollegeProfileCompletionPage";
 import DomainExplorerPage from "./pages/DomainExplorerPage";
 import SkillRadarPage from "./pages/SkillRadarPage";
+import StudentRecommendedMentorsPage from "./pages/student/StudentRecommendedMentorsPage";
+import AlumniRecommendedStudentsPage from "./pages/alumni/AlumniRecommendedStudentsPage";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { UserRole } from "./types";
@@ -239,6 +241,14 @@ function App() {
               }
             />
             <Route
+              path="/student/mentorships/recommended"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Student]}>
+                  <StudentRecommendedMentorsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/student/events"
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Student]}>
@@ -349,6 +359,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
                   <AlumniJobApplicationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alumni/students/recommended"
+              element={
+                <ProtectedRoute allowedRoles={[UserRole.Alumni]}>
+                  <AlumniRecommendedStudentsPage />
                 </ProtectedRoute>
               }
             />
