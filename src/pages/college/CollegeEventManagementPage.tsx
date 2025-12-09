@@ -84,7 +84,7 @@ const CollegeEventManagementPage = () => {
   }
 
   return (
-    <div className="bg-stone-50 min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen">
       <div className="container mx-auto py-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -93,14 +93,14 @@ const CollegeEventManagementPage = () => {
           className="flex items-center justify-between mb-8"
         >
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1565C0]">
               Event Management
             </h1>
-            <p className="text-gray-500 mt-2">
+            <p className="text-[#333333] mt-2">
               Create, update, and manage all your institution's events.
             </p>
           </div>
-          <Button asChild>
+          <Button asChild className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
             <Link to="/college/events/create">
               <Plus className="h-4 w-4 mr-2" />
               Create Event
@@ -114,35 +114,42 @@ const CollegeEventManagementPage = () => {
           </div>
         )}
 
-        <Card>
+        <Card className="bg-white border-[#1E88E5]/30">
           <CardContent className="pt-6">
             {events.length > 0 ? (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Event</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                <TableHeader className="bg-[#E3F2FD]">
+                  <TableRow className="border-[#1E88E5]/20 hover:bg-[#E3F2FD]/80">
+                    <TableHead className="text-[#1565C0]">Event</TableHead>
+                    <TableHead className="text-[#1565C0]">Date</TableHead>
+                    <TableHead className="text-[#1565C0]">Location</TableHead>
+                    <TableHead className="text-[#1565C0]">Status</TableHead>
+                    <TableHead className="text-right text-[#1565C0]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {events.map((event) => {
                     const status = getEventStatus(event.eventDate);
                     return (
-                      <TableRow key={event._id}>
-                        <TableCell className="font-medium">
+                      <TableRow key={event._id} className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30">
+                        <TableCell className="font-medium text-[#1565C0]">
                           {event.title}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-[#333333]">
                           {new Date(event.eventDate).toLocaleDateString()}
                         </TableCell>
-                        <TableCell>{event.location}</TableCell>
+                        <TableCell className="text-[#333333]">{event.location}</TableCell>
                         <TableCell>
                           <Badge
                             variant={
                               status === "Completed" ? "secondary" : "default"
+                            }
+                            className={
+                              status === "Completed"
+                                ? "bg-gray-100 text-gray-600"
+                                : status === "Today"
+                                ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                                : "bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30"
                             }
                           >
                             {status}
@@ -153,6 +160,7 @@ const CollegeEventManagementPage = () => {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
                               onClick={() =>
                                 navigate(`/college/events/edit/${event._id}`)
                               }
@@ -162,6 +170,7 @@ const CollegeEventManagementPage = () => {
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
                               onClick={() =>
                                 navigate(
                                   `/college/events/registrations?eventId=${event._id}`
@@ -194,17 +203,17 @@ const CollegeEventManagementPage = () => {
                   text: "Create Your First Event",
                   link: "/college/events/create",
                 }}
-                icon={<Calendar className="w-12 h-12 text-gray-400" />}
+                icon={<Calendar />}
               />
             )}
           </CardContent>
         </Card>
 
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <DialogContent>
+          <DialogContent className="border-[#1E88E5]/20">
             <DialogHeader>
-              <DialogTitle>Are you sure?</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-[#1565C0]">Are you sure?</DialogTitle>
+              <DialogDescription className="text-[#333333]/80">
                 This will permanently delete the event "{eventToDelete?.title}".
                 This action cannot be undone.
               </DialogDescription>
@@ -214,6 +223,7 @@ const CollegeEventManagementPage = () => {
                 variant="outline"
                 onClick={() => setIsDeleteDialogOpen(false)}
                 disabled={deleting}
+                className="border-[#1E88E5]/30 text-[#1E88E5] hover:bg-[#E3F2FD]"
               >
                 Cancel
               </Button>
@@ -239,11 +249,11 @@ type EmptyStateProps = {
 };
 
 const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
-  <div className="text-center py-16 rounded-lg flex flex-col items-center">
-    {icon}
-    <p className="mt-4 font-medium">{message}</p>
+  <div className="text-center py-16 rounded-lg flex flex-col items-center text-[#333333]/60">
+    <div className="text-[#1E88E5]/40 mb-4 [&>svg]:w-12 [&>svg]:h-12">{icon}</div>
+    <p className="font-medium">{message}</p>
     {cta && (
-      <Button asChild className="mt-4">
+      <Button asChild className="mt-4 bg-[#1E88E5] hover:bg-[#1565C0] text-white">
         <Link to={cta.link}>{cta.text}</Link>
       </Button>
     )}

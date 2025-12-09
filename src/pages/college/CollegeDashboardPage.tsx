@@ -73,6 +73,9 @@ const CollegeDashboardPage = () => {
       description: `${stats.verifiedAlumni} verified`,
       icon: Users,
       link: "/college/alumni",
+      className: "bg-blue-50 border-blue-200",
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-600",
     },
     {
       title: "Total Students",
@@ -80,6 +83,9 @@ const CollegeDashboardPage = () => {
       description: `${stats.verifiedStudents} verified`,
       icon: GraduationCap,
       link: "/college/students",
+      className: "bg-emerald-50 border-emerald-200",
+      iconBg: "bg-emerald-100",
+      iconColor: "text-emerald-600",
     },
     {
       title: "Job Postings",
@@ -87,6 +93,9 @@ const CollegeDashboardPage = () => {
       description: "Active opportunities",
       icon: Briefcase,
       link: "/jobs",
+      className: "bg-violet-50 border-violet-200",
+      iconBg: "bg-violet-100",
+      iconColor: "text-violet-600",
     },
   ];
 
@@ -95,17 +104,17 @@ const CollegeDashboardPage = () => {
   }
 
   return (
-    <div className="bg-stone-50 min-h-screen">
+    <div className="bg-white min-h-screen">
       <div className="container mx-auto py-8 space-y-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1565C0]">
             College Dashboard
           </h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-[#333333] mt-2">
             Welcome back, {user?.name}! Here's an overview of your institution's
             network.
           </p>
@@ -134,7 +143,7 @@ const CollegeDashboardPage = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur">
+          <div className="rounded-2xl border border-[#1E88E5]/30 bg-white p-4 shadow-sm">
             <CollegeAnalytics />
           </div>
         </motion.div>
@@ -144,10 +153,10 @@ const CollegeDashboardPage = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <Card>
+          <Card className="bg-white border-[#1E88E5]/30">
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-[#1565C0]">Quick Actions</CardTitle>
+              <CardDescription className="text-[#333333]/80">
                 Common management tasks for your institution.
               </CardDescription>
             </CardHeader>
@@ -156,21 +165,29 @@ const CollegeDashboardPage = () => {
                 icon={Users}
                 title="Manage Alumni"
                 link="/college/alumni"
+                className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                iconColor="text-blue-600"
               />
               <QuickActionButton
                 icon={GraduationCap}
                 title="Manage Students"
                 link="/college/students"
+                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                iconColor="text-emerald-600"
               />
               <QuickActionButton
                 icon={Plus}
                 title="Post a Job"
                 link="/college/jobs/create"
+                className="border-violet-200 text-violet-700 hover:bg-violet-50"
+                iconColor="text-violet-600"
               />
               <QuickActionButton
                 icon={Upload}
                 title="Bulk Import"
                 link="/college/bulk-import"
+                className="border-amber-200 text-amber-700 hover:bg-amber-50"
+                iconColor="text-amber-600"
               />
             </CardContent>
           </Card>
@@ -186,12 +203,17 @@ type StatCardProps = {
   description: string;
   icon: LucideIcon;
   link: string;
+  className?: string;
+  iconBg?: string;
+  iconColor?: string;
 };
 
 type QuickActionButtonProps = {
   icon: LucideIcon;
   title: string;
   link: string;
+  className?: string;
+  iconColor?: string;
 };
 
 const StatCard = ({
@@ -200,16 +222,19 @@ const StatCard = ({
   description,
   icon: Icon,
   link,
+  className,
+  iconBg,
+  iconColor,
 }: StatCardProps) => (
   <Link to={link}>
-    <Card className="p-6 flex items-start gap-4 transition-all bg-white hover:shadow-md">
-      <div className="p-3 bg-stone-100 rounded-lg">
-        <Icon className="w-6 h-6 text-black" />
+    <Card className={`p-6 flex items-start gap-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${className}`}>
+      <div className={`p-3 rounded-lg ${iconBg}`}>
+        <Icon className={`w-6 h-6 ${iconColor}`} />
       </div>
       <div>
-        <p className="text-sm text-gray-500">{title}</p>
-        <p className="text-3xl font-bold">{value}</p>
-        <p className="text-xs text-gray-400">{description}</p>
+        <p className="text-sm text-[#333333]/80">{title}</p>
+        <p className="text-3xl font-bold text-[#1565C0]">{value}</p>
+        <p className="text-xs text-[#333333]/60">{description}</p>
       </div>
     </Card>
   </Link>
@@ -219,14 +244,16 @@ const QuickActionButton = ({
   icon: Icon,
   title,
   link,
+  className,
+  iconColor = "text-[#1E88E5]",
 }: QuickActionButtonProps) => (
   <Button
     asChild
     variant="outline"
-    className="h-auto flex-col items-start p-4 justify-start hover:bg-stone-100 transition-colors"
+    className={`h-auto flex-col items-start p-4 justify-start transition-colors ${className || "hover:bg-[#E3F2FD] border-[#1E88E5]/30 text-[#1565C0]"}`}
   >
     <Link to={link}>
-      <Icon className="w-6 h-6 mb-2" />
+      <Icon className={`w-6 h-6 mb-2 ${iconColor}`} />
       <span className="font-semibold">{title}</span>
     </Link>
   </Button>

@@ -100,12 +100,12 @@ const CollegeJobManagementPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-[#E3F2FD]">
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">Job Postings</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold tracking-tight text-[#1565C0]">Job Postings</h1>
+            <p className="text-[#333333]">
               Manage your college's job postings, view applications, and update
               job details.
             </p>
@@ -113,51 +113,51 @@ const CollegeJobManagementPage = () => {
           <div className="flex gap-2 flex-wrap">
             <Button
               asChild
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="bg-[#1E88E5] hover:bg-[#1565C0] text-white"
             >
               <Link to="/college/jobs/create">
                 <Plus className="h-4 w-4 mr-2" />
                 Post New Job
               </Link>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]">
               <Link to="/college/jobs/applications">View Applications</Link>
             </Button>
           </div>
         </div>
 
         {error && (
-          <div className="p-4 border border-red-200 bg-red-50 dark:bg-red-950 rounded-md text-red-700 dark:text-red-300">
+          <div className="p-4 border border-red-200 bg-red-50 rounded-md text-red-700">
             {error}
           </div>
         )}
 
         {jobs.length === 0 ? (
-          <Card>
+          <Card className="bg-white border-[#1E88E5]/30">
             <CardContent className="py-12">
-              <div className="text-center text-muted-foreground">
-                <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium mb-2">No jobs posted yet</p>
+              <div className="text-center text-[#333333]/60">
+                <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-50 text-[#1E88E5]" />
+                <p className="text-lg font-medium mb-2 text-[#1565C0]">No jobs posted yet</p>
                 <p className="text-sm mb-4">
                   Start by posting your first job opportunity.
                 </p>
-                <Button asChild>
+                <Button asChild className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
                   <Link to="/college/jobs/create">Post Your First Job</Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
         ) : (
-          <div className="rounded-md border">
+          <div className="rounded-md border border-[#1E88E5]/20 bg-white">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Job Title</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Applications</TableHead>
-                  <TableHead>Posted Date</TableHead>
-                  <TableHead>Actions</TableHead>
+              <TableHeader className="bg-[#E3F2FD]">
+                <TableRow className="border-[#1E88E5]/20 hover:bg-[#E3F2FD]/80">
+                  <TableHead className="text-[#1565C0]">Job Title</TableHead>
+                  <TableHead className="text-[#1565C0]">Type</TableHead>
+                  <TableHead className="text-[#1565C0]">Location</TableHead>
+                  <TableHead className="text-[#1565C0]">Applications</TableHead>
+                  <TableHead className="text-[#1565C0]">Posted Date</TableHead>
+                  <TableHead className="text-[#1565C0]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -168,37 +168,37 @@ const CollegeJobManagementPage = () => {
                       : "Company";
 
                   return (
-                    <TableRow key={job._id}>
+                    <TableRow key={job._id} className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30">
                       <TableCell>
                         <div>
-                          <div className="font-medium">{job.title}</div>
-                          <div className="text-sm text-muted-foreground">
+                          <div className="font-medium text-[#1565C0]">{job.title}</div>
+                          <div className="text-sm text-[#333333]/70">
                             {posterName}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">
+                        <Badge variant="outline" className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]">
                           {mapBackendJobType(job.jobType)}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <MapPin className="h-3 w-3" />
+                        <div className="flex items-center gap-1 text-sm text-[#333333]">
+                          <MapPin className="h-3 w-3 text-[#1E88E5]" />
                           {job.location}
                         </div>
                       </TableCell>
                       <TableCell>
                         <Link
                           to={`/college/jobs/applications?jobId=${job._id}`}
-                          className="text-primary hover:underline"
+                          className="text-[#1E88E5] hover:underline font-medium"
                         >
                           {job.totalApplications || 0} applications
                         </Link>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
+                        <div className="flex items-center gap-1 text-sm text-[#333333]/70">
+                          <Calendar className="h-3 w-3 text-[#1E88E5]" />
                           {new Date(job.createdAt).toLocaleDateString()}
                         </div>
                       </TableCell>
@@ -207,6 +207,7 @@ const CollegeJobManagementPage = () => {
                           <Button
                             variant="ghost"
                             size="sm"
+                            className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]"
                             onClick={() =>
                               navigate(`/college/jobs/edit/${job._id}`)
                             }
@@ -216,14 +217,15 @@ const CollegeJobManagementPage = () => {
                           <Button
                             variant="ghost"
                             size="sm"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
                             onClick={() => {
                               setJobToDelete(job);
                               setIsDeleteDialogOpen(true);
                             }}
                           >
-                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" asChild>
+                          <Button variant="ghost" size="sm" asChild className="text-[#1E88E5] hover:text-[#1565C0] hover:bg-[#E3F2FD]">
                             <Link to={`/jobs?jobId=${job._id}`}>
                               <Eye className="h-4 w-4" />
                             </Link>

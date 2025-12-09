@@ -123,16 +123,16 @@ export const EventCard = ({
   const venue = locationParts[0] || event.location || "Location TBD";
 
   return (
-    <Card className="bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-700 shadow-md hover:shadow-lg transition-all duration-200">
+    <Card className="bg-white border-2 border-[#1E88E5]/20 shadow-md hover:shadow-lg transition-all duration-200">
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
           {/* Date Block */}
           <div className="flex-shrink-0">
-            <div className="flex flex-col items-center min-w-[60px] p-3 bg-slate-100 dark:bg-gray-700 rounded-lg border border-slate-200 dark:border-gray-600">
-              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">
+            <div className="flex flex-col items-center min-w-[60px] p-3 bg-[#E3F2FD] rounded-lg border border-[#1E88E5]/30">
+              <div className="text-xs font-semibold text-[#1E88E5] mb-1">
                 {month}
               </div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              <div className="text-2xl font-bold text-[#1565C0]">
                 {day}
               </div>
             </div>
@@ -140,10 +140,10 @@ export const EventCard = ({
 
           {/* Event Details */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
+            <h3 className="text-lg font-bold text-[#1565C0] mb-2">
               {event.title}
             </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            <p className="text-sm text-[#333333] mb-3">
               {venue}
             </p>
 
@@ -157,8 +157,8 @@ export const EventCard = ({
                     key={idx}
                     variant="outline"
                     className={`text-xs ${isPopular || isSocial
-                        ? "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-900 dark:text-teal-200 dark:border-teal-700"
-                        : "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700"
+                        ? "bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30"
+                        : "bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30"
                       }`}
                   >
                     {tag}
@@ -168,15 +168,15 @@ export const EventCard = ({
             </div>
 
             {/* Time & Attendance */}
-            <div className="flex flex-col gap-1 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex flex-col gap-1 text-sm text-[#333333]/80">
               {timeRange && (
                 <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
+                  <Clock className="h-4 w-4 text-[#1E88E5]" />
                   <span>{timeRange}</span>
                 </div>
               )}
               <div className="flex items-center gap-1">
-                <Users className="h-4 w-4" />
+                <Users className="h-4 w-4 text-[#1E88E5]" />
                 <span>{attendance}</span>
               </div>
             </div>
@@ -186,14 +186,14 @@ export const EventCard = ({
           <div className="flex-shrink-0">
             {isRegistered ? (
               <Button
-                className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 cursor-default"
+                className="bg-[#F5F5F5] text-[#333333] hover:bg-gray-200 cursor-default"
                 disabled
               >
                 Registered
               </Button>
             ) : (
               <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                className="bg-[#1E88E5] hover:bg-[#1565C0] text-white shadow-md"
                 onClick={() => onRSVP(event)}
                 disabled={event.status !== "Upcoming"}
               >

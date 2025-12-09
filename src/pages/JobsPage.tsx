@@ -196,7 +196,7 @@ const JobsPage = () => {
       : "/college/jobs/create";
 
   return (
-    <div className="bg-stone-50 min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen">
       <div className="container mx-auto py-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -205,15 +205,15 @@ const JobsPage = () => {
           className="flex items-center justify-between mb-8"
         >
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1565C0]">
               Job Opportunities
             </h1>
-            <p className="text-gray-500 mt-2">
+            <p className="text-[#333333] mt-2">
               Find your next career move within our exclusive network.
             </p>
           </div>
           {canCreateJobs && (
-            <Button asChild>
+            <Button asChild className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">
               <Link to={createJobPath}>
                 <Plus className="h-4 w-4 mr-2" />
                 Post a Job
@@ -230,36 +230,36 @@ const JobsPage = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {canCreateJobs && (
-            <TabsList>
-              <TabsTrigger value="all">All Jobs</TabsTrigger>
-              <TabsTrigger value="my-jobs">My Posted Jobs</TabsTrigger>
+            <TabsList className="bg-white/80 backdrop-blur-sm border border-[#1E88E5]/20">
+              <TabsTrigger value="all" className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]">All Jobs</TabsTrigger>
+              <TabsTrigger value="my-jobs" className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]">My Posted Jobs</TabsTrigger>
             </TabsList>
           )}
 
           <TabsContent value="all" className="mt-6">
-            <Card className="mb-6">
+            <Card className="mb-6 border-[#1E88E5]/30 shadow-sm bg-white">
               <CardContent className="pt-6">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#1E88E5]" />
                     <Input
                       placeholder="Search by title, skill, or company..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 border-[#E3F2FD] focus:border-[#1E88E5] focus:ring-[#1E88E5]"
                     />
                   </div>
                   <Input
                     placeholder="Location"
                     value={locationFilter}
                     onChange={(e) => setLocationFilter(e.target.value)}
-                    className="w-full md:w-[200px]"
+                    className="w-full md:w-[200px] border-[#E3F2FD] focus:border-[#1E88E5] focus:ring-[#1E88E5]"
                   />
                   <Select value={typeFilter} onValueChange={setTypeFilter}>
-                    <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectTrigger className="w-full md:w-[180px] border-[#E3F2FD]">
                       <SelectValue placeholder="Job Type" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-[#E3F2FD]">
                       <SelectItem value="all">All Types</SelectItem>
                       <SelectItem value="Full-Time">Full-time</SelectItem>
                       <SelectItem value="Part-Time">Part-time</SelectItem>
@@ -360,26 +360,26 @@ const JobListItem = ({ job, onSelect, hasApplied }: JobListItemProps) => (
     variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
   >
     <Card
-      className="hover:shadow-md transition-shadow cursor-pointer"
+      className="hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-[#1E88E5]/30 hover:scale-[1.02]"
       onClick={() => onSelect(job)}
     >
       <CardContent className="p-4 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-lg bg-stone-100 flex items-center justify-center flex-shrink-0">
-          <Building2 className="h-6 w-6 text-gray-500" />
+        <div className="w-12 h-12 rounded-lg bg-[#E3F2FD] flex items-center justify-center flex-shrink-0 border border-[#1E88E5]/20">
+          <Building2 className="h-6 w-6 text-[#1E88E5]" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold">{job.title}</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="font-semibold text-[#1565C0]">{job.title}</h3>
+          <p className="text-sm text-[#333333]">
             {typeof job.postedBy.posterId === "object"
               ? job.postedBy.posterId.name
               : "Company"}{" "}
             • {job.location}
           </p>
         </div>
-        <div className="flex items-center gap-4 text-sm text-gray-500 hidden md:flex">
-          <Badge variant="outline">{job.jobType}</Badge>
+        <div className="flex items-center gap-4 text-sm text-[#333333]/80 hidden md:flex">
+          <Badge variant="outline" className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]">{job.jobType}</Badge>
           {job.referral && (
-            <Badge className="bg-green-100 text-green-800">
+            <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">
               <Star className="h-3 w-3 mr-1" />
               Referral
             </Badge>
@@ -387,11 +387,11 @@ const JobListItem = ({ job, onSelect, hasApplied }: JobListItemProps) => (
         </div>
         <div className="w-24 text-right">
           {hasApplied ? (
-            <Button variant="outline" disabled>
+            <Button variant="outline" disabled className="bg-[#F5F5F5] text-[#333333]">
               Applied
             </Button>
           ) : (
-            <Button>Apply</Button>
+            <Button className="bg-[#1E88E5] hover:bg-[#1565C0] text-white">Apply</Button>
           )}
         </div>
       </CardContent>
@@ -408,24 +408,24 @@ const MyJobListItem = ({ job, userRole }: MyJobListItemProps) => (
   <motion.div
     variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
   >
-    <Card>
+    <Card className="bg-white border-[#1E88E5]/30 hover:shadow-md transition-shadow">
       <CardContent className="p-4 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-lg bg-stone-100 flex items-center justify-center flex-shrink-0">
-          <Briefcase className="h-6 w-6 text-gray-500" />
+        <div className="w-12 h-12 rounded-lg bg-[#E3F2FD] flex items-center justify-center flex-shrink-0 border border-[#1E88E5]/20">
+          <Briefcase className="h-6 w-6 text-[#1E88E5]" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold">{job.title}</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="font-semibold text-[#1565C0]">{job.title}</h3>
+          <p className="text-sm text-[#333333]">
             {job.jobType} • {job.location}
           </p>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <Users className="h-4 w-4 text-gray-500" />
-          <span className="font-semibold">{job.totalApplications}</span>
-          <span className="text-gray-500">Applicants</span>
+          <Users className="h-4 w-4 text-[#1E88E5]" />
+          <span className="font-semibold text-[#1565C0]">{job.totalApplications}</span>
+          <span className="text-[#333333]/80">Applicants</span>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]">
             <Link
               to={
                 userRole === UserRole.Alumni
@@ -436,7 +436,7 @@ const MyJobListItem = ({ job, userRole }: MyJobListItemProps) => (
               Edit
             </Link>
           </Button>
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]">
             <Link
               to={
                 userRole === UserRole.Alumni

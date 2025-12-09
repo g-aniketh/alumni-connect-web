@@ -17,9 +17,11 @@ import { Eye, EyeOff } from "lucide-react";
 
 interface LoginFormProps {
   role: UserRole;
+  onLoginError?: (hasError: boolean) => void;
+  onLoginSuccess?: () => void;
 }
 
-export const LoginForm = ({ role }: LoginFormProps) => {
+export const LoginForm = ({ role, onLoginError, onLoginSuccess }: LoginFormProps) => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -31,16 +33,21 @@ export const LoginForm = ({ role }: LoginFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (onLoginError) onLoginError(false);
     setLoading(true);
 
     try {
       await login(role, email, password);
 
-      // After successful login, check if profile needs completion
-      // This will be handled by the RoleDashboard component
-      navigate("/dashboard");
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      const errorMessage = err instanceof Error ? err.message : "Login failed";
+      setError(errorMessage);
+      if (onLoginError) onLoginError(true);
     } finally {
       setLoading(false);
     }

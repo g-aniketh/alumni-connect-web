@@ -120,17 +120,17 @@ const AlumniDashboardPage = () => {
   }
 
   return (
-    <div className="bg-stone-50 min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen">
       <div className="container mx-auto py-8 space-y-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1565C0]">
             Welcome back, {user?.name.split(" ")[0]}!
           </h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-[#333333] mt-2">
             Here's your hub for mentorship, career opportunities, and community
             engagement.
           </p>
@@ -151,23 +151,22 @@ const AlumniDashboardPage = () => {
             <StatCard
               title="Pending Requests"
               value={pendingMentorshipRequests.length}
-              icon={<MessageSquare />}
-              isHighlighted
+              icon={<MessageSquare className="w-6 h-6 text-[#1E88E5]" />}
             />
             <StatCard
               title="Active Mentorships"
               value={activeMentorships.length}
-              icon={<Users />}
+              icon={<Users className="w-6 h-6 text-[#1E88E5]" />}
             />
             <StatCard
               title="Jobs Posted"
               value={myJobs.length}
-              icon={<Briefcase />}
+              icon={<Briefcase className="w-6 h-6 text-[#1E88E5]" />}
             />
             <StatCard
               title="Total Mentorships"
               value={totalMentorships}
-              icon={<TrendingUp />}
+              icon={<TrendingUp className="w-6 h-6 text-[#1E88E5]" />}
             />
           </div>
         </motion.div>
@@ -177,7 +176,7 @@ const AlumniDashboardPage = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur">
+          <div className="rounded-2xl border border-[#1E88E5]/30 bg-white p-4 shadow-sm">
             <AlumniAnalytics />
           </div>
         </motion.div>
@@ -187,31 +186,35 @@ const AlumniDashboardPage = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <Card>
+          <Card className="bg-white border-[#1E88E5]/30">
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common tasks and shortcuts.</CardDescription>
+              <CardTitle className="text-[#1565C0]">Quick Actions</CardTitle>
+              <CardDescription className="text-[#333333]/80">Common tasks and shortcuts.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <QuickActionButton
                 icon={MessageSquare}
                 title="Mentorships"
                 link="/alumni/mentorships"
+                className="bg-indigo-50 border-indigo-100 hover:bg-indigo-100"
               />
               <QuickActionButton
                 icon={Plus}
                 title="Post a Job"
                 link="/alumni/jobs/create"
+                className="bg-rose-50 border-rose-100 hover:bg-rose-100"
               />
               <QuickActionButton
                 icon={GraduationCap}
                 title="View Students"
                 link="/alumni/students"
+                className="bg-teal-50 border-teal-100 hover:bg-teal-100"
               />
               <QuickActionButton
                 icon={Users}
                 title="Alumni Network"
                 link="/alumni/network"
+                className="bg-amber-50 border-amber-100 hover:bg-amber-100"
               />
             </CardContent>
           </Card>
@@ -277,11 +280,11 @@ const AlumniDashboardPage = () => {
               <CardContent>
                 {activeMentorships.length > 0 ? (
                   <div className="space-y-4">
-                    <div className="p-4 rounded-lg bg-stone-100 flex items-center justify-between">
+                    <div className="p-4 rounded-lg border bg-emerald-50 border-emerald-100 flex items-center justify-between transition-all duration-300 hover:scale-105 hover:shadow-lg">
                       <p className="font-semibold">
                         {activeMentorships.length} Active
                       </p>
-                      <Button asChild variant="outline" size="sm">
+                      <Button asChild variant="outline" size="sm" className="bg-white hover:bg-emerald-100">
                         <Link to="/alumni/mentorships">Manage All</Link>
                       </Button>
                     </div>
@@ -380,24 +383,25 @@ type StatCardProps = {
   title: string;
   value: number | string;
   icon: React.ReactNode;
-  isHighlighted?: boolean;
+  className?: string;
 };
 
 const StatCard = ({
   title,
   value,
   icon,
-  isHighlighted = false,
 }: StatCardProps) => (
   <Card
-    className={`p-6 transition-all ${isHighlighted ? "bg-black text-white" : "bg-white"}`}
+    className="p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg cursor-pointer bg-white border-[#1E88E5]/30"
   >
     <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      {icon}
+      <CardTitle className="text-sm font-medium text-[#333333]/80">{title}</CardTitle>
+      <div className="p-2 bg-[#E3F2FD] rounded-lg border border-[#1E88E5]/20">
+        {icon}
+      </div>
     </div>
     <CardContent className="p-0">
-      <div className="text-2xl font-bold">{value}</div>
+      <div className="text-2xl font-bold text-[#1565C0]">{value}</div>
     </CardContent>
   </Card>
 );
@@ -406,16 +410,17 @@ type QuickActionButtonProps = {
   icon: LucideIcon;
   title: string;
   link: string;
+  className?: string;
 };
 
 const QuickActionButton = ({ icon: Icon, title, link }: QuickActionButtonProps) => (
   <Button
     asChild
     variant="outline"
-    className="h-auto flex-col items-start p-4 justify-start hover:bg-stone-100 transition-colors"
+    className="h-auto flex-col items-start p-4 justify-start transition-all duration-300 hover:scale-[1.02] hover:shadow-lg bg-white hover:bg-[#E3F2FD] border-[#1E88E5]/30 text-[#1565C0]"
   >
     <Link to={link}>
-      <Icon className="w-5 h-5" />
+      <Icon className="w-5 h-5 text-[#1E88E5]" />
       <span className="font-semibold mt-2">{title}</span>
     </Link>
   </Button>
@@ -437,26 +442,26 @@ const MentorshipRequestCard = ({
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.5 }}
   >
-    <div className="flex items-start gap-4 rounded-lg border p-4 bg-white hover:bg-stone-50 transition-colors">
-      <Avatar className="h-12 w-12">
+    <div className="flex items-start gap-4 rounded-lg border p-4 bg-white border-[#1E88E5]/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+      <Avatar className="h-12 w-12 border-2 border-[#E3F2FD]">
         <AvatarImage src={student.profilePictureUrl} alt={student.name} />
-        <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
+        <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">{student.name.charAt(0)}</AvatarFallback>
       </Avatar>
       <div className="flex-1">
         <div className="flex justify-between items-start">
           <div>
-            <p className="font-semibold">{student.name}</p>
-            <p className="text-sm text-gray-500">{student.degree}</p>
+            <p className="font-semibold text-[#1565C0]">{student.name}</p>
+            <p className="text-sm text-[#333333]/80">{student.degree}</p>
           </div>
-          <Badge variant="outline">
+          <Badge variant="outline" className="bg-[#E3F2FD] text-[#1565C0] border-[#1E88E5]/30">
             <Clock className="w-3 h-3 mr-1" />
             Pending
           </Badge>
         </div>
-        <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+        <p className="mt-2 text-sm text-[#333333] line-clamp-2">
           {request.message}
         </p>
-        <Button variant="outline" size="sm" className="mt-3" asChild>
+        <Button variant="outline" size="sm" className="mt-3 bg-[#1E88E5] hover:bg-[#1565C0] text-white border-none" asChild>
           <Link to="/alumni/mentorships">View Request</Link>
         </Button>
       </div>
@@ -475,15 +480,15 @@ const JobCard = ({ job, delay }: JobCardProps) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.5 }}
   >
-    <Card className="h-full flex flex-col bg-white">
+    <Card className="h-full flex flex-col bg-white border-[#1E88E5]/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
       <CardHeader>
-        <CardTitle className="text-base">{job.title}</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-base text-[#1565C0]">{job.title}</CardTitle>
+        <CardDescription className="text-[#333333]/80">
           {job.jobType} • {job.location}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-end">
-        <Button variant="outline" size="sm" className="w-full" asChild>
+        <Button variant="outline" size="sm" className="w-full bg-[#E3F2FD] hover:bg-[#1E88E5] text-[#1565C0] hover:text-white border-[#1E88E5]/30" asChild>
           <Link to={`/jobs/${job._id}`}>View Details</Link>
         </Button>
       </CardContent>
@@ -502,15 +507,15 @@ const EventCard = ({ event, delay }: EventCardProps) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.5 }}
   >
-    <Card className="h-full flex flex-col bg-white">
+    <Card className="h-full flex flex-col bg-white border-[#1E88E5]/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
       <CardHeader>
-        <CardTitle className="text-base">{event.title}</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-base text-[#1565C0]">{event.title}</CardTitle>
+        <CardDescription className="text-[#333333]/80">
           {new Date(event.eventDate).toLocaleDateString()}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-end">
-        <Button variant="outline" size="sm" className="w-full" asChild>
+        <Button variant="outline" size="sm" className="w-full bg-[#E3F2FD] hover:bg-[#1E88E5] text-[#1565C0] hover:text-white border-[#1E88E5]/30" asChild>
           <Link to={`/events`}>View Event</Link>
         </Button>
       </CardContent>
@@ -527,11 +532,11 @@ type EmptyStateProps = {
 const EmptyState = ({ message, cta, icon }: EmptyStateProps) => (
   <div className="text-center py-12">
     {icon && (
-      <div className="inline-block p-4 bg-stone-100 rounded-full">{icon}</div>
+      <div className="inline-block p-4 bg-[#E3F2FD] rounded-full text-[#1E88E5]">{icon}</div>
     )}
-    <p className="mt-4 text-gray-500">{message}</p>
+    <p className="mt-4 text-[#333333]">{message}</p>
     {cta && (
-      <Button asChild className="mt-4">
+      <Button asChild className="mt-4 bg-[#1E88E5] hover:bg-[#1565C0] text-white">
         <Link to={cta.link}>{cta.text}</Link>
       </Button>
     )}

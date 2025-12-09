@@ -169,26 +169,17 @@ const StudentMentorshipsPage = () => {
 
     // Get gradient based on status
     const getCardGradient = (status: string) => {
-      switch (status.toLowerCase()) {
-        case "active":
-          return "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-900 border-green-200 dark:border-green-800";
-        case "pending":
-          return "bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950 dark:to-amber-900 border-yellow-200 dark:border-yellow-800";
-        case "completed":
-          return "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-900 border-blue-200 dark:border-blue-800";
-        default:
-          return "bg-white dark:bg-gray-800 border-slate-200 dark:border-slate-700";
-      }
+      return "bg-white border-[#1E88E5]/30";
     };
 
     return (
       <Card
-        className={`hover:shadow-xl transition-all ${getCardGradient(request.status)} border-2`}
+        className={`hover:shadow-xl transition-all ${getCardGradient(request.status)} border hover:scale-[1.02] duration-300`}
       >
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <Avatar className="h-14 w-14 border-2 border-white dark:border-gray-700 ring-2 ring-slate-200 dark:ring-slate-700">
+              <Avatar className="h-14 w-14 border-2 border-[#E3F2FD] ring-2 ring-[#E3F2FD]">
                 <AvatarImage
                   src={
                     mentor.profilePictureUrlOptimized ||
@@ -197,16 +188,16 @@ const StudentMentorshipsPage = () => {
                   }
                   alt={mentor.name}
                 />
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">
                   {mentor.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-lg text-slate-900 dark:text-slate-100">
+                <CardTitle className="text-lg text-[#1565C0]">
                   {mentor.name}
                 </CardTitle>
-                <CardDescription className="flex items-center gap-2 mt-1 text-slate-600 dark:text-slate-400">
-                  <Building2 className="h-3 w-3" />
+                <CardDescription className="flex items-center gap-2 mt-1 text-[#333333]/80">
+                  <Building2 className="h-3 w-3 text-[#1E88E5]" />
                   <span className="truncate">{roleText}</span>
                 </CardDescription>
               </div>
@@ -216,18 +207,18 @@ const StudentMentorshipsPage = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           {request.message && (
-            <div className="p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
-              <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+            <div className="p-3 bg-[#E3F2FD]/30 rounded-lg border border-[#1E88E5]/20">
+              <p className="text-xs font-medium text-[#1565C0] mb-1">
                 Your Message:
               </p>
-              <p className="text-sm text-slate-900 dark:text-slate-100">
+              <p className="text-sm text-[#333333]">
                 {request.message}
               </p>
             </div>
           )}
           {request.areasOfInterest && request.areasOfInterest.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-2">
+              <p className="text-xs font-medium text-[#1565C0] mb-2">
                 Areas of Interest:
               </p>
               <div className="flex flex-wrap gap-2">
@@ -236,7 +227,7 @@ const StudentMentorshipsPage = () => {
                     <Badge
                       key={idx}
                       variant="outline"
-                      className="bg-white/50 dark:bg-gray-800/50 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300"
+                      className="bg-[#E3F2FD] border-[#1E88E5]/30 text-[#1565C0]"
                     >
                       {area}
                     </Badge>
@@ -245,16 +236,16 @@ const StudentMentorshipsPage = () => {
               </div>
             </div>
           )}
-          <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-4 text-sm text-[#333333]/60 pt-2 border-t border-[#E3F2FD]">
             <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="h-4 w-4 text-[#1E88E5]" />
               <span>
                 Requested {new Date(request.createdAt).toLocaleDateString()}
               </span>
             </div>
             {request.startDate && (
               <div className="flex items-center gap-1">
-                <Clock className="h-4 w-4" />
+                <Clock className="h-4 w-4 text-[#1E88E5]" />
                 <span>
                   Started {new Date(request.startDate).toLocaleDateString()}
                 </span>
@@ -265,7 +256,7 @@ const StudentMentorshipsPage = () => {
             <Button
               variant="outline"
               size="sm"
-              className="w-full hover:bg-blue-100 dark:hover:bg-blue-900 border-blue-300 dark:border-blue-700"
+              className="w-full hover:bg-[#E3F2FD] border-[#1E88E5]/30 text-[#1565C0]"
               onClick={() => handleViewFeedback(request)}
             >
               <MessageSquare className="h-4 w-4 mr-2" />
@@ -279,10 +270,10 @@ const StudentMentorshipsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#E3F2FD] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E88E5] mx-auto mb-4"></div>
+          <p className="text-[#1565C0]">
             Loading mentorships...
           </p>
         </div>
@@ -291,41 +282,41 @@ const StudentMentorshipsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#E3F2FD]">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col gap-2 mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-3xl font-bold tracking-tight text-[#1565C0]">
             My Mentorships
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-[#333333]">
             Manage your mentorship relationships and track your progress.
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-lg text-red-700 dark:text-red-300">
+          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 rounded-lg text-red-700">
             {error}
           </div>
         )}
 
         <Tabs defaultValue="active" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3 bg-white/80 backdrop-blur-sm border border-[#1E88E5]/20">
             <TabsTrigger
               value="active"
-              className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 dark:data-[state=active]:bg-green-900 dark:data-[state=active]:text-green-100"
+              className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
             >
               Active ({activeMentorships.length})
             </TabsTrigger>
             <TabsTrigger
               value="pending"
-              className="data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-900 dark:data-[state=active]:bg-yellow-900 dark:data-[state=active]:text-yellow-100"
+              className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
             >
               Pending ({pendingRequests.length})
             </TabsTrigger>
             <TabsTrigger
               value="completed"
-              className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100"
+              className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
             >
               Completed ({completedMentorships.length})
             </TabsTrigger>
@@ -339,19 +330,19 @@ const StudentMentorshipsPage = () => {
                 ))}
               </div>
             ) : (
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-900 border-2 border-green-200 dark:border-green-800">
+              <Card className="bg-white border-[#1E88E5]/30">
                 <CardContent className="flex flex-col items-center justify-center py-12">
-                  <Users className="h-16 w-16 text-green-500 dark:text-green-400 mb-4 opacity-50" />
-                  <p className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2">
+                  <Users className="h-16 w-16 text-[#1E88E5]/50 mb-4" />
+                  <p className="text-lg font-semibold text-[#1565C0] mb-2">
                     No active mentorships
                   </p>
-                  <p className="text-sm text-green-700 dark:text-green-300 text-center max-w-md mb-4">
+                  <p className="text-sm text-[#333333] text-center max-w-md mb-4">
                     You don't have any active mentorship relationships yet.
                     Browse alumni to find a mentor.
                   </p>
                   <Button
                     asChild
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-[#1E88E5] hover:bg-[#1565C0] text-white"
                   >
                     <a href="/student/alumni">Browse Alumni</a>
                   </Button>
@@ -368,13 +359,13 @@ const StudentMentorshipsPage = () => {
                 ))}
               </div>
             ) : (
-              <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950 dark:to-amber-900 border-2 border-yellow-200 dark:border-yellow-800">
+              <Card className="bg-white border-[#1E88E5]/30">
                 <CardContent className="flex flex-col items-center justify-center py-12">
-                  <Clock className="h-16 w-16 text-yellow-500 dark:text-yellow-400 mb-4 opacity-50" />
-                  <p className="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">
+                  <Clock className="h-16 w-16 text-[#1E88E5]/50 mb-4" />
+                  <p className="text-lg font-semibold text-[#1565C0] mb-2">
                     No pending requests
                   </p>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                  <p className="text-sm text-[#333333]">
                     All your mentorship requests have been responded to.
                   </p>
                 </CardContent>
@@ -390,13 +381,13 @@ const StudentMentorshipsPage = () => {
                 ))}
               </div>
             ) : (
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-900 border-2 border-blue-200 dark:border-blue-800">
+              <Card className="bg-white border-[#1E88E5]/30">
                 <CardContent className="flex flex-col items-center justify-center py-12">
-                  <CheckCircle2 className="h-16 w-16 text-blue-500 dark:text-blue-400 mb-4 opacity-50" />
-                  <p className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                  <CheckCircle2 className="h-16 w-16 text-[#1E88E5]/50 mb-4" />
+                  <p className="text-lg font-semibold text-[#1565C0] mb-2">
                     No completed mentorships
                   </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <p className="text-sm text-[#333333]">
                     Completed mentorship relationships will appear here.
                   </p>
                 </CardContent>

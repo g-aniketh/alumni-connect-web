@@ -41,13 +41,13 @@ const CollegeJobApplicationsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-[#E3F2FD]">
       <div className="container mx-auto px-4 py-8 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-[#1565C0]">
             Job Applications
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-[#333333]">
             Review and manage applications for the jobs posted by your college.
           </p>
         </div>
@@ -59,15 +59,15 @@ const CollegeJobApplicationsPage = () => {
         )}
 
         {loading ? (
-          <p className="text-muted-foreground">Loading your jobs...</p>
+          <p className="text-[#333333]/60">Loading your jobs...</p>
         ) : jobs.length === 0 ? (
-          <p className="text-muted-foreground">No jobs have been posted yet.</p>
+          <p className="text-[#333333]/60">No jobs have been posted yet.</p>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <aside className="lg:col-span-1 space-y-3">
-              <Card>
+              <Card className="bg-white border-[#1E88E5]/30">
                 <CardHeader>
-                  <CardTitle className="text-sm">College Jobs</CardTitle>
+                  <CardTitle className="text-sm text-[#1565C0]">College Jobs</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {jobs.map((job) => (
@@ -76,14 +76,18 @@ const CollegeJobApplicationsPage = () => {
                       variant={
                         selectedJob?._id === job._id ? "default" : "outline"
                       }
-                      className="w-full justify-start text-left"
+                      className={`w-full justify-start text-left ${
+                        selectedJob?._id === job._id
+                          ? "bg-[#1E88E5] hover:bg-[#1565C0] text-white"
+                          : "border-[#1E88E5]/30 text-[#333333] hover:bg-[#E3F2FD] hover:text-[#1565C0]"
+                      }`}
                       onClick={() => setSelectedJob(job)}
                     >
                       <div className="flex flex-col items-start">
                         <span className="text-sm font-medium truncate">
                           {job.title}
                         </span>
-                        <span className="text-xs text-muted-foreground truncate">
+                        <span className="text-xs opacity-80 truncate">
                           {job.location}
                         </span>
                       </div>
@@ -94,9 +98,9 @@ const CollegeJobApplicationsPage = () => {
             </aside>
 
             <main className="lg:col-span-3 space-y-4">
-              <Card>
+              <Card className="bg-white border-[#1E88E5]/30">
                 <CardHeader>
-                  <CardTitle className="text-lg">
+                  <CardTitle className="text-lg text-[#1565C0]">
                     {selectedJob ? selectedJob.title : "Select a job"}
                   </CardTitle>
                 </CardHeader>

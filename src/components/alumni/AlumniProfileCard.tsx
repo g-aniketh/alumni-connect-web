@@ -36,15 +36,14 @@ export const AlumniProfileCard = React.memo(
           hidden: { y: 20, opacity: 0 },
           visible: { y: 0, opacity: 1 },
         }}
-        whileHover={{ scale: 1.03 }}
         className="h-full"
       >
-        <Card className="flex flex-col h-full bg-white transition-shadow hover:shadow-md">
+        <Card className="flex flex-col h-full bg-[#E3F2FD] border-[#1E88E5]/30 transition-all duration-300 hover:scale-105 hover:shadow-lg">
           <CardHeader className="text-center pb-4">
             <div className="flex flex-col items-center gap-3">
-              <Avatar className="h-20 w-20">
+              <Avatar className="h-20 w-20 border-2 border-white shadow-sm">
                 <AvatarImage src={alumni.avatar} alt={alumni.name} />
-                <AvatarFallback className="text-xl">
+                <AvatarFallback className="text-xl bg-white text-[#1565C0]">
                   {alumni.name
                     .split(" ")
                     .map((n) => n[0])
@@ -52,9 +51,9 @@ export const AlumniProfileCard = React.memo(
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-semibold text-lg">{alumni.name}</h3>
-                <p className="text-sm text-gray-500">{alumni.designation}</p>
-                <p className="text-xs text-gray-400">
+                <h3 className="font-semibold text-lg text-[#1565C0]">{alumni.name}</h3>
+                <p className="text-sm text-[#333333]">{alumni.designation}</p>
+                <p className="text-xs text-[#333333]/80">
                   @{alumni.currentEmployer} | Class of {alumni.graduationYear}
                 </p>
               </div>
@@ -67,8 +66,8 @@ export const AlumniProfileCard = React.memo(
                   variant={isAvailable ? "default" : "secondary"}
                   className={
                     isAvailable
-                      ? "bg-green-100 text-green-800"
-                      : "bg-stone-100 text-stone-800"
+                      ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                      : "bg-[#F5F5F5] text-[#333333]"
                   }
                 >
                   {isAvailable ? (
@@ -81,22 +80,22 @@ export const AlumniProfileCard = React.memo(
               </div>
             )}
             <div className="space-y-2 text-center">
-              <p className="text-xs font-semibold text-gray-400">SKILLS</p>
+              <p className="text-xs font-semibold text-[#1E88E5]">SKILLS</p>
               <div className="flex flex-wrap gap-1 justify-center">
                 {alumni.skills.slice(0, 3).map((skill) => (
-                  <Badge key={skill} variant="outline">
+                  <Badge key={skill} variant="outline" className="bg-white border-[#1E88E5]/30 text-[#1565C0]">
                     {skill}
                   </Badge>
                 ))}
                 {alumni.skills.length > 3 && (
-                  <Badge variant="outline">
+                  <Badge variant="outline" className="bg-white border-[#1E88E5]/30 text-[#1565C0]">
                     +{alumni.skills.length - 3} more
                   </Badge>
                 )}
               </div>
             </div>
           </CardContent>
-          <CardFooter className="pt-4 border-t">
+          <CardFooter className="pt-4 border-t border-[#1E88E5]/20">
             {isAlumniViewer && onConnect ? (
               <Button
                 className="w-full"

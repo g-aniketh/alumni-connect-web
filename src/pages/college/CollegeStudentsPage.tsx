@@ -103,17 +103,17 @@ const CollegeStudentsPage = () => {
   }
 
   return (
-    <div className="bg-stone-50 min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen">
       <div className="container mx-auto py-8 space-y-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1565C0]">
             Student Management
           </h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-[#333333] mt-2">
             Verify new students and manage your institution's directory.
           </p>
         </motion.div>
@@ -129,10 +129,10 @@ const CollegeStudentsPage = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Card>
+          <Card className="bg-white border-[#1E88E5]/30">
             <CardHeader>
-              <CardTitle>Pending Verifications</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-[#1565C0]">Pending Verifications</CardTitle>
+              <CardDescription className="text-[#333333]/80">
                 These students are awaiting verification to get full access.
               </CardDescription>
             </CardHeader>
@@ -159,22 +159,22 @@ const CollegeStudentsPage = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Card>
+          <Card className="bg-white border-[#1E88E5]/30">
             <CardHeader>
-              <CardTitle>Student Directory</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-[#1565C0]">Student Directory</CardTitle>
+              <CardDescription className="text-[#333333]/80">
                 Search and manage all verified students.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#1E88E5]" />
                   <Input
                     placeholder="Search by name or roll number..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 border-[#1E88E5]/30 focus:border-[#1E88E5] focus:ring-[#1E88E5]"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -182,7 +182,7 @@ const CollegeStudentsPage = () => {
                     value={departmentFilter}
                     onValueChange={setDepartmentFilter}
                   >
-                    <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectTrigger className="w-full sm:w-[180px] border-[#1E88E5]/30">
                       <SelectValue placeholder="Department" />
                     </SelectTrigger>
                     <SelectContent>
@@ -196,42 +196,42 @@ const CollegeStudentsPage = () => {
                   </Select>
                 </div>
               </div>
-              <div className="rounded-md border">
+              <div className="rounded-md border border-[#1E88E5]/20">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Student</TableHead>
-                      <TableHead>Roll Number</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Batch</TableHead>
-                      <TableHead>Status</TableHead>
+                  <TableHeader className="bg-[#E3F2FD]">
+                    <TableRow className="border-[#1E88E5]/20 hover:bg-[#E3F2FD]/80">
+                      <TableHead className="text-[#1565C0]">Student</TableHead>
+                      <TableHead className="text-[#1565C0]">Roll Number</TableHead>
+                      <TableHead className="text-[#1565C0]">Department</TableHead>
+                      <TableHead className="text-[#1565C0]">Batch</TableHead>
+                      <TableHead className="text-[#1565C0]">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paginatedStudents.map((student) => (
-                      <TableRow key={student._id}>
+                      <TableRow key={student._id} className="border-[#1E88E5]/10 hover:bg-[#E3F2FD]/30">
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-9 w-9">
+                            <Avatar className="h-9 w-9 border border-[#E3F2FD]">
                               <AvatarImage
                                 src={student.profilePictureUrl}
                                 alt={student.name}
                               />
-                              <AvatarFallback>
+                              <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">
                                 {student.name.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium">{student.name}</div>
-                              <div className="text-sm text-gray-500">
+                              <div className="font-medium text-[#1565C0]">{student.name}</div>
+                              <div className="text-sm text-[#333333]/70">
                                 {student.email}
                               </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>{student.rollNumber}</TableCell>
-                        <TableCell>{student.department}</TableCell>
-                        <TableCell>{student.graduationYear}</TableCell>
+                        <TableCell className="text-[#333333]">{student.rollNumber}</TableCell>
+                        <TableCell className="text-[#333333]">{student.department}</TableCell>
+                        <TableCell className="text-[#333333]">{student.graduationYear}</TableCell>
                         <TableCell>
                           <Badge
                             variant={
@@ -239,8 +239,8 @@ const CollegeStudentsPage = () => {
                             }
                             className={
                               student.isVerified
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
+                                ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                                : "bg-amber-100 text-amber-800 border-amber-200"
                             }
                           >
                             {student.isVerified ? "Verified" : "Pending"}
@@ -250,7 +250,7 @@ const CollegeStudentsPage = () => {
                     ))}
                     {filteredStudents.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center">
+                        <TableCell colSpan={5} className="h-24 text-center text-[#333333]/60">
                           No students found.
                         </TableCell>
                       </TableRow>
@@ -277,34 +277,34 @@ type PendingStudentCardProps = {
 };
 
 const PendingStudentCard = ({ student, onVerify }: PendingStudentCardProps) => (
-  <Card>
+  <Card className="bg-white border-[#1E88E5]/30 hover:shadow-md transition-all">
     <CardHeader>
       <div className="flex items-center gap-4">
-        <Avatar className="h-12 w-12">
+        <Avatar className="h-12 w-12 border-2 border-[#E3F2FD]">
           <AvatarImage src={student.profilePictureUrl} alt={student.name} />
-          <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback className="bg-[#E3F2FD] text-[#1565C0]">{student.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
-          <CardTitle className="text-base">{student.name}</CardTitle>
-          <CardDescription>{student.email}</CardDescription>
+          <CardTitle className="text-base text-[#1565C0]">{student.name}</CardTitle>
+          <CardDescription className="text-[#333333]/80">{student.email}</CardDescription>
         </div>
       </div>
     </CardHeader>
-    <CardContent className="text-sm space-y-1">
+    <CardContent className="text-sm space-y-1 text-[#333333]">
       <p>
-        <strong>Roll No:</strong> {student.rollNumber}
+        <strong className="text-[#1565C0]">Roll No:</strong> {student.rollNumber}
       </p>
       <p>
-        <strong>Department:</strong> {student.department}
+        <strong className="text-[#1565C0]">Department:</strong> {student.department}
       </p>
       <p>
-        <strong>Batch:</strong> {student.graduationYear}
+        <strong className="text-[#1565C0]">Batch:</strong> {student.graduationYear}
       </p>
     </CardContent>
     <CardFooter>
       <Button
         size="sm"
-        className="w-full"
+        className="w-full bg-[#1E88E5] hover:bg-[#1565C0] text-white"
         disabled={!student._id}
         onClick={() => {
           if (student._id) {
@@ -322,8 +322,8 @@ const PendingStudentCard = ({ student, onVerify }: PendingStudentCardProps) => (
 type EmptyStateProps = { message: string };
 
 const EmptyState = ({ message }: EmptyStateProps) => (
-  <div className="text-center py-12 text-gray-500">
-    <GraduationCap className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+  <div className="text-center py-12 text-[#333333]/60">
+    <GraduationCap className="h-10 w-10 mx-auto text-[#1E88E5]/40 mb-2" />
     {message}
   </div>
 );
@@ -348,10 +348,11 @@ const PaginationControls = ({
         size="sm"
         disabled={!canPrev}
         onClick={() => canPrev && onPageChange(page - 1)}
+        className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]"
       >
         Previous
       </Button>
-      <span className="text-sm text-gray-600">
+      <span className="text-sm text-[#333333]/80">
         Page {page} of {pageCount}
       </span>
       <Button
@@ -359,6 +360,7 @@ const PaginationControls = ({
         size="sm"
         disabled={!canNext}
         onClick={() => canNext && onPageChange(page + 1)}
+        className="border-[#1E88E5]/30 text-[#1565C0] hover:bg-[#E3F2FD]"
       >
         Next
       </Button>

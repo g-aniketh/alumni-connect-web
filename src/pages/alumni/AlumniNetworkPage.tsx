@@ -156,7 +156,7 @@ const AlumniNetworkPage = () => {
   }
 
   return (
-    <div className="bg-stone-50 min-h-screen">
+    <div className="bg-[#E3F2FD] min-h-screen">
       <div className="container mx-auto py-8">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -164,10 +164,10 @@ const AlumniNetworkPage = () => {
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1565C0]">
             Alumni Network
           </h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-[#333333] mt-2">
             Connect with fellow alumni, find mentors, and expand your
             professional circle.
           </p>

@@ -322,10 +322,10 @@ const EventsCampaignsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#E3F2FD] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E88E5] mx-auto mb-4"></div>
+          <p className="text-[#333333]">
             Loading events...
           </p>
         </div>
@@ -334,16 +334,16 @@ const EventsCampaignsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-[#E3F2FD]">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col gap-2 mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              <h1 className="text-3xl font-bold tracking-tight text-[#1565C0]">
                 {canCreateEvents ? "Events & Campaigns" : "Upcoming Events"}
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 mt-2">
+              <p className="text-[#333333] mt-2">
                 Stay connected through events and support fundraising
                 initiatives.
               </p>
@@ -352,7 +352,7 @@ const EventsCampaignsPage = () => {
               {canCreateEvents && (
                 <Button
                   asChild
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-[#1565C0] hover:bg-[#1E88E5] text-white"
                 >
                   <Link to={createEventPath}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -363,7 +363,7 @@ const EventsCampaignsPage = () => {
               {canCreateCampaigns && (
                 <Button
                   asChild
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-[#1565C0] hover:bg-[#1E88E5] text-white"
                 >
                   <Link to="/college/campaigns/create">
                     <Plus className="h-4 w-4 mr-2" />
@@ -376,34 +376,34 @@ const EventsCampaignsPage = () => {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 dark:bg-red-950 rounded-lg text-red-700 dark:text-red-300">
+          <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 rounded-lg text-red-700">
             {error}
           </div>
         )}
 
         <Tabs defaultValue="events" className="w-full">
           <TabsList
-            className={`grid w-full mb-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-700 ${
+            className={`grid w-full mb-6 bg-white/80 backdrop-blur-sm border-2 border-[#1E88E5]/20 ${
               canCreateEvents ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"
             }`}
           >
             <TabsTrigger
               value="events"
-              className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100"
+              className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
             >
               Upcoming Events
             </TabsTrigger>
             {canCreateEvents && (
               <TabsTrigger
                 value="my-events"
-                className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100"
+                className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
               >
                 My Events
               </TabsTrigger>
             )}
             <TabsTrigger
               value="campaigns"
-              className="data-[state=active]:bg-blue-100 data-[state=active]:text-blue-900 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-100"
+              className="data-[state=active]:bg-[#E3F2FD] data-[state=active]:text-[#1565C0]"
             >
               Fundraising Campaigns
             </TabsTrigger>
@@ -414,10 +414,10 @@ const EventsCampaignsPage = () => {
             <div className="mb-6 space-y-4">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#1E88E5]" />
                   <Input
                     placeholder="Search events by title or venue..."
-                    className="w-full pl-9 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full pl-9 bg-white border-[#E3F2FD] focus:border-[#1E88E5] focus:ring-[#1E88E5]"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -426,10 +426,10 @@ const EventsCampaignsPage = () => {
                   value={categoryFilter}
                   onValueChange={setCategoryFilter}
                 >
-                  <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                  <SelectTrigger className="w-full md:w-[180px] bg-white border-[#E3F2FD]">
                     <SelectValue placeholder="Category: All" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <SelectContent className="bg-white border-[#E3F2FD]">
                     <SelectItem value="all">Category: All</SelectItem>
                     <SelectItem value="networking">Networking</SelectItem>
                     <SelectItem value="career">Career Development</SelectItem>
@@ -438,10 +438,10 @@ const EventsCampaignsPage = () => {
                   </SelectContent>
                 </Select>
                 <Select value={timeFilter} onValueChange={setTimeFilter}>
-                  <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                  <SelectTrigger className="w-full md:w-[180px] bg-white border-[#E3F2FD]">
                     <SelectValue placeholder="Time: Upcoming" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <SelectContent className="bg-white border-[#E3F2FD]">
                     <SelectItem value="upcoming">Time: Upcoming</SelectItem>
                     <SelectItem value="all">Time: All</SelectItem>
                     <SelectItem value="past">Time: Past</SelectItem>
@@ -471,11 +471,11 @@ const EventsCampaignsPage = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-2 border-blue-200 dark:border-gray-700 rounded-lg p-12">
-                  <p className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                <div className="bg-[#E3F2FD] border-2 border-[#1E88E5]/20 rounded-lg p-12">
+                  <p className="text-lg font-semibold text-[#1565C0] mb-2">
                     No upcoming events
                   </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-[#333333]">
                     Check back later for new events.
                   </p>
                 </div>

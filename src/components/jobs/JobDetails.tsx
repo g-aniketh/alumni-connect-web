@@ -124,18 +124,18 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto p-0">
         {!showApplicationForm ? (
           <>
-            <DialogHeader className="p-6">
+            <DialogHeader className="p-6 bg-[#E3F2FD]/30">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <DialogTitle className="text-2xl font-bold">
+                  <DialogTitle className="text-2xl font-bold text-[#1565C0]">
                     {job.title}
                   </DialogTitle>
-                  <DialogDescription className="text-base mt-1 flex items-center gap-2">
-                    <Building2 className="h-4 w-4" /> {job.company}
+                  <DialogDescription className="text-base mt-1 flex items-center gap-2 text-[#333333]">
+                    <Building2 className="h-4 w-4 text-[#1E88E5]" /> {job.company}
                   </DialogDescription>
                 </div>
                 {job.referralAvailable && (
-                  <Badge className="bg-green-100 text-green-800">
+                  <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">
                     <Star className="h-3 w-3 mr-1" />
                     Alumni Referral
                   </Badge>
@@ -144,17 +144,17 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
             </DialogHeader>
 
             <div className="px-6 pb-6 grid gap-6">
-              <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#333333]/80">
                 <div className="flex items-center gap-2">
-                  <Briefcase className="h-4 w-4" />
+                  <Briefcase className="h-4 w-4 text-[#1E88E5]" />
                   {job.type}
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
+                  <MapPin className="h-4 w-4 text-[#1E88E5]" />
                   {job.location}
                 </div>
                 <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" />
+                  <DollarSign className="h-4 w-4 text-[#1E88E5]" />
                   {job.salaryMin && job.salaryMax
                     ? `$${job.salaryMin / 1000}k - $${job.salaryMax / 1000}k`
                     : job.salaryMin
@@ -162,14 +162,14 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                     : "Competitive"}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4 text-[#1E88E5]" />
                   Posted: {new Date(job.postedDate).toLocaleDateString()}
                 </div>
               </div>
 
-              <Separator />
+              <Separator className="bg-[#E3F2FD]" />
 
-              <div className="prose prose-stone max-w-none">
+              <div className="prose prose-stone max-w-none text-[#333333]">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {job.description}
                 </ReactMarkdown>
@@ -177,10 +177,10 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
 
               {job.department.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-lg">Target Departments</h3>
+                  <h3 className="font-semibold text-lg text-[#1565C0]">Target Departments</h3>
                   <div className="flex flex-wrap gap-2">
                     {job.department.map((dept) => (
-                      <Badge key={dept} variant="outline">
+                      <Badge key={dept} variant="outline" className="border-[#1E88E5]/30 text-[#1565C0] bg-[#E3F2FD]">
                         {dept}
                       </Badge>
                     ))}
@@ -189,13 +189,13 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
               )}
             </div>
 
-            <DialogFooter className="p-6 bg-stone-50 border-t">
+            <DialogFooter className="p-6 bg-[#E3F2FD]/30 border-t border-[#E3F2FD]">
               {user && user.role === UserRole.Student ? (
-                <Button className="w-full sm:w-auto" onClick={handleApply}>
+                <Button className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white" onClick={handleApply}>
                   Apply Now
                 </Button>
               ) : job.applyLink ? (
-                <Button className="w-full sm:w-auto" asChild>
+                <Button className="w-full sm:w-auto bg-[#1E88E5] hover:bg-[#1565C0] text-white" asChild>
                   <a
                     href={job.applyLink}
                     target="_blank"
@@ -205,7 +205,7 @@ export const JobDetails = ({ job, open, onOpenChange }: JobDetailsProps) => {
                   </a>
                 </Button>
               ) : (
-                <Button className="w-full sm:w-auto" disabled>
+                <Button className="w-full sm:w-auto bg-[#F5F5F5] text-[#333333]" disabled>
                   Applications closed
                 </Button>
               )}

@@ -18,22 +18,17 @@ import {
   LineChart,
   Pie,
   PieChart,
-  Radar,
-  RadarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
 } from "recharts";
 type ChartPaletteKey = "student" | "college" | "alumni";
 
 const palettes: Record<ChartPaletteKey, string[]> = {
   student: ["#7C3AED", "#EC4899", "#22D3EE", "#F59E0B", "#10B981"],
-  college: ["#2563EB", "#22C55E", "#F97316", "#0EA5E9", "#D946EF"],
-  alumni: ["#14B8A6", "#F59E0B", "#8B5CF6", "#F43F5E", "#0EA5E9"],
+  college: ["#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EC4899"],
+  alumni: ["#1565C0", "#1E88E5", "#42A5F5", "#90CAF9", "#BBDEFB"],
 };
 
 type ChartTooltipPayload = {
@@ -86,12 +81,12 @@ const ChartCard = ({
   className = "",
 }: ChartCardProps) => (
   <Card
-    className={`bg-linear-to-b from-white to-stone-50 border-stone-100 shadow-sm ${className}`}
+    className={`bg-white border-[#1E88E5]/30 shadow-sm ${className}`}
   >
     <CardHeader className="space-y-1">
-      <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+      <CardTitle className="text-lg font-semibold text-[#1565C0]">{title}</CardTitle>
       {description && (
-        <CardDescription className="text-sm text-muted-foreground">
+        <CardDescription className="text-sm text-[#333333]/80">
           {description}
         </CardDescription>
       )}
@@ -119,7 +114,7 @@ type MentorshipHealthPoint = { month: string; active: number; new: number; compl
 type JobImpactSlice = { label: string; value: number };
 type EngagementBar = { channel: string; score: number };
 type GivingBackPoint = { quarter: string; donations: number; volunteerHours: number };
-type RelationshipRadar = { metric: string; score: number };
+
 
 export const StudentAnalytics = () => {
   const palette = palettes.student;
@@ -272,6 +267,7 @@ export const StudentAnalytics = () => {
 
 export const CollegeAnalytics = () => {
   const palette = palettes.college;
+  const lightPalette = ["#93C5FD", "#6EE7B7", "#C4B5FD", "#FCD34D", "#F9A8D4"];
   const placementTrend: PlacementTrendPoint[] = [
     { year: "2020", placements: 64, offers: 78 },
     { year: "2021", placements: 69, offers: 89 },
@@ -349,7 +345,7 @@ export const CollegeAnalytics = () => {
             <Tooltip content={<ChartTooltip />} />
             <Bar dataKey="employed" radius={[10, 10, 6, 6]}>
               {departmentOutcomes.map((_, idx) => (
-                <Cell key={idx} fill={palette[idx % palette.length]} />
+                <Cell key={idx} fill={lightPalette[idx % lightPalette.length]} />
               ))}
             </Bar>
           </BarChart>
@@ -374,7 +370,7 @@ export const CollegeAnalytics = () => {
               label
             >
               {alumniGeo.map((_, idx) => (
-                <Cell key={idx} fill={palette[idx % palette.length]} />
+                <Cell key={idx} fill={lightPalette[idx % lightPalette.length]} />
               ))}
             </Pie>
           </PieChart>
@@ -399,13 +395,13 @@ export const CollegeAnalytics = () => {
             <Bar
               dataKey="verified"
               stackId="a"
-              fill={palette[1]}
+              fill={lightPalette[1]}
               radius={[10, 10, 0, 0]}
             />
             <Bar
               dataKey="pending"
               stackId="a"
-              fill={palette[2]}
+              fill={lightPalette[3]}
               radius={[0, 0, 10, 10]}
             />
           </BarChart>
@@ -431,6 +427,8 @@ export const AlumniAnalytics = () => {
     { label: "Shortlisted", value: 27 },
     { label: "Offers", value: 13 },
   ];
+  
+  const jobOutcomesColors = ["#93C5FD", "#6EE7B7", "#FCD34D"]; // Light Blue, Light Green, Light Amber
 
   const engagement: EngagementBar[] = [
     { channel: "Mentorship", score: 89 },
@@ -439,6 +437,8 @@ export const AlumniAnalytics = () => {
     { channel: "Donations", score: 67 },
   ];
 
+  const engagementColors = ["#C4B5FD", "#F9A8D4", "#67E8F9", "#FDBA74"]; // Light Purple, Light Pink, Light Cyan, Light Orange
+
   const givingBack: GivingBackPoint[] = [
     { quarter: "Q1", donations: 48, volunteerHours: 62 },
     { quarter: "Q2", donations: 55, volunteerHours: 69 },
@@ -446,13 +446,7 @@ export const AlumniAnalytics = () => {
     { quarter: "Q4", donations: 61, volunteerHours: 80 },
   ];
 
-  const relationshipDepth: RelationshipRadar[] = [
-    { metric: "Career", score: 82 },
-    { metric: "Mentorship", score: 91 },
-    { metric: "Events", score: 74 },
-    { metric: "Philanthropy", score: 63 },
-    { metric: "Recruiting", score: 79 },
-  ];
+
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -518,7 +512,7 @@ export const AlumniAnalytics = () => {
               paddingAngle={6}
             >
               {jobImpact.map((_, idx) => (
-                <Cell key={idx} fill={palette[idx % palette.length]} />
+                <Cell key={idx} fill={jobOutcomesColors[idx % jobOutcomesColors.length]} />
               ))}
             </Pie>
           </PieChart>
@@ -541,7 +535,7 @@ export const AlumniAnalytics = () => {
             <Tooltip content={<ChartTooltip />} />
             <Bar dataKey="score" radius={[10, 10, 6, 6]}>
               {engagement.map((_, idx) => (
-                <Cell key={idx} fill={palette[idx % palette.length]} />
+                <Cell key={idx} fill={engagementColors[idx % engagementColors.length]} />
               ))}
             </Bar>
           </BarChart>
@@ -578,26 +572,7 @@ export const AlumniAnalytics = () => {
         </ResponsiveContainer>
       </ChartCard>
 
-      <ChartCard
-        title="Relationship Strength"
-        description="How alumni engage across dimensions."
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={relationshipDepth}>
-            <PolarGrid />
-            <PolarAngleAxis dataKey="metric" />
-            <PolarRadiusAxis angle={30} domain={[0, 100]} />
-            <Tooltip content={<ChartTooltip />} />
-            <Radar
-              name="Score"
-              dataKey="score"
-              stroke={palette[0]}
-              fill={palette[0]}
-              fillOpacity={0.25}
-            />
-          </RadarChart>
-        </ResponsiveContainer>
-      </ChartCard>
+
     </div>
   );
 };
